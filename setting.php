@@ -47,10 +47,23 @@ if (isset($_POST['submit'])) {
         echo '<div class="notice_failure">Hai mật khẩu không giống nhau</div>';
     } elseif (!empty($passwordO) && strlen($passwordN) < 5) {
         echo '<div class="notice_failure">Mật khẩu phải lớn hơn 5 ký tự</div>';
-    } elseif ($pageList <= 0 || $pageFileEdit <= 0 || $pageFileEditLine <= 0) {
+    } elseif (
+        $pageList <= 0
+        || $pageFileEdit <= 0
+        || $pageFileEditLine <= 0
+        || $pageDatabaseListRows <= 0
+    ) {
         echo '<div class="notice_failure">Phân trang phải lớn hơn 0</div>';
     } else {
-        if (createConfig($username, (!empty($passwordN) ? getPasswordEncode($passwordN) : $configs['password']), $pageList, $pageFileEdit, $pageFileEditLine, false)) {
+        if (createConfig(
+            $username,
+            (!empty($passwordN) ? getPasswordEncode($passwordN) : $configs['password']),
+            $pageList,
+            $pageFileEdit,
+            $pageFileEditLine,
+            $pageDatabaseListRows,
+            false
+        )) {
             include PATH_CONFIG;
 
             $username         = $configs['username'];

@@ -50,7 +50,7 @@ const LOGIN_PASSWORD_DEFAULT      = '12345';
 const PAGE_LIST_DEFAULT           = 120;
 const PAGE_FILE_EDIT_DEFAULT      = 120;
 const PAGE_FILE_EDIT_LINE_DEFAULT = 120;
-const PAGE_DATABASE_LIST_ROWS_DEFAULT = 20;
+const PAGE_DATABASE_LIST_ROWS_DEFAULT = 120;
 
 const PAGE_NUMBER      = 7;
 const PAGE_URL_DEFAULT = 'default';
@@ -142,6 +142,7 @@ if (
 }
 
 $login = isset($_COOKIE[FM_COOKIE_NAME])
+    && isset($configs['password'])
     && $_COOKIE[FM_COOKIE_NAME] === $configs['password'];
 
 define('IS_LOGIN', $login);
