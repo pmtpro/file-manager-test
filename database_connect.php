@@ -33,11 +33,14 @@
         if (isDatabaseVariable($databases)) {
             define('IS_VALIDATE', true);
             define('IS_DATABASE_ROOT', empty($databases['db_name']) || $databases['db_name'] == null);
-            define('LINK_IDENTIFIER', mysqli_connect(
+            
+            $MySQLi = mysqli_connect(
                 $databases['db_host'],
                 $databases['db_username'],
                 $databases['db_password']
-            ));
+            );
+
+            define('LINK_IDENTIFIER', $MySQLi ? true : false);
 
             if (LINK_IDENTIFIER != false) {
                 define('ERROR_CONNECT', false);
@@ -45,6 +48,7 @@
                 function printDataType($default = null)
                 {
                     global $MYSQL_DATA_TYPE;
+                    global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_DATA_TYPE) && count($MYSQL_DATA_TYPE) <= 0) {
                         $json = jsonDecode(@file_get_contents(PATH_MYSQL_DATA_TYPE), true);
@@ -74,6 +78,7 @@
                 function printCollection($default = null)
                 {
                     global $MYSQL_COLLECTION;
+                    global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_COLLECTION) && count($MYSQL_COLLECTION) <= 0) {
                         $json = jsonDecode(@file_get_contents(PATH_MYSQL_COLLECTION), true);
@@ -105,6 +110,7 @@
                 function printAttributes($default = null)
                 {
                     global $MYSQL_ATTRIBUTES;
+                    global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_ATTRIBUTES) && count($MYSQL_ATTRIBUTES) <= 0) {
                         $json = jsonDecode(@file_get_contents(PATH_MYSQL_ATTRIBUTES), true);
@@ -130,6 +136,7 @@
                 function printFieldKey($name, $default = null)
                 {
                     global $MYSQL_FIELD_KEY;
+                    global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_FIELD_KEY) && count($MYSQL_FIELD_KEY) <= 0) {
                         $json = jsonDecode(@file_get_contents(PATH_MYSQL_FIELD_KEY), true);
@@ -155,6 +162,7 @@
                 function printEngineStorage($default = null)
                 {
                     global $MYSQL_ENGINE_STORAGE;
+                    global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_ENGINE_STORAGE) && count($MYSQL_ENGINE_STORAGE) <= 0) {
                         $json = jsonDecode(@file_get_contents(PATH_MYSQL_ENGINE_STORAGE), true);
@@ -177,6 +185,8 @@
 
                 function isDatabaseExists($name, $igone = null, $isLowerCase = false, &$output = false)
                 {
+                    global $MySQLi;
+
                     if ($isLowerCase) {
                         $name = strtolower($name);
 
@@ -184,7 +194,7 @@
                             $igone = strtolower($igone);
                     }
 
-                    $query = mysqli_query(LINK_IDENTIFIER, 'SHOW DATABASES');
+                    $query = mysqli_query($MySQLi, 'SHOW DATABASES');
 
                     if ($query) {
                         while ($assoc = mysqli_fetch_assoc($query)) {
@@ -205,6 +215,8 @@
 
                 function isTableExists($name, $igone = null, $isLowerCase = false, &$output = false)
                 {
+                    global $MySQLi;
+
                     if ($isLowerCase) {
                         $name = strtolower($name);
 
@@ -212,7 +224,7 @@
                             $igone = strtolower($igone);
                     }
 
-                    $query = mysqli_query(LINK_IDENTIFIER, 'SHOW TABLE STATUS');
+                    $query = mysqli_query($MySQLi, 'SHOW TABLE STATUS');
 
                     if ($query !== false) {
                         while ($assoc = mysqli_fetch_assoc($query)) {
@@ -233,6 +245,8 @@
 
                 function isColumnsExists($name, $table, $igone = null, $isLowerCase = false, &$output = false)
                 {
+                    global $MySQLi;
+
                     if ($isLowerCase) {
                         $name = strtolower($name);
 
@@ -240,7 +254,7 @@
                             $igone = strtolower($igone);
                     }
 
-                    $query = mysqli_query(LINK_IDENTIFIER, "SHOW COLUMNS FROM `$table`");
+                    $query = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$table`");
 
                     if ($query) {
                         while ($assoc = mysqli_fetch_assoc($query)) {
@@ -261,12 +275,15 @@
 
                 function isDataTypeHasLength($type)
                 {
+                    global $MySQLi;
+
                     return !preg_match('/^(DATE|DATETIME|TIME|TINYBLOB|TINYTEXT|BLOB|TEXT|MEDIUMBLOB|MEDIUMTEXT|LONGBLOB|LONGTEXT|SERIAL|BOOLEAN|UUID)$/i', $type);
                 }
 
                 function isDataTypeNumeric($type)
                 {
                     global $MYSQL_DATA_TYPE;
+                    global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_DATA_TYPE) && count($MYSQL_DATA_TYPE) <= 0) {
                         $json = jsonDecode(@file_get_contents(PATH_MYSQL_DATA_TYPE), true);
@@ -283,14 +300,16 @@
 
                 function getColumnsKey($table)
                 {
-                    $query = mysqli_query(LINK_IDENTIFIER, "SHOW INDEXES FROM `$table` WHERE `Key_name`='PRIMARY'");
+                    global $MySQLi;
+                    
+                    $query = mysqli_query($MySQLi, "SHOW INDEXES FROM `$table` WHERE `Key_name`='PRIMARY'");
                     $key = null;
 
                     if (mysqli_num_rows($query) > 0) {
                         $key = mysqli_fetch_assoc($query);
                         $key = $key['Column_name'];
                     } else {
-                        $query = mysqli_query(LINK_IDENTIFIER, "SHOW COLUMNS FROM `$table`");
+                        $query = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$table`");
                         $key = mysqli_fetch_assoc($query);
                         $key = $key['Field'];
                     }
@@ -305,13 +324,13 @@
                     } else if (
                         isset($_GET['db_name'])
                         && empty($_GET['db_name']) == false
-                        && mysqli_select_db(LINK_IDENTIFIER, $_GET['db_name'])
+                        && mysqli_select_db($MySQLi, $_GET['db_name'])
                     ) {
                         define('IS_CONNECT', true);
                         define('ERROR_SELECT_DB', false);
                         define('DATABASE_NAME', $_GET['db_name']);
                     }
-                } else if (empty($databases['db_name']) == false && $databases['db_name'] != null && mysqli_select_db(LINK_IDENTIFIER, $databases['db_name'])) {
+                } else if (empty($databases['db_name']) == false && $databases['db_name'] != null && mysqli_select_db($MySQLi, $databases['db_name'])) {
                     define('IS_CONNECT', true);
                     define('ERROR_SELECT_DB', false);
                     define('DATABASE_NAME', $databases['db_name']);

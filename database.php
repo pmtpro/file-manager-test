@@ -50,7 +50,7 @@
 
             if (empty($host) || empty($username)) {
                 $notice = '<div class="notice_failure">Chưa nhập đầy đủ thông tin</div>';
-            } else if (!$connectTemp = mysqli_connect($host, $username, $password)) {
+            } else if (!$connectTemp = @mysqli_connect($host, $username, $password)) {
                 $notice = '<div class="notice_failure">Không thể kết nối tới database</div>';
             } else if (!empty($name) && !mysqli_select_db($connectTemp, $name)) {
                 $notice = '<div class="notice_failure">Không thể chọn database</div>';

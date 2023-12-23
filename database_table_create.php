@@ -85,8 +85,8 @@
                     if ($auto_increment_put != null)
                         $sql .= ' ' . $auto_increment_put . '=1';
 
-                    if (!mysqli_query(LINK_IDENTIFIER, $sql))
-                        $notice .= 'Lỗi tạo bảng: ' . mysqli_error(LINK_IDENTIFIER);
+                    if (!mysqli_query($MySQLi, $sql))
+                        $notice .= 'Lỗi tạo bảng: ' . mysqli_error($MySQLi);
                     else
                         goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
                 }

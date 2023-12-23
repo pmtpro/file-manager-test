@@ -12,7 +12,7 @@
 
         if (IS_CONNECT) {            
             $title .= ': ' . DATABASE_NAME;
-            $query = mysqli_query(LINK_IDENTIFIER, 'SHOW TABLE STATUS');
+            $query = mysqli_query($MySQLi, 'SHOW TABLE STATUS');
 
             include_once 'header.php';
 
@@ -20,7 +20,7 @@
                 echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                 <ul class="list_database">';
 
-                $count = mysqli_query(LINK_IDENTIFIER, 'SELECT COUNT(*) as `c` FROM `information_schema`.`tables` WHERE `table_schema`="' . DATABASE_NAME . '"');
+                $count = mysqli_query($MySQLi, 'SELECT COUNT(*) as `c` FROM `information_schema`.`tables` WHERE `table_schema`="' . DATABASE_NAME . '"');
                 $count = mysqli_fetch_object($count);
                 $count = (int) $count->c;
                 
@@ -44,7 +44,7 @@
                             </p>
                             <p>
                                 <span class="size">' . size($assoc['Data_length']) . '</span>, 
-                                <span class="count_columns">' . ($assoc['Rows'] == 0 ? mysqli_query(LINK_IDENTIFIER, "SHOW COLUMNS FROM `$name`")->num_rows : $assoc['Rows']) . '</span>
+                                <span class="count_columns">' . ($assoc['Rows'] == 0 ? mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`")->num_rows : $assoc['Rows']) . '</span>
                                 <span>cột</span>
                             </p>
                         </li>';

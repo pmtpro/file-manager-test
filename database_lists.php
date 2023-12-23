@@ -23,8 +23,8 @@
                     echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
                     if (isset($_POST['accept'])) {
-                        if (!mysqli_query(LINK_IDENTIFIER, "DROP DATABASE `$name`"))
-                            echo '<div class="notice_failure">Xóa database thất bại: ' . mysqli_error(LINK_IDENTIFIER) . '</div>';
+                        if (!mysqli_query($MySQLi, "DROP DATABASE `$name`"))
+                            echo '<div class="notice_failure">Xóa database thất bại: ' . mysqli_error($MySQLi) . '</div>';
                         else
                             goURL('database_lists.php');
                     } else if (isset($_POST['not'])) {
@@ -53,7 +53,7 @@
             } else {
                 include_once 'header.php';
 
-                $query = mysqli_query(LINK_IDENTIFIER, 'SHOW DATABASES');
+                $query = mysqli_query($MySQLi, 'SHOW DATABASES');
 
                 if ($query) {
                     echo '<div class="title">' . $title . '</div>
@@ -61,7 +61,7 @@
 
                     while ($assoc = mysqli_fetch_assoc($query)) {
                         $name = $assoc['Database'];
-                        $count = mysqli_query(LINK_IDENTIFIER, 'SELECT COUNT(*) AS `c` FROM `information_schema`.`tables` WHERE `table_schema`="' . $name . '"');
+                        $count = mysqli_query($MySQLi, 'SELECT COUNT(*) AS `c` FROM `information_schema`.`tables` WHERE `table_schema`="' . $name . '"');
                         $count = mysqli_fetch_object($count);
                         $count = (int) $count->c;
                         

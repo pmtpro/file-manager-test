@@ -149,6 +149,7 @@
             echo '</div>
             <div class="title">Chức năng</div>
             <ul class="list">
+                <li><img src="icon/edit_text_line.png"/> <a href="edit_code.php?dir=' . $dirEncode . '&name=' . $name . '">Chế độ sửa code</a></li>
                 <li><img src="icon/edit_text_line.png"/> <a href="edit_text_line.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Sửa theo dòng</a></li>
                 <li><img src="icon/download.png"/> <a href="file_download.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Tải về</a></li>
                 <li><img src="icon/info.png"/> <a href="file.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Thông tin</a></li>

@@ -30,16 +30,16 @@ if (IS_CONNECT && IS_DATABASE_ROOT) {
             $notice .= 'Tên database đã tồn tại';
         else if (
             $collection == MYSQL_COLLECTION_NONE
-            && !mysqli_query(LINK_IDENTIFIER, 'CREATE DATABASE `' . $name . '`')
+            && !mysqli_query($MySQLi, 'CREATE DATABASE `' . $name . '`')
         ) {
             $notice .= 'Tạo database thất bại, có thể tên database đã tồn tại';
         } else if ($collection != MYSQL_COLLECTION_NONE && !preg_match('#^(.+?)' . MYSQL_COLLECTION_SPLIT . '(.+?)$#i', $collection, $matches))
             $notice .= 'Mã hóa - Đối chiếu không hợp lệ';
         else if (
             $collection != MYSQL_COLLECTION_NONE
-            && !mysqli_query(LINK_IDENTIFIER, 'CREATE DATABASE `' . $name . '` CHARACTER SET ' . $matches[1] . ' COLLATE ' . $matches[2])
+            && !mysqli_query($MySQLi, 'CREATE DATABASE `' . $name . '` CHARACTER SET ' . $matches[1] . ' COLLATE ' . $matches[2])
         ) {
-            $notice .= 'Tạo database thất bại: ' . mysqli_error(LINK_IDENTIFIER);
+            $notice .= 'Tạo database thất bại: ' . mysqli_error($MySQLi);
         } else
             goURL('database_lists.php');
 

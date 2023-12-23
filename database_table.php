@@ -39,7 +39,7 @@
                         echo '<div class="notice_failure">Chưa nhập tên bảng</div>';
                     else if (isTableExists($table, $name, true))
                         echo '<div class="notice_failure">Tên bảng đã tồn tại</div>';
-                    else if (!mysqli_query(LINK_IDENTIFIER, "RENAME TABLE `$name` TO `$table`"))
+                    else if (!mysqli_query($MySQLi, "RENAME TABLE `$name` TO `$table`"))
                         echo '<div class="notice_failure">Đổi tên thất bại</div>';
                     else
                         goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
@@ -60,7 +60,7 @@
                 echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
                 if (isset($_POST['accept'])) {
-                    if (!mysqli_query(LINK_IDENTIFIER, "DROP TABLE `$name`"))
+                    if (!mysqli_query($MySQLi, "DROP TABLE `$name`"))
                         echo '<div class="notice_failure">Xóa bảng thất bại</div>';
                     else
                         goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
@@ -82,7 +82,7 @@
 
                 include_once 'header.php';
 
-                $query = mysqli_query(LINK_IDENTIFIER, 'SHOW COLUMNS FROM `' . $name . '`');
+                $query = mysqli_query($MySQLi, 'SHOW COLUMNS FROM `' . $name . '`');
 
                 if ($query) {
                     echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
@@ -176,8 +176,8 @@
                         if ($after_put != null)
                             $sql .= ' ' . $after_put;
 
-                        if (!mysqli_query(LINK_IDENTIFIER, $sql)) {
-                            $notice .= 'Lỗi tạo cột: ' . mysqli_error(LINK_IDENTIFIER);
+                        if (!mysqli_query($MySQLi, $sql)) {
+                            $notice .= 'Lỗi tạo cột: ' . mysqli_error($MySQLi);
                         } else {
                             if (isset($_POST['continue'])) {
                                 $column = null;
@@ -202,7 +202,7 @@
                     $notice .= '</div>';
                 }
 
-                $query = mysqli_query(LINK_IDENTIFIER, "SHOW COLUMNS FROM `$name`");
+                $query = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
                 $position_list = null;
 
                 if ($query !== false && mysqli_num_rows($query) > 0) {
@@ -214,7 +214,7 @@
                     $position_list .= '</optgroup>';
                 }
 
-                if (mysqli_num_rows(mysqli_query(LINK_IDENTIFIER, "SHOW INDEXES FROM `$name` WHERE `Key_name`='PRIMARY'")) > 0 && $field_key == null)
+                if (mysqli_num_rows(mysqli_query($MySQLi, "SHOW INDEXES FROM `$name` WHERE `Key_name`='PRIMARY'")) > 0 && $field_key == null)
                     $field_key = MYSQL_FIELD_KEY_NONE;
 
                 echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
@@ -312,8 +312,8 @@
                             if ($auto_increment_put != null)
                                 $sql .= ' ' . $auto_increment_put;
 
-                            if (!mysqli_query(LINK_IDENTIFIER, $sql))
-                                $notice .= 'Lỗi sửa cột: ' . mysqli_error(LINK_IDENTIFIER);
+                            if (!mysqli_query($MySQLi, $sql))
+                                $notice .= 'Lỗi sửa cột: ' . mysqli_error($MySQLi);
                             else
                                 goURL('database_table.php?action=list_struct&name=' . $name . DATABASE_NAME_PARAMATER_1);
                         }
@@ -386,8 +386,8 @@
                     echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
                     if (isset($_POST['accept'])) {
-                        if (!mysqli_query(LINK_IDENTIFIER, "ALTER TABLE `$name` DROP `$columns`"))
-                            echo '<div class="notice_failure">Xóa cột thất bại: ' . mysqli_error(LINK_IDENTIFIER) . '</div>';
+                        if (!mysqli_query($MySQLi, "ALTER TABLE `$name` DROP `$columns`"))
+                            echo '<div class="notice_failure">Xóa cột thất bại: ' . mysqli_error($MySQLi) . '</div>';
                         else
                             goURL('database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name);
                     } else if (isset($_POST['not'])) {
@@ -410,7 +410,7 @@
                 }
             } else if (isset($_GET['action']) && trim($_GET['action']) == 'add_data') {
                 $title = 'Tạo dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
-                $query = mysqli_query(LINK_IDENTIFIER, "SHOW COLUMNS FROM `$name`");
+                $query = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
                 $count = mysqli_num_rows($query);
 
                 if ($page['current'] > 1) {
@@ -444,8 +444,8 @@
                             $i++;
                         }
 
-                        if (!mysqli_query(LINK_IDENTIFIER, $sql)) {
-                            echo '<div class="notice_failure">Tạo dữ liệu thất bại: ' . mysqli_error(LINK_IDENTIFIER) . '</div>';
+                        if (!mysqli_query($MySQLi, $sql)) {
+                            echo '<div class="notice_failure">Tạo dữ liệu thất bại: ' . mysqli_error($MySQLi) . '</div>';
                         } else {
                             if (isset($_POST['continue'])) {
                                 foreach ($data AS $key => $value)
@@ -497,7 +497,7 @@
                 echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
                 if (isset($_POST['accept'])) {
-                    if (!mysqli_query(LINK_IDENTIFIER, "TRUNCATE TABLE `$name`"))
+                    if (!mysqli_query($MySQLi, "TRUNCATE TABLE `$name`"))
                         echo '<div class="notice_failure">Xóa sạch dữ liệu bảng thất bại</div>';
                     else
                         goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $order['paramater_1']);
@@ -522,7 +522,7 @@
 
                 if ($where != null) {
                     $key = getColumnsKey($name);
-                    $info = mysqli_fetch_assoc(mysqli_query(LINK_IDENTIFIER, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1"));
+                    $info = mysqli_fetch_assoc(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1"));
 
                     if ($info != false) {
                         echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
@@ -564,8 +564,8 @@
 
                 if ($where != null) {
                     $key = getColumnsKey($name);
-                    $data = mysqli_fetch_assoc(mysqli_query(LINK_IDENTIFIER, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1"));
-                    $columns = mysqli_query(LINK_IDENTIFIER, "SHOW COLUMNS FROM `$name`");
+                    $data = mysqli_fetch_assoc(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1"));
+                    $columns = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
 
                     if ($data != false && $columns) {
                         $array = array();
@@ -595,8 +595,8 @@
                             $sql .= " WHERE `$key`='$where' LIMIT 1";
                             $i = 0;
 
-                            if (!mysqli_query(LINK_IDENTIFIER, $sql))
-                                echo '<div class="notice_failure">Lưu thất bại: ' . mysqli_error(LINK_IDENTIFIER) . '</div>';
+                            if (!mysqli_query($MySQLi, $sql))
+                                echo '<div class="notice_failure">Lưu thất bại: ' . mysqli_error($MySQLi) . '</div>';
                             else
                                 goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
                         }
@@ -643,12 +643,12 @@
                 if ($where != null) {
                     $key = getColumnsKey($name);
 
-                    if (mysqli_num_rows(mysqli_query(LINK_IDENTIFIER, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1")) > 0) {
+                    if (mysqli_num_rows(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1")) > 0) {
                         echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
                         if (isset($_POST['submit'])) {
-                            if (!mysqli_query(LINK_IDENTIFIER, "DELETE FROM `$name` WHERE `$key`='$where' LIMIT 1"))
-                                echo '<div class="notice_failure">Xóa thất bại: ' . mysqli_error(LINK_IDENTIFIER) . '</div>';
+                            if (!mysqli_query($MySQLi, "DELETE FROM `$name` WHERE `$key`='$where' LIMIT 1"))
+                                echo '<div class="notice_failure">Xóa thất bại: ' . mysqli_error($MySQLi) . '</div>';
                             else
                                 goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
                         }
@@ -684,7 +684,7 @@
                     $listEntryHtml = null;
 
                     foreach ($entrys AS $v) {
-                        if (mysqli_num_rows(mysqli_query(LINK_IDENTIFIER, "SELECT `$key` FROM `$name` WHERE `$key`='" . addslashes($v) ."' LIMIT 1")) == 0) {
+                        if (mysqli_num_rows(mysqli_query($MySQLi, "SELECT `$key` FROM `$name` WHERE `$key`='" . addslashes($v) ."' LIMIT 1")) == 0) {
                             $isAllExists = false;
                             break;
                         } else {
@@ -702,10 +702,10 @@
                             $isDeleteAll = true;
 
                             foreach ($entrys AS $v) {
-                                if (!mysqli_query(LINK_IDENTIFIER, "DELETE FROM `$name` WHERE `$key`='" . addslashes($v) . "' LIMIT 1")) {
+                                if (!mysqli_query($MySQLi, "DELETE FROM `$name` WHERE `$key`='" . addslashes($v) . "' LIMIT 1")) {
                                     $isDeleteAll = false;
 
-                                    echo '<div class="notice_failure">Xóa [<strong>' . $v . '</strong>] thất bại: ' . mysqli_error(LINK_IDENTIFIER) . '</div>';
+                                    echo '<div class="notice_failure">Xóa [<strong>' . $v . '</strong>] thất bại: ' . mysqli_error($MySQLi) . '</div>';
                                 } else {
                                     echo '<div class="notice_succeed">Xóa [<strong>' . $v . '</strong>] thành công</div>';
                                 }
@@ -763,11 +763,11 @@
                 }
 
                 if ($configs['page_database_list_rows'] > 0 && empty($by) == false)
-                    $query = mysqli_query(LINK_IDENTIFIER, "SELECT * FROM `$name` ORDER BY `$by` {$order['name']} LIMIT {$page['start']}, {$page['end']}");
+                    $query = mysqli_query($MySQLi, "SELECT * FROM `$name` ORDER BY `$by` {$order['name']} LIMIT {$page['start']}, {$page['end']}");
                 else if (empty($by) == false)
-                    $query = mysqli_query(LINK_IDENTIFIER, "SELECT * FROM `$name` ORDER BY `$by` {$order['name']}");
+                    $query = mysqli_query($MySQLi, "SELECT * FROM `$name` ORDER BY `$by` {$order['name']}");
 
-                $count = empty($by) == false ? mysqli_query(LINK_IDENTIFIER, "SELECT * FROM `$name`")->num_rows : 0;
+                $count = empty($by) == false ? mysqli_query($MySQLi, "SELECT * FROM `$name`")->num_rows : 0;
 
                 if ($count <= 0 && isset($_GET['start']))
                     goURL('database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . $order['paramater_1']);
