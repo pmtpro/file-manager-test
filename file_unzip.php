@@ -36,7 +36,7 @@
                 } else if (isPathNotPermission(processDirectory($_POST['path']))) {
                     echo 'Bạn không thể giải nén tập tin zip tới đường dẫn của File Manager';
                 } else {
-                    include 'pclzip.lib.php';
+                    require_once __DIR__ . '/lib/pclzip.class.php';
 
                     $zip = new PclZip($dir . '/' . $name);
 
