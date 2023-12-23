@@ -72,6 +72,10 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
                 height: 500px;
                 font-size: 14px;
             }
+
+            .ace_scroller, .ace_gutter {
+                padding-top: 10px;
+            }
         </style>
 
         <div id="editor" contenteditable="true">' . htmlspecialchars($content) . '</div>
