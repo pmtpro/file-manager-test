@@ -62,7 +62,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
 
     echo '</select>
             </div>        
-            <p>Nếu không thấy nội dung file, vui lòng không chỉnh sửa trên web!</p>
+            <p style="white-space: normal">Nếu không thấy nội dung file, vui lòng không chỉnh sửa trên web!</p>
             <hr/>
         </div>
 
