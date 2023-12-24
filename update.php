@@ -18,12 +18,6 @@ $remoteVersion = getNewVersion();
 
 if ($remoteVersion === false) {
     echo '<div class="list">Lỗi máy chủ cập nhật!</div>';
-} else if (
-    intval($remoteVersion['major']) == VERSION_MAJOR
-    && intval($remoteVersion['minor']) == VERSION_MINOR
-    && intval($remoteVersion['patch']) == VERSION_PATCH
-) {
-    echo '<div class="list">Bạn đang sử dụng phiên bản manager mới nhất</div>';
 } else {
     if (isset($_POST['submit'])) {
         if (
@@ -76,7 +70,16 @@ if ($remoteVersion === false) {
         $token = time();
         $_SESSION['token'] = $token;
 
-        // print_r($info);
+        if (
+            intval($remoteVersion['major']) == VERSION_MAJOR
+            && intval($remoteVersion['minor']) == VERSION_MINOR
+            && intval($remoteVersion['patch']) == VERSION_PATCH
+        ) {
+            echo '<div class="list">
+                    Bạn đang sử dụng phiên bản manager mới nhất!<br />
+                    Ấn "Cập nhật" để cài đặt lại phiên bản hiện tại!
+                </div>';
+        }
 
         echo '<div class="list">
             <span>Có phiên bản mới <b>' . $remoteVersion['major'] . '.' . $remoteVersion['minor'] . '.' . $remoteVersion['patch'] . '</b>, bạn có muốn cập nhật?</span><hr />
