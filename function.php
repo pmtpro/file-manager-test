@@ -7,6 +7,7 @@ if (!defined('ACCESS')) {
 ini_set('display_errors', true);
 
 error_reporting(-1);
+mysqli_report(MYSQLI_REPORT_ERROR);
 
 ob_start();
 
