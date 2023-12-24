@@ -82,6 +82,7 @@ const FM_COOKIE_NAME = 'fm_php';
 
 { // lay phien ban moi
     define('REMOTE_FILE', 'https://github.com/pmtpro/file-manager-php/archive/main.zip');
+    define('REMOTE_DIR_IN_ZIP', 'file-manager-php-main');
     define('REMOTE_VERSION_FILE', 'https://raw.githubusercontent.com/pmtpro/file-manager-php/main/version.json');
 }
 
@@ -265,6 +266,26 @@ function getNewVersion() {
         ? $remoteVersion
         : false;
 }
+
+
+function hasNewVersion() {
+    $remoteVersion = getNewVersion();
+
+    if ($remoteVersion === false) {
+        return false;
+    }
+
+    if (
+        intval($remoteVersion['major']) == VERSION_MAJOR
+        && intval($remoteVersion['minor']) == VERSION_MINOR
+        && intval($remoteVersion['patch']) == VERSION_PATCH
+    ) {
+        return false;
+    } 
+
+    return true;
+}
+
 
 function goURL($url)
 {
@@ -544,6 +565,37 @@ function moves($entrys, $dir, $path)
     return true;
 }
 
+
+function copy_folder_recursive($source, $destination, $overwrite = true) {
+    if (!is_dir($source)) {
+        return false; // Source is not a directory
+    }
+
+    if (!file_exists($destination)) {
+        mkdir($destination);
+    }
+
+    $dir = opendir($source);
+
+    while ($file = readdir($dir)) {
+        if ($file !== '.' && $file !== '..') {
+            $src_file = $source . '/' . $file;
+            $dst_file = $destination . '/' . $file;
+
+            if (is_dir($src_file)) {
+                copy_folder_recursive($src_file, $dst_file);
+            } else {
+                copy($src_file, $dst_file); // Overwrite existing files
+            }
+        }
+    }
+
+    closedir($dir);
+
+    return true;
+}
+
+
 function zipdir($path, $file, $isDelete = false)
 {
     require_once __DIR__ . '/lib/pclzip.class.php';
@@ -668,7 +720,7 @@ function grab($url, $ref = '', $cookie = '', $user_agent = '', $header = '')
 
 function import($url, $path)
 {
-    $binarys = grab($url);
+    $binarys = file_get_contents($url);
 
     if (!file_put_contents($path, $binarys)) {
         @unlink($path);

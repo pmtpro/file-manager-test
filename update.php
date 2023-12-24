@@ -47,6 +47,8 @@ if ($remoteVersion === false) {
                 ) != false
             ) {
                 @unlink($file);
+                
+                copy_folder_recursive(REMOTE_DIR_IN_ZIP, __DIR__);
 
                 goURL('update.php');
             } else {
@@ -72,11 +74,7 @@ if ($remoteVersion === false) {
         $token = time();
         $_SESSION['token'] = $token;
 
-        if (
-            intval($remoteVersion['major']) == VERSION_MAJOR
-            && intval($remoteVersion['minor']) == VERSION_MINOR
-            && intval($remoteVersion['patch']) == VERSION_PATCH
-        ) {
+        if (!hasNewVersion()) {
             echo '<div class="list">
                     Bạn đang sử dụng phiên bản manager mới nhất!<br />
                     Ấn "Cập nhật" để cài đặt lại phiên bản hiện tại!
