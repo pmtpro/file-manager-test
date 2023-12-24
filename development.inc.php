@@ -2,6 +2,9 @@
 
     if (!defined('ACCESS') || !defined('DEVELOPMENT'))
         die('Not access');
+    
+    // Khong dung den, va cung khong can dung
+    return;
 
     const DEVELOPMENT_FILE = 'development.count';
     const DEVELOPMENT_INC  = 'development.inc.php';
@@ -10,7 +13,7 @@
     $files      = array();
     $times      = array();
     $count      = 1;
-    $version    = '0.0.1';
+    $version    = '1.0';
     $isCreator  = true;
     $isModifier = false;
 

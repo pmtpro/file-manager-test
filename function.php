@@ -5,8 +5,10 @@ if (!defined('ACCESS')) {
 }
 
 ini_set('display_errors', true);
+ini_set('display_startup_errors', true);
 
-error_reporting(-1);
+error_reporting(E_ALL);
+
 mysqli_report(MYSQLI_REPORT_ERROR);
 
 ob_start();
@@ -63,6 +65,25 @@ const NAME_SUBSTR          = 1000;
 const NAME_SUBSTR_ELLIPSIS = '...';
 
 const FM_COOKIE_NAME = 'fm_php';
+
+{ // lay thong tin phien ban hien tai
+    $version = json_decode(
+        file_get_contents('version.json'),
+        true
+    );
+    
+    define('VERSION_MAJOR', $version['major']);
+    define('VERSION_MINOR', $version['minor']);
+    define('VERSION_PATCH', $version['patch']);
+    define('VERSION_MESSAGE', $version['message']);
+    
+    unset($version);
+}
+
+{ // lay phien ban moi
+    define('REMOTE_FILE', 'https://github.com/pmtpro/file-manager-php/archive/main.zip');
+    define('REMOTE_VERSION_FILE', 'https://raw.githubusercontent.com/pmtpro/file-manager-php/main/version.json');
+}
 
 $configs = array();
 $jsons   = null;
@@ -237,6 +258,13 @@ function isDatabaseVariable($array)
                 empty($array['db_username']) == false && $array['db_username'] != null;
 }
 
+function getNewVersion() {
+    $remoteVersion = json_decode(@file_get_contents(REMOTE_VERSION_FILE), true);
+
+    return is_array($remoteVersion) && isset($remoteVersion['message'])
+        ? $remoteVersion
+        : false;
+}
 
 function goURL($url)
 {

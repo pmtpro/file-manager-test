@@ -114,6 +114,7 @@ if ($ref != null) {
     echo '<li><img src="icon/list.png" alt=""/> <a href="index.php">Danh sách</a></li>';
 }
 
+echo '<li><img src="icon/download.png" alt=""/> <a href="update.php">Cập nhật</a></li>';
 echo '</ul>';
 
 include_once 'footer.php';

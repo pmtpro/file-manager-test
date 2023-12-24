@@ -32,3 +32,6 @@
 </div>
 
 <div id="container">
+    <?php if (getNewVersion() !== false) { ?>
+        <div class="title">Có phiên bản mới! Hãy vào <span style="font-weight: bold; font-style: italic">Cài đặt - Cập nhật</span>!</div>
+    <?php } ?>
