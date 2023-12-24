@@ -4,6 +4,8 @@ define('ACCESS', true);
 
 include_once 'function.php';
 
+@session_start();
+
 if (!IS_LOGIN) {
     goURL('login.php');
 }
@@ -31,9 +33,9 @@ if ($remoteVersion === false) {
 
         $file = 'manager-' . time() . '.zip';
 
-        if (import($remoteFile, $file)) {
+        if (import(REMOTE_FILE, $file)) {
 
-            include 'pclzip.class.php';
+            require_once __DIR__ . '/lib/pclzip.class.php';
 
             $zip = new PclZip($file);
 
