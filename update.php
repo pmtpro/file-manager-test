@@ -82,7 +82,7 @@ if ($remoteVersion === false) {
         }
 
         echo '<div class="list">
-            <span>Có phiên bản mới <b>' . $remoteVersion['major'] . '.' . $remoteVersion['minor'] . '.' . $remoteVersion['patch'] . '</b>, bạn có muốn cập nhật?</span><hr />
+            <span>Có phiên bản <b>' . $remoteVersion['major'] . '.' . $remoteVersion['minor'] . '.' . $remoteVersion['patch'] . '</b>, bạn có muốn cập nhật?</span><hr />
             <span>' . $remoteVersion['message'] . '</span><hr />
             <form action="update.php" method="post">
                 <input type="hidden" name="token" value="' . $token . '" />
