@@ -34,7 +34,7 @@
             define('IS_VALIDATE', true);
             define('IS_DATABASE_ROOT', empty($databases['db_name']) || $databases['db_name'] == null);
             
-            $MySQLi = mysqli_connect(
+            $MySQLi = @mysqli_connect(
                 $databases['db_host'],
                 $databases['db_username'],
                 $databases['db_password']
@@ -324,13 +324,13 @@
                     } else if (
                         isset($_GET['db_name'])
                         && empty($_GET['db_name']) == false
-                        && mysqli_select_db($MySQLi, $_GET['db_name'])
+                        && @mysqli_select_db($MySQLi, $_GET['db_name'])
                     ) {
                         define('IS_CONNECT', true);
                         define('ERROR_SELECT_DB', false);
                         define('DATABASE_NAME', $_GET['db_name']);
                     }
-                } else if (empty($databases['db_name']) == false && $databases['db_name'] != null && mysqli_select_db($MySQLi, $databases['db_name'])) {
+                } else if (empty($databases['db_name']) == false && $databases['db_name'] != null && @mysqli_select_db($MySQLi, $databases['db_name'])) {
                     define('IS_CONNECT', true);
                     define('ERROR_SELECT_DB', false);
                     define('DATABASE_NAME', $databases['db_name']);
