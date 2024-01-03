@@ -1,6 +1,6 @@
 {
     "major": 1,
     "minor": 0,
-    "patch": 3,
-    "message": "fix typo"
+    "patch": 4,
+    "message": "Thêm chế độ sửa file (văn bản và code), sau khi cập nhật hãy vào Cài đặt, lưu lại cấu hình để hoàn tất cập nhật!"
 }
