@@ -124,7 +124,7 @@
                 <div class="ellipsis break-word">
                     <span class="bull">&bull; </span>Tập tin: <strong class="file_name_edit">' . $name . '</strong><hr/>
                 </div>
-                <form action="edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . ($page > 1 ? '&page=' . $page : null) . '" method="post">
+                <form action="' . FILE_EDIT_ACTION . '?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . ($page > 1 ? '&page=' . $page : null) . '" method="post">
                     <span class="bull">&bull; </span>Nội dung:<br/>
                     <div class="parent_box_edit">
                         <textarea class="box_edit" name="content">' . htmlspecialchars($content) . '</textarea>
@@ -144,7 +144,7 @@
                 </form>';
 
                 if ($pageLine > 0 && $total > 1)
-                    echo page($page, $total, array(PAGE_URL_DEFAULT => 'edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'], PAGE_URL_START => 'edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '&page='));
+                    echo page($page, $total, array(PAGE_URL_DEFAULT => FILE_EDIT_ACTION . '?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'], PAGE_URL_START => FILE_EDIT_ACTION . '?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '&page='));
 
             echo '</div>
             <div class="title">Chức năng</div>

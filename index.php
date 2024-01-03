@@ -196,7 +196,7 @@ if (!IS_INSTALL_ROOT_DIRECTORY) {
                 }
 
                 if (strtolower($name) == 'error_log' || $isEdit)
-                    $edit[0] = '<a href="edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">';
+                    $edit[0] = '<a href="' . FILE_EDIT_ACTION . '?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">';
                 elseif (in_array($type, $formats['zip']))
                     $edit[0] = '<a href="file_unzip.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">';
                 else

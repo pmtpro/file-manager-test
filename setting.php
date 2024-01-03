@@ -20,6 +20,7 @@ $username         = $configs['username'];
 $passwordO        = null;
 $passwordN        = null;
 $verifyN          = null;
+$fileEditMode = $configs['file_edit_mode'];
 $pageList         = $configs['page_list'];
 $pageFileEdit     = $configs['page_file_edit'];
 $pageFileEditLine = $configs['page_file_edit_line'];
@@ -30,6 +31,7 @@ if (isset($_POST['submit'])) {
     $passwordO        = addslashes($_POST['password_o']);
     $passwordN        = addslashes($_POST['password_n']);
     $verifyN          = addslashes($_POST['verify_n']);
+    $fileEditMode = addslashes($_POST['file_edit_mode']);
     $pageList         = intval(addslashes($_POST['page_list']));
     $pageFileEdit     = intval(addslashes($_POST['page_file_edit']));
     $pageFileEditLine = intval(addslashes($_POST['page_file_edit_line']));
@@ -58,6 +60,7 @@ if (isset($_POST['submit'])) {
         if (createConfig(
             $username,
             (!empty($passwordN) ? getPasswordEncode($passwordN) : $configs['password']),
+            $fileEditMode,
             $pageList,
             $pageFileEdit,
             $pageFileEditLine,
@@ -70,6 +73,7 @@ if (isset($_POST['submit'])) {
             $passwordO        = null;
             $passwordN        = null;
             $verifyN          = null;
+            $fileEditMode = $configs['file_edit_mode'];
             $pageList         = $configs['page_list'];
             $pageFileEdit     = $configs['page_file_edit'];
             $pageFileEditLine = $configs['page_file_edit_line'];
@@ -86,21 +90,36 @@ echo '<div class="list">
             <form action="setting.php" method="post">
                 <span class="bull">&bull; </span>Tài khoản:<br/>
                 <input type="text" name="username" value="' . $username . '" size="18"/><br/>
+
                 <span class="bull">&bull; </span>Mật khẩu cũ:<br/>
                 <input type="password" name="password_o" value="' . $passwordO . '" size="18"/><br/>
+
                 <span class="bull">&bull; </span>Mật khẩu mới:<br/>
                 <input type="password" name="password_n" value="' . $passwordN . '" size="18"/><br/>
+
                 <span class="bull">&bull; </span>Nhập lại mật khẩu mới:<br/>
                 <input type="password" name="verify_n" value="' . $verifyN . '" size="18"/><br/>
+
+                <span class="bull">&bull; </span>Chế độ sửa file mặc định:<br/>
+                <select name="file_edit_mode">
+                    <option ' . ($fileEditMode == 'text' ? 'selected="selected"' : '') . ' value="text">Văn bản</option>
+                    <option ' . ($fileEditMode == 'code' ? 'selected="selected"' : '') . ' value="code">Code</option>
+                </select><br />
+
                 <span class="bull">&bull; </span>Phân trang danh sách:<br/>
                 <input type="text" name="page_list" value="' . $pageList . '" size="18"/><br/>
+
                 <span class="bull">&bull; </span>Phân trang sửa văn bản thường:<br/>
                 <input type="text" name="page_file_edit" value="' . $pageFileEdit . '" size="18"/><br/>
+
                 <span class="bull">&bull; </span>Phân trang sửa văn bản theo dòng:<br/>
                 <input type="text" name="page_file_edit_line" value="' . $pageFileEditLine . '" size="18"/><br/>
+
                 <span class="bull">&bull;</span>Phân trang danh sách dữ liệu sql:<br/>
                 <input type="text" name="page_database_list_rows" value="' . $pageDatabaseListRows . '" size="18"/><br/>
+
                 <input type="hidden" name="ref" value="' . $ref . '"/>
+
                 <input type="submit" name="submit" value="Lưu"/>
             </form>
         </div>

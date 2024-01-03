@@ -48,10 +48,11 @@ ob_start();
 define('REALPATH', realpath('./'));
 const PATH_CONFIG = 'config.inc.php';
 const PATH_DATABASE = 'database.inc.php';
-const LOGIN_USERNAME_DEFAULT      = 'Admin';
-const LOGIN_PASSWORD_DEFAULT      = '12345';
-const PAGE_LIST_DEFAULT           = 120;
-const PAGE_FILE_EDIT_DEFAULT      = 120;
+const LOGIN_USERNAME_DEFAULT = 'Admin';
+const LOGIN_PASSWORD_DEFAULT = '12345';
+const FILE_EDIT_MODE_DEFAULT = 'text'; // 'text' | 'code'
+const PAGE_LIST_DEFAULT = 120;
+const PAGE_FILE_EDIT_DEFAULT = 120;
 const PAGE_FILE_EDIT_LINE_DEFAULT = 120;
 const PAGE_DATABASE_LIST_ROWS_DEFAULT = 120;
 
@@ -173,6 +174,7 @@ define('IS_LOGIN', $login);
 function createConfig(
     $username = LOGIN_USERNAME_DEFAULT,
     $password = LOGIN_PASSWORD_DEFAULT,
+    $fileEditMode = FILE_EDIT_MODE_DEFAULT,
     $pageList = PAGE_LIST_DEFAULT,
     $pageFileEdit = PAGE_FILE_EDIT_DEFAULT,
     $pageFileEditLine = PAGE_FILE_EDIT_LINE_DEFAULT,
@@ -182,6 +184,7 @@ function createConfig(
     $content = "<?php if (!defined('ACCESS')) die('Not access'); else \$configs = array(";
     $content .= "'username' => '$username', ";
     $content .= "'password' => '" . ($isEncodePassword ? getPasswordEncode($password) : $password) . "', ";
+    $content .= "'file_edit_mode' => '$fileEditMode', ";
     $content .= "'page_list' => '$pageList', ";
     $content .= "'page_file_edit' => '$pageFileEdit', ";
     $content .= "'page_file_edit_line' => '$pageFileEditLine',";
@@ -955,3 +958,13 @@ $name      = isset($_GET['name']) && !empty($_GET['name']) ? $_GET['name'] : nul
 $dirEncode = $dir != null ? rawurlencode($dir) : null;
 
 require_once 'permission.inc.php';
+
+
+// default mode
+define(
+    'FILE_EDIT_ACTION',
+    isset($configs['file_edit_mode'])
+    && $configs['file_edit_mode'] == 'code' 
+    ? 'edit_code.php'
+    : 'edit_text.php'
+);
