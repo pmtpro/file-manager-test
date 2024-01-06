@@ -29,7 +29,7 @@
 body {
     background-color: #f8f8f8;
     font-family: Tahoma, Verdana, Segoe, Sans-Serif, serif;
-    font-size: 16px;
+    font-size: 14px;
     max-width: 768px;
     margin: auto;
     padding: 0;
@@ -417,14 +417,14 @@ ul.list_database > li > p:first-child,
 ul.list_database > li > p:first-child a {
     color: #202020;
     font-weight: normal;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 ul.list_file > li.folder > div > div.perms > a.chmod,
 ul.list_file > li.file > p:last-child > a.chmod {
     color: #ff7900;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 14px;
     text-shadow: none !important;
 }
 
@@ -434,7 +434,7 @@ ul.list_database > li > p:last-child > span.count_tables,
 ul.list_database > li > p:last-child > span.count_columns {
     color: red;
     font-weight: normal;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 ul.info {
