@@ -37,7 +37,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     $codeType = [
         'text' => 'Text',
         'php' => 'PHP',
-        'javascript' => 'JavaScript',
+        'js' => 'JavaScript',
     ];
 
     if (array_key_exists($fileExt, $codeType)) {
@@ -91,11 +91,12 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
         
         <script>
             var codeLang = "' . $codeLang . '";
-            var editor = ace.edit("editor");
-            
-            editor.setShowPrintMargin(false);
-            editor.setTheme("ace/theme/one_dark");
-            editor.session.setMode("ace/mode/" + codeLang);
+            var editor = ace.edit("editor", {
+                useWorker: false,
+                showPrintMargin: false,
+                mode: "ace/mode/" + codeLang,
+                theme: "ace/theme/one_dark"
+            });
             
             var codeLangElement = document.getElementById("code_lang");
             codeLangElement.addEventListener("change", function () {

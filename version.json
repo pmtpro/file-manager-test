@@ -1,6 +1,6 @@
 {
     "major": 1,
     "minor": 0,
-    "patch": 6,
-    "message": "Ai đó kêu sửa CSS!"
+    "patch": 7,
+    "message": "Tắt kiểm tra cú pháp khi ở chế độ code vì nó check sai!!!"
 }
