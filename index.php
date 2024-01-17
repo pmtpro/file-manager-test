@@ -244,6 +244,7 @@ if (!IS_INSTALL_ROOT_DIRECTORY) {
             <li><img src="icon/create.png"/> <a href="create.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Tạo mới</a></li>
             <li><img src="icon/upload.png"/> <a href="upload.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Tải lên tập tin</a></li>
             <li><img src="icon/import.png"/> <a href="import.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Nhập khẩu tập tin</a></li>
+            <li><img src="icon/search.png"/> <a href="find_in_folder.php?dir=' . $dirEncode . '">Tìm trong file</a></li>
         </ul>';
 }
 

@@ -57,7 +57,7 @@ if ($dir == null || !is_dir(processDirectory($dir))) {
 
         if ($option != 5)
             $entryHtmlList .= '<li>
-                <img src="icon/' . ($isFolder ? 'folder' : 'file') . '.png" alt="" />'
+                <img src="icon/' . ($isFolder ? 'folder' : 'file') . '.png" alt="" /> '
                 . ($isFolder ? '<strong class="folder_name">' . $e . '</strong>' : '<span class="file_name">' . $e . '</span>') . '
                 </li>';
     }

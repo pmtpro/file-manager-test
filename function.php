@@ -599,6 +599,18 @@ function copy_folder_recursive($source, $destination, $overwrite = true) {
 }
 
 
+function readDirectoryIterator($path)
+{
+    foreach (
+        new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path)
+        ) as $item
+    ) {
+        yield $item;
+    }
+}
+
+
 function zipdir($path, $file, $isDelete = false)
 {
     require_once __DIR__ . '/lib/pclzip.class.php';
