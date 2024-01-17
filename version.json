@@ -1,6 +1,6 @@
 {
     "major": 1,
     "minor": 0,
-    "patch": 7,
-    "message": "Tắt kiểm tra cú pháp khi ở chế độ code vì nó check sai!!!"
+    "patch": 8,
+    "message": "Thêm tính năng tìm kiếm nội dung trong từng file trong 1 thư mục."
 }
