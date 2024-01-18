@@ -31,7 +31,7 @@ if (
     echo '<div class="list">
         <form method="post">
             Nội dung tìm kiếm:<br />
-            <textarea name="search">' . htmlspecialchars($search) . '</textarea><br />
+            <input type="text" name="search" value="' . htmlspecialchars($search) . '" style="width: 100%" /><br />
             <input type="checkbox" name="case" ' . ($case ? 'checked="checked"' : '') . ' />
             Phân biệt chữ hoa<br />
             <input type="submit" name="submit" value="Tìm kiếm"/>
@@ -83,11 +83,20 @@ if (
                                 <div id="line_number_' . $line_number . '">';
                         }
 
-                        $line = str_replace(
-                            htmlspecialchars($search),
-                            '<span style="background-color: yellow">' . htmlspecialchars($search) . '</span>',
-                            htmlspecialchars($line)
-                        );
+                        if ($case) {
+                            $line = str_replace(
+                                htmlspecialchars($search),
+                                '<span style="background-color: yellow">' . htmlspecialchars($search) . '</span>',
+                                htmlspecialchars($line)
+                            );
+                        } else {
+                            $line = preg_replace(
+                                '/(' . preg_quote(htmlspecialchars($search)) . ')/i',
+                                '<span style="background-color: yellow">${1}</span>',
+                                htmlspecialchars($line)
+                            );
+                        }
+                        
                         echo '<b>' . $line_number . ':</b> ' . $line . '<hr />';
                     }
                 }
