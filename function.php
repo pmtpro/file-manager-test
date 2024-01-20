@@ -305,7 +305,9 @@ function getPasswordEncode($pass): string
 
 function getFormat($name)
 {
-    return strrchr($name, '.') !== false ? strtolower(str_replace('.', '', strrchr($name, '.'))) : null;
+    return strrchr($name, '.') !== false
+        ? strtolower(str_replace('.', '', strrchr($name, '.')))
+        : '';
 }
 
 
