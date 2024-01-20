@@ -127,7 +127,7 @@
                 <form action="edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . ($page > 1 ? '&page=' . $page : null) . '" method="post">
                     <span class="bull">&bull; </span>Nội dung:<br/>
                     <div class="parent_box_edit">
-                        <textarea class="box_edit" name="content">' . htmlspecialchars($content) . '</textarea>
+                        <textarea wrap="off" style="white-space: nowrap;" class="box_edit" name="content">' . htmlspecialchars($content) . '</textarea>
                     </div>
                     <div class="search_replace search">
                         <span class="bull">&bull; </span>Tìm kiếm:<br/>
