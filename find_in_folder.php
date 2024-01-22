@@ -113,7 +113,7 @@ if (
         
                 if ($file_have_search) {
                     echo '</div><div>
-                            <span id="line_number"><span>&bull; <a style="color: red" href="' . FILE_EDIT_ACTION . '?dir=' . dirname($file_path) . '&name=' . $file_name . $pages['paramater_1'] . '">' . htmlspecialchars($file_path_sort) . '</a></span></span>
+                            <span id="line_number"><span>&bull; <a style="color: red" href="edit_text.php?dir=' . dirname($file_path) . '&name=' . $file_name . $pages['paramater_1'] . '">' . htmlspecialchars($file_path_sort) . '</a></span></span>
                             <span> | </span>
                         </div>
                         </div>';
