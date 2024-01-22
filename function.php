@@ -340,6 +340,15 @@ function isFormatUnknown($name)
     return true;
 }
 
+function str_replace_first($needle, $replace, $haystack) {
+    $pos = strpos($haystack, $needle);
+
+    if ($pos !== false) {
+        return substr_replace($haystack, $replace, $pos, strlen($needle));
+    }
+
+    return $haystack;
+}
 
 function isURL($url)
 {
@@ -347,7 +356,7 @@ function isURL($url)
 }
 
 
-function processDirectory($var = '')
+function processDirectory($var, $seSlash = false)
 {
     if (empty($var)) {
         $var = '';
@@ -359,6 +368,12 @@ function processDirectory($var = '')
     $var = preg_replace('#/\.{1,2}$#', '//', $var);
     $var = preg_replace('|/{2,}|', '/', $var);
     $var = preg_replace('|(.+?)/$|', '$1', $var);
+
+    // thêm / vào đầu và cuối
+    if ($seSlash) {
+        $var = trim($var, '/');
+        $var = '/' . $var . '/';
+    }
 
     return $var;
 }
@@ -601,15 +616,34 @@ function copy_folder_recursive($source, $destination, $overwrite = true) {
 }
 
 
-function readDirectoryIterator($path)
-{
-    foreach (
-        new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($path)
-        ) as $item
-    ) {
-        yield $item;
-    }
+function readDirectoryIterator(
+    $path,
+    $excludes = []
+) {
+    $directory = new RecursiveDirectoryIterator($path);
+    
+    $filter = new RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) use ($path, $excludes) {
+        var_dump(str_replace_first($path, '', $current->getPathname()));
+
+        $excludes = array_map(function ($data) {
+            return processDirectory($data, true);
+        }, $excludes);
+  
+        if ($current->isDir()) {
+            $pathname = $current->getPathname();
+            $pathname = processDirectory($pathname, true);
+      
+            foreach ($excludes as $e) {
+                if (stripos($pathname, $e) !== false) {
+                    return false;
+                }
+            }
+        }
+      
+        return true;
+    });
+
+    return new RecursiveIteratorIterator($filter);
 }
 
 

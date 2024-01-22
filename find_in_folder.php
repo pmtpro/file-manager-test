@@ -29,11 +29,18 @@ if (
     $case = isset($_POST['case']) ? (bool) $_POST['case'] : false;
 
     echo '<div class="list">
+        <span class="bull">&bull; </span><span>' . printPath($dir, true) . '</span><hr/>
         <form method="post">
             Nội dung tìm kiếm:<br />
             <input type="text" name="search" value="' . htmlspecialchars($search) . '" style="width: 100%" /><br />
             <input type="checkbox" name="case" ' . ($case ? 'checked="checked"' : '') . ' />
-            Phân biệt chữ hoa<br />
+            Phân biệt chữ hoa<br /><br />
+
+            Loại trừ theo biểu thức:<br />
+            <textarea name="exclude" rows="5" style="width: 60%">node_module/' . PHP_EOL . 'vendor/</textarea><br />
+            <p style="font-size: small">
+                Thư mục thì thêm / vào sau tên: <b>vendor/</b>
+            </p>
             <input type="submit" name="submit" value="Tìm kiếm"/>
         </form>
         </div>';
@@ -55,6 +62,9 @@ if (
                 if (!$file->isFile()) {
                     continue;
                 }
+
+                var_dump(ltrim(processDirectory($file->getPathname()), '.'));
+
 
                 $fileObj = $file->openFile();
                 $file_name = $fileObj->getFilename();
