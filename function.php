@@ -620,7 +620,7 @@ function readDirectoryIterator(
     $directory = new RecursiveDirectoryIterator($path);
     
     $filter = new RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) use ($path, $excludes) {
-        var_dump(str_replace_first($path, '', $current->getPathname()));
+        // var_dump(str_replace_first($path, '', $current->getPathname()));
 
         $excludes = array_map(function ($data) {
             return processDirectory($data, true);
@@ -641,6 +641,20 @@ function readDirectoryIterator(
     });
 
     return new RecursiveIteratorIterator($filter);
+}
+
+
+function dirSize($path) {
+    $size = 0;
+    
+    $files = readDirectoryIterator($path);
+    foreach ($files as $file) {
+        if ($file->isFile()) {
+            $size += filesize($file->getPathname());
+        }
+    }
+    
+    return $size;
 }
 
 
