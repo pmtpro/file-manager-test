@@ -125,10 +125,16 @@
                     <span class="bull">&bull; </span>Tập tin: <strong class="file_name_edit">' . $name . '</strong><hr/>
                 </div>
                 <form action="edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . ($page > 1 ? '&page=' . $page : null) . '" method="post">
-                    <span class="bull">&bull; </span>Nội dung:<br/>
-                    <div class="parent_box_edit">
-                        <textarea wrap="off" style="white-space: nowrap;" class="box_edit" name="content">' . htmlspecialchars($content) . '</textarea>
+                    <span class="bull">&bull; </span>Nội dung:
+
+                    <div style="display: inline-block; float: right">
+                        <input type="checkbox" id="code_wrap" /> Wrap
                     </div>
+                    
+                    <div class="parent_box_edit">
+                        <textarea id="editor" wrap="off" style="white-space: nowrap;" class="box_edit" name="content">' . htmlspecialchars($content) . '</textarea>
+                    </div>
+                    
                     <div class="search_replace search">
                         <span class="bull">&bull; </span>Tìm kiếm:<br/>
                         <input type="text" name="search" value=""/>
@@ -154,8 +160,24 @@
                     );
                 }
 
-            echo '</div>
-            <div class="title">Chức năng</div>
+            echo '</div>';
+            
+            echo '<script>
+                var editorElement = document.getElementById("editor");
+                
+                var codeWrapElement = document.getElementById("code_wrap");
+                codeWrapElement.addEventListener("change", function () {
+                    if (codeWrapElement.checked) {
+                        editorElement.removeAttribute("wrap");
+                        editorElement.removeAttribute("style");
+                    } else {
+                        editorElement.setAttribute("wrap", "off");
+                        editorElement.setAttribute("style", "white-space: nowrap");
+                    }
+                });
+            </script>';
+            
+            echo '<div class="title">Chức năng</div>
             <ul class="list">
                 <li><img src="icon/edit_text_line.png"/> <a href="edit_code.php?dir=' . $dirEncode . '&name=' . $name . '">Chế độ sửa code</a></li>
                 <li><img src="icon/edit_text_line.png"/> <a href="edit_text_line.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Sửa theo dòng</a></li>

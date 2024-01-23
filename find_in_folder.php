@@ -27,9 +27,10 @@ if (
     $dir = processDirectory($dir);
     $search = isset($_POST['search']) ? $_POST['search'] : '';
     $case = isset($_POST['case']) ? (bool) $_POST['case'] : false;
+    $exclude = isset($_POST['exclude']) ? $_POST['exclude'] : 'node_module/' . PHP_EOL . 'vendor/';
 
     echo '<div class="list">
-        <span class="bull">&bull; </span><span>' . printPath($dir, true) . '</span><hr/>
+        <span>' . printPath($dir, true) . '</span><hr/>
         <form method="post">
             Nội dung tìm kiếm:<br />
             <input type="text" name="search" value="' . htmlspecialchars($search) . '" style="width: 100%" /><br />
@@ -37,9 +38,10 @@ if (
             Phân biệt chữ hoa<br /><br />
 
             Loại trừ theo biểu thức:<br />
-            <textarea name="exclude" rows="5" style="width: 60%">node_module/' . PHP_EOL . 'vendor/</textarea><br />
+            <textarea name="exclude" rows="5" style="width: 60%">' . htmlspecialchars($exclude) . '</textarea><br />
             <p style="font-size: small">
-                Thư mục thì thêm / vào sau tên: <b>vendor/</b>
+                Thư mục thì thêm / vào sau tên: <b>vendor/</b><br />
+                Chỉ hỗ trợ loại trừ 1 cấp! Như: "vendor/" gồm("*/vendor/"). Không hỗ trợ "abc/vendor/".
             </p>
             <input type="submit" name="submit" value="Tìm kiếm"/>
         </form>
@@ -47,13 +49,15 @@ if (
 
     if (isset($_POST['submit'])) {
         $error = false;
+        $excludes = explode(PHP_EOL, $exclude);
+
 
         if (empty($search)) {
             echo $error = 'Chưa nhập nội dung!';            
         }
         
         if ($error === false) {
-            $files = readDirectoryIterator($dir);
+            $files = readDirectoryIterator($dir, $excludes);
             $files_search_count = 0;
 
             echo '<div class="list_line">';
@@ -62,9 +66,6 @@ if (
                 if (!$file->isFile()) {
                     continue;
                 }
-
-                var_dump(ltrim(processDirectory($file->getPathname()), '.'));
-
 
                 $fileObj = $file->openFile();
                 $file_name = $fileObj->getFilename();

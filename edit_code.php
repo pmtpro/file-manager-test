@@ -60,8 +60,11 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
         echo "<option {$cSeleted} value=\"{$cType}\">{$cValue}</option>";
     }
 
-    echo '</select>
-            </div>        
+    echo '</select><br />
+            <input type="checkbox" id="code_wrap" />
+            Wrap<br />
+            </div>
+
             <p style="white-space: normal">Nếu không thấy nội dung file, vui lòng không chỉnh sửa trên web!</p>
             <hr/>
         </div>
@@ -122,6 +125,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
                 mode: codeLang,
                 theme: "darcula",
                 lineNumbers: true,
+                lineWrapping: false,
                 fixedGutter: false,
                 styleActiveLine: true,
             });
@@ -130,6 +134,11 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
             codeLangElement.addEventListener("change", function () {
                 var mode = codeLangElement.value;
                 editor.setOption("mode", mode);
+            });
+            
+            var codeWrapElement = document.getElementById("code_wrap");
+            codeWrapElement.addEventListener("change", function () {
+                editor.setOption("lineWrapping", codeWrapElement.checked);
             });
             
             var codeFormElement = document.getElementById("code_form");
