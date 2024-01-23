@@ -617,7 +617,11 @@ function readDirectoryIterator(
     $path,
     $excludes = []
 ) {
-    $directory = new RecursiveDirectoryIterator($path);
+    $directory = new RecursiveDirectoryIterator(
+        $path,
+         //FilesystemIterator::FOLLOW_SYMLINKS
+         FilesystemIterator::SKIP_DOTS
+    );
     
     $filter = new RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) use ($path, $excludes) {
         // var_dump(str_replace_first($path, '', $current->getPathname()));
@@ -632,7 +636,7 @@ function readDirectoryIterator(
       
             foreach ($excludes as $e) {
                 if (stripos($pathname, $e) !== false) {
-                    return false;
+                   // return false;
                 }
             }
         }
@@ -648,9 +652,10 @@ function dirSize($path) {
     $size = 0;
     
     $files = readDirectoryIterator($path);
+
     foreach ($files as $file) {
         if ($file->isFile()) {
-            $size += filesize($file->getPathname());
+            $size += $file->getSize();
         }
     }
     
