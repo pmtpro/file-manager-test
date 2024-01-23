@@ -58,7 +58,7 @@ if (!IS_INSTALL_ROOT_DIRECTORY && $count > 0) {
     }
 
     if (count($files) > 0) {
-        asort($files);
+        natcasesort($files);
 
         foreach ($files as $entry)
             $lists[] = array('name' => $entry, 'is_directory' => false);
