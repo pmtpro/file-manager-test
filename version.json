@@ -1,6 +1,6 @@
 {
     "major": 1,
     "minor": 0,
-    "patch": 11,
-    "message": "Sửa lại thứ tự sắp xếp danh sách, đẹp hơn, tự nhiên hơn."
+    "patch": 12,
+    "message": "Thêm scan error_log"
 }
