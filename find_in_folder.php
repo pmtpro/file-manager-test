@@ -49,7 +49,7 @@ if (
         $error = false;
 
         if (empty($search)) {
-            echo $error = 'Chua nhap noi dung!';            
+            echo $error = 'Chưa nhập nội dung!';            
         }
         
         if ($error === false) {

@@ -613,38 +613,46 @@ function copy_folder_recursive($source, $destination, $overwrite = true) {
 }
 
 
+// chi dung de doc tat ca file
 function readDirectoryIterator(
     $path,
     $excludes = []
 ) {
     $directory = new RecursiveDirectoryIterator(
         $path,
-         //FilesystemIterator::FOLLOW_SYMLINKS
-         FilesystemIterator::SKIP_DOTS
+        FilesystemIterator::UNIX_PATHS
+        | FilesystemIterator::SKIP_DOTS
     );
     
     $filter = new RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) use ($path, $excludes) {
-        // var_dump(str_replace_first($path, '', $current->getPathname()));
+        $relative_path = str_replace_first($path, '', $current->getPathname());
 
         $excludes = array_map(function ($data) {
-            return processDirectory($data, true);
+            return ltrim($data, '/');
         }, $excludes);
   
-        if ($current->isDir()) {
-            $pathname = $current->getPathname();
-            $pathname = processDirectory($pathname, true);
-      
-            foreach ($excludes as $e) {
-                if (stripos($pathname, $e) !== false) {
-                   // return false;
-                }
+        foreach ($excludes as $exclude) {
+            $fileName = $current->getFilename();
+            
+            if (
+                substr($exclude, -1) == '/'
+                && $current->isDir()
+            ) {
+                $fileName .= '/';
+            }
+
+            if ($fileName === $exclude) {
+                return false;
             }
         }
       
         return true;
     });
 
-    return new RecursiveIteratorIterator($filter);
+    return new RecursiveIteratorIterator(
+        $filter,
+        RecursiveIteratorIterator::SELF_FIRST
+    );
 }
 
 
