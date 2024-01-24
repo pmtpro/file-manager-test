@@ -58,15 +58,18 @@ hr {
     border-bottom: 1px dotted #e0e0e0;
 }
 
-input[type=submit] {
-    color: #707070;
+input[type=submit],
+.button {
+    color: #707070 !important;
     padding-left: 10px !important;
     padding-right: 10px !important;
     background-color: #ffffff !important;
 }
 
 input[type=submit]:focus,
-input[type=submit]:hover {
+input[type=submit]:hover,
+.button:focus,
+.button:hover  {
     color: #101010;
 }
 
@@ -78,7 +81,8 @@ input[type=radio] {
 
 input,
 select,
-textarea {
+textarea,
+.button {
     color: #c0c0c0;
     background: #ffffff;
     border: 1px solid #cecece;
@@ -91,7 +95,9 @@ input:hover,
 select:focus,
 select:hover,
 textarea:focus,
-textarea:hover {
+textarea:hover,
+.button:focus,
+.button:hover, {
     color: #555555;
     border: 1px solid #eaaa11;
 }

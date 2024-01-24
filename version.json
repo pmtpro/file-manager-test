@@ -1,6 +1,6 @@
 {
     "major": 1,
     "minor": 0,
-    "patch": 12,
-    "message": "Thêm scan error_log"
+    "patch": 13,
+    "message": "Thay trình sửa code, thêm check PHP khi sửa code!"
 }

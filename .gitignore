@@ -1,4 +1,7 @@
 .idea/
+node_modules/
+vendor/
 
 config.inc.php
 database.inc.php
+yarn.lock

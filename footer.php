@@ -3,7 +3,9 @@
 </div>
 
 <div id="footer">
-    <span>ngatngay</span><br />
+    <span>
+		ngatngay cooperation with linh
+	</span><br />
     <span>Version: <?php echo VERSION_MAJOR; ?>.<?php echo VERSION_MINOR; ?>.<?php echo VERSION_PATCH; ?></span>
 </div>
 
