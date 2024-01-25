@@ -294,7 +294,7 @@ function goURL($url)
 }
 
 
-function getPasswordEncode($pass): string
+function getPasswordEncode($pass)
 {
     return md5(md5(trim($pass)));
 }
@@ -409,7 +409,7 @@ function processName($var)
     return $var;
 }
 
-function isNameError($var): bool
+function isNameError($var)
 {
     return strpos($var, '\\') !== false || strpos($var, '/') !== false;
 }
@@ -805,7 +805,7 @@ function import($url, $path)
     return true;
 }
 
-function page($current, $total, $url): string
+function page($current, $total, $url)
 {
     $html                   = '<div class="page">';
     $center                 = PAGE_NUMBER - 2;
@@ -901,7 +901,7 @@ function jsonDecode($var, $isAssoc = false)
     return json_decode($var, $isAssoc);
 }
 
-function countStringArray($array, $search, $isLowerCase = false): int
+function countStringArray($array, $search, $isLowerCase = false)
 {
     $count = 0;
 
@@ -995,9 +995,10 @@ function getPathPHP()
     return 'php';
 }
 
-function isFunctionExecEnable(): bool
+function isFunctionExecEnable()
 {
-    return function_exists('exec') && isFunctionDisable('exec') == false;
+    return function_exists('exec')
+        && isFunctionDisable('exec') == false;
 }
 
 function isFunctionDisable($func)
