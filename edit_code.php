@@ -120,13 +120,6 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
         
         <script src="edit_code.bundle.js"></script>
         <script>
-            const editorElement = document.getElementById("editor");
-
-            var codeWrapElement = document.getElementById("code_wrap");
-            codeWrapElement.addEventListener("change", function () {
-                editor.setOption("lineWrapping", codeWrapElement.checked);
-            });
-            
             const codeCheckMessageElement = document.getElementById("code_check_message");
             const codeCheckPHPElement = document.getElementById("code_check_php");
             
@@ -165,7 +158,6 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
                 event.preventDefault();
                 return false;
             });
-
         </script>
 
         <div class="title">Chức năng</div>

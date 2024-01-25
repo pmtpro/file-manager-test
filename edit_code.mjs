@@ -25,10 +25,10 @@ import { xml } from "@codemirror/lang-xml"
 import { yaml } from "@codemirror/lang-yaml"
   
 const languageConf = new Compartment()
+const lineWrapConf = new Compartment()
 
 const initialState = EditorState.create({
   doc: document.querySelector("#content").value,
-  lineWrapping: true,
   bracketMatching: true,
   highlightSelectionMatches: true,
 
@@ -39,6 +39,7 @@ const initialState = EditorState.create({
     highlightActiveLine(),
     highlightSpecialChars(),
 
+    lineWrapConf.of([]),
     languageConf.of([]),
 
     materialDark
@@ -50,6 +51,8 @@ const editor = new EditorView({
   parent: document.querySelector("#editor")
 });
 
+
+// doi ngon ngu
 var codeLangElement = document.getElementById("code_lang");
 codeLangElement.addEventListener("change", function () {
     var mode = codeLangElement.value;
@@ -61,7 +64,7 @@ codeLangElement.addEventListener("change", function () {
     })
 });
 
-// default
+// ngon ngu mac dinh
 editor.dispatch({
     effects: languageConf.reconfigure(
         getLang(codeLangElement.value)
@@ -79,5 +82,19 @@ function getLang(mode) {
     return lang;
 }
 
+// che do wrap
+var codeWrapElement = document.getElementById("code_wrap");
+codeWrapElement.addEventListener("change", function () {
+    let wrap = [];
+    
+    if (codeWrapElement.checked) {
+        wrap = EditorView.lineWrapping;
+    }
+    
+    editor.dispatch({
+        effects: lineWrapConf.reconfigure(wrap)
+    })
+});
 
+// xuat bien toan cau
 window.editor = editor;

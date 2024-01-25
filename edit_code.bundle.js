@@ -22239,10 +22239,10 @@
    }
 
    const languageConf = new Compartment();
+   const lineWrapConf = new Compartment();
 
    const initialState = EditorState.create({
      doc: document.querySelector("#content").value,
-     lineWrapping: true,
      bracketMatching: true,
      highlightSelectionMatches: true,
 
@@ -22253,6 +22253,7 @@
        highlightActiveLine(),
        highlightSpecialChars(),
 
+       lineWrapConf.of([]),
        languageConf.of([]),
 
        materialDark
@@ -22264,6 +22265,8 @@
      parent: document.querySelector("#editor")
    });
 
+
+   // doi ngon ngu
    var codeLangElement = document.getElementById("code_lang");
    codeLangElement.addEventListener("change", function () {
        var mode = codeLangElement.value;
@@ -22275,7 +22278,7 @@
        });
    });
 
-   // default
+   // ngon ngu mac dinh
    editor.dispatch({
        effects: languageConf.reconfigure(
            getLang(codeLangElement.value)
@@ -22293,7 +22296,21 @@
        return lang;
    }
 
+   // che do wrap
+   var codeWrapElement = document.getElementById("code_wrap");
+   codeWrapElement.addEventListener("change", function () {
+       let wrap = [];
+       
+       if (codeWrapElement.checked) {
+           wrap = EditorView.lineWrapping;
+       }
+       
+       editor.dispatch({
+           effects: lineWrapConf.reconfigure(wrap)
+       });
+   });
 
+   // xuat bien toan cau
    window.editor = editor;
 
 })();

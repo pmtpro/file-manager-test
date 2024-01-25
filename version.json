@@ -1,6 +1,6 @@
 {
     "major": 1,
     "minor": 0,
-    "patch": 13,
-    "message": "Thay trình sửa code, thêm check PHP khi sửa code!"
+    "patch": 14,
+    "message": "Sửa lỗi đăng nhập! Sửa lỗi wrap trong chế độ sửa code!"
 }

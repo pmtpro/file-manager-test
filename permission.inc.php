@@ -87,3 +87,11 @@ if (IS_INSTALL_ROOT_DIRECTORY) {
     include_once 'footer.php';
     exit();
 }
+
+// Kiểm tra đăng nhập
+if (
+    !IS_LOGIN
+    && !defined('LOGIN')
+) {
+    goURL('login.php');
+}
