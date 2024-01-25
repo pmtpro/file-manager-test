@@ -8,6 +8,10 @@ Edit by PMTpro
 
 Nếu có lỗi các bạn cứ báo trên repo này (phần `Issues`), hoặc liên hệ mình, mình hứa có thời gian sẽ sửa lỗi sớm nhất có thể!
 
+## File cài đặt nhanh
+
+Tạo một file php, dán code ở [file này](https://raw.githubusercontent.com/pmtpro/file-manager-php/main/install.manager.php.txt) vào và chạy nó.
+
 ## Hướng dẫn cài đặt
 
 - Tải code về và giải nén vào 1 thư mục không phải thư mục gốc!

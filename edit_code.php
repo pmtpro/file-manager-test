@@ -116,6 +116,17 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
                     height: 720px;
                 }
             }
+
+			.cm-focused .cm-selectionBackground,
+			.cm-selectionBackground,
+			.cm-content ::selection {
+				background-color: #4a4a4a !important;
+			}
+
+			.cm-activeLine.cm-line::selection,
+			.cm-activeLine.cm-line ::selection {
+				background-color: #8a8a8a !important;
+			}
         </style>
         
         <script src="edit_code.bundle.js"></script>

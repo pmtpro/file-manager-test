@@ -651,6 +651,17 @@
        return ((code0 - 0xd800) << 10) + (code1 - 0xdc00) + 0x10000;
    }
    /**
+   Given a Unicode codepoint, return the JavaScript string that
+   respresents it (like
+   [`String.fromCodePoint`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCodePoint)).
+   */
+   function fromCodePoint(code) {
+       if (code <= 0xffff)
+           return String.fromCharCode(code);
+       code -= 0x10000;
+       return String.fromCharCode((code >> 10) + 0xd800, (code & 1023) + 0xdc00);
+   }
+   /**
    The amount of positions a character takes up a JavaScript string.
    */
    function codePointSize(code) { return code < 0x10000 ? 1 : 2; }
@@ -10019,7 +10030,7 @@
            }
        });
    }
-   const baseTheme$1 = /*@__PURE__*/buildTheme("." + baseThemeID, {
+   const baseTheme$1$1 = /*@__PURE__*/buildTheme("." + baseThemeID, {
        "&": {
            position: "relative !important",
            boxSizing: "border-box",
@@ -11568,7 +11579,7 @@
        mountStyles() {
            this.styleModules = this.state.facet(styleModule);
            let nonce = this.state.facet(EditorView.cspNonce);
-           StyleModule.mount(this.root, this.styleModules.concat(baseTheme$1).reverse(), nonce ? { nonce } : undefined);
+           StyleModule.mount(this.root, this.styleModules.concat(baseTheme$1$1).reverse(), nonce ? { nonce } : undefined);
        }
        readMeasured() {
            if (this.updateState == 2 /* UpdateState.Updating */)
@@ -13104,7 +13115,26 @@
    in all gutters for the line).
    */
    const gutterLineClass = /*@__PURE__*/Facet.define();
+   const defaults = {
+       class: "",
+       renderEmptyElements: false,
+       elementStyle: "",
+       markers: () => RangeSet.empty,
+       lineMarker: () => null,
+       widgetMarker: () => null,
+       lineMarkerChange: null,
+       initialSpacer: null,
+       updateSpacer: null,
+       domEventHandlers: {}
+   };
    const activeGutters = /*@__PURE__*/Facet.define();
+   /**
+   Define an editor gutter. The order in which the gutters appear is
+   determined by their extension priority.
+   */
+   function gutter(config) {
+       return [gutters(), activeGutters.of(Object.assign(Object.assign({}, defaults), config))];
+   }
    const unfixGutters = /*@__PURE__*/Facet.define({
        combine: values => values.some(x => x)
    });
@@ -17258,6 +17288,14 @@
            return context.baseIndent + (matchExcept ? 0 : units * context.unit);
        };
    }
+
+   /**
+   A facet that registers a code folding service. When called with
+   the extent of a line, such a function should return a foldable
+   range that starts on that line (but continues beyond it), if one
+   can be found.
+   */
+   const foldService = /*@__PURE__*/Facet.define();
    /**
    This node prop is used to associate folding information with
    syntax node types. Given a syntax node, it should check whether
@@ -17274,6 +17312,281 @@
        let first = node.firstChild, last = node.lastChild;
        return first && first.to < last.from ? { from: first.to, to: last.type.isError ? node.to : last.from } : null;
    }
+   function syntaxFolding(state, start, end) {
+       let tree = syntaxTree(state);
+       if (tree.length < end)
+           return null;
+       let stack = tree.resolveStack(end, 1);
+       let found = null;
+       for (let iter = stack; iter; iter = iter.next) {
+           let cur = iter.node;
+           if (cur.to <= end || cur.from > end)
+               continue;
+           if (found && cur.from < start)
+               break;
+           let prop = cur.type.prop(foldNodeProp);
+           if (prop && (cur.to < tree.length - 50 || tree.length == state.doc.length || !isUnfinished(cur))) {
+               let value = prop(cur, state);
+               if (value && value.from <= end && value.from >= start && value.to > end)
+                   found = value;
+           }
+       }
+       return found;
+   }
+   function isUnfinished(node) {
+       let ch = node.lastChild;
+       return ch && ch.to == node.to && ch.type.isError;
+   }
+   /**
+   Check whether the given line is foldable. First asks any fold
+   services registered through
+   [`foldService`](https://codemirror.net/6/docs/ref/#language.foldService), and if none of them return
+   a result, tries to query the [fold node
+   prop](https://codemirror.net/6/docs/ref/#language.foldNodeProp) of syntax nodes that cover the end
+   of the line.
+   */
+   function foldable(state, lineStart, lineEnd) {
+       for (let service of state.facet(foldService)) {
+           let result = service(state, lineStart, lineEnd);
+           if (result)
+               return result;
+       }
+       return syntaxFolding(state, lineStart, lineEnd);
+   }
+   function mapRange(range, mapping) {
+       let from = mapping.mapPos(range.from, 1), to = mapping.mapPos(range.to, -1);
+       return from >= to ? undefined : { from, to };
+   }
+   /**
+   State effect that can be attached to a transaction to fold the
+   given range. (You probably only need this in exceptional
+   circumstances—usually you'll just want to let
+   [`foldCode`](https://codemirror.net/6/docs/ref/#language.foldCode) and the [fold
+   gutter](https://codemirror.net/6/docs/ref/#language.foldGutter) create the transactions.)
+   */
+   const foldEffect = /*@__PURE__*/StateEffect.define({ map: mapRange });
+   /**
+   State effect that unfolds the given range (if it was folded).
+   */
+   const unfoldEffect = /*@__PURE__*/StateEffect.define({ map: mapRange });
+   /**
+   The state field that stores the folded ranges (as a [decoration
+   set](https://codemirror.net/6/docs/ref/#view.DecorationSet)). Can be passed to
+   [`EditorState.toJSON`](https://codemirror.net/6/docs/ref/#state.EditorState.toJSON) and
+   [`fromJSON`](https://codemirror.net/6/docs/ref/#state.EditorState^fromJSON) to serialize the fold
+   state.
+   */
+   const foldState = /*@__PURE__*/StateField.define({
+       create() {
+           return Decoration.none;
+       },
+       update(folded, tr) {
+           folded = folded.map(tr.changes);
+           for (let e of tr.effects) {
+               if (e.is(foldEffect) && !foldExists(folded, e.value.from, e.value.to)) {
+                   let { preparePlaceholder } = tr.state.facet(foldConfig);
+                   let widget = !preparePlaceholder ? foldWidget :
+                       Decoration.replace({ widget: new PreparedFoldWidget(preparePlaceholder(tr.state, e.value)) });
+                   folded = folded.update({ add: [widget.range(e.value.from, e.value.to)] });
+               }
+               else if (e.is(unfoldEffect)) {
+                   folded = folded.update({ filter: (from, to) => e.value.from != from || e.value.to != to,
+                       filterFrom: e.value.from, filterTo: e.value.to });
+               }
+           }
+           // Clear folded ranges that cover the selection head
+           if (tr.selection) {
+               let onSelection = false, { head } = tr.selection.main;
+               folded.between(head, head, (a, b) => { if (a < head && b > head)
+                   onSelection = true; });
+               if (onSelection)
+                   folded = folded.update({
+                       filterFrom: head,
+                       filterTo: head,
+                       filter: (a, b) => b <= head || a >= head
+                   });
+           }
+           return folded;
+       },
+       provide: f => EditorView.decorations.from(f),
+       toJSON(folded, state) {
+           let ranges = [];
+           folded.between(0, state.doc.length, (from, to) => { ranges.push(from, to); });
+           return ranges;
+       },
+       fromJSON(value) {
+           if (!Array.isArray(value) || value.length % 2)
+               throw new RangeError("Invalid JSON for fold state");
+           let ranges = [];
+           for (let i = 0; i < value.length;) {
+               let from = value[i++], to = value[i++];
+               if (typeof from != "number" || typeof to != "number")
+                   throw new RangeError("Invalid JSON for fold state");
+               ranges.push(foldWidget.range(from, to));
+           }
+           return Decoration.set(ranges, true);
+       }
+   });
+   function findFold(state, from, to) {
+       var _a;
+       let found = null;
+       (_a = state.field(foldState, false)) === null || _a === void 0 ? void 0 : _a.between(from, to, (from, to) => {
+           if (!found || found.from > from)
+               found = { from, to };
+       });
+       return found;
+   }
+   function foldExists(folded, from, to) {
+       let found = false;
+       folded.between(from, from, (a, b) => { if (a == from && b == to)
+           found = true; });
+       return found;
+   }
+   const defaultConfig = {
+       placeholderDOM: null,
+       preparePlaceholder: null,
+       placeholderText: "…"
+   };
+   const foldConfig = /*@__PURE__*/Facet.define({
+       combine(values) { return combineConfig(values, defaultConfig); }
+   });
+   /**
+   Create an extension that configures code folding.
+   */
+   function codeFolding(config) {
+       let result = [foldState, baseTheme$1];
+       if (config)
+           result.push(foldConfig.of(config));
+       return result;
+   }
+   function widgetToDOM(view, prepared) {
+       let { state } = view, conf = state.facet(foldConfig);
+       let onclick = (event) => {
+           let line = view.lineBlockAt(view.posAtDOM(event.target));
+           let folded = findFold(view.state, line.from, line.to);
+           if (folded)
+               view.dispatch({ effects: unfoldEffect.of(folded) });
+           event.preventDefault();
+       };
+       if (conf.placeholderDOM)
+           return conf.placeholderDOM(view, onclick, prepared);
+       let element = document.createElement("span");
+       element.textContent = conf.placeholderText;
+       element.setAttribute("aria-label", state.phrase("folded code"));
+       element.title = state.phrase("unfold");
+       element.className = "cm-foldPlaceholder";
+       element.onclick = onclick;
+       return element;
+   }
+   const foldWidget = /*@__PURE__*/Decoration.replace({ widget: /*@__PURE__*/new class extends WidgetType {
+           toDOM(view) { return widgetToDOM(view, null); }
+       } });
+   class PreparedFoldWidget extends WidgetType {
+       constructor(value) {
+           super();
+           this.value = value;
+       }
+       eq(other) { return this.value == other.value; }
+       toDOM(view) { return widgetToDOM(view, this.value); }
+   }
+   const foldGutterDefaults = {
+       openText: "⌄",
+       closedText: "›",
+       markerDOM: null,
+       domEventHandlers: {},
+       foldingChanged: () => false
+   };
+   class FoldMarker extends GutterMarker {
+       constructor(config, open) {
+           super();
+           this.config = config;
+           this.open = open;
+       }
+       eq(other) { return this.config == other.config && this.open == other.open; }
+       toDOM(view) {
+           if (this.config.markerDOM)
+               return this.config.markerDOM(this.open);
+           let span = document.createElement("span");
+           span.textContent = this.open ? this.config.openText : this.config.closedText;
+           span.title = view.state.phrase(this.open ? "Fold line" : "Unfold line");
+           return span;
+       }
+   }
+   /**
+   Create an extension that registers a fold gutter, which shows a
+   fold status indicator before foldable lines (which can be clicked
+   to fold or unfold the line).
+   */
+   function foldGutter(config = {}) {
+       let fullConfig = Object.assign(Object.assign({}, foldGutterDefaults), config);
+       let canFold = new FoldMarker(fullConfig, true), canUnfold = new FoldMarker(fullConfig, false);
+       let markers = ViewPlugin.fromClass(class {
+           constructor(view) {
+               this.from = view.viewport.from;
+               this.markers = this.buildMarkers(view);
+           }
+           update(update) {
+               if (update.docChanged || update.viewportChanged ||
+                   update.startState.facet(language) != update.state.facet(language) ||
+                   update.startState.field(foldState, false) != update.state.field(foldState, false) ||
+                   syntaxTree(update.startState) != syntaxTree(update.state) ||
+                   fullConfig.foldingChanged(update))
+                   this.markers = this.buildMarkers(update.view);
+           }
+           buildMarkers(view) {
+               let builder = new RangeSetBuilder();
+               for (let line of view.viewportLineBlocks) {
+                   let mark = findFold(view.state, line.from, line.to) ? canUnfold
+                       : foldable(view.state, line.from, line.to) ? canFold : null;
+                   if (mark)
+                       builder.add(line.from, line.from, mark);
+               }
+               return builder.finish();
+           }
+       });
+       let { domEventHandlers } = fullConfig;
+       return [
+           markers,
+           gutter({
+               class: "cm-foldGutter",
+               markers(view) { var _a; return ((_a = view.plugin(markers)) === null || _a === void 0 ? void 0 : _a.markers) || RangeSet.empty; },
+               initialSpacer() {
+                   return new FoldMarker(fullConfig, false);
+               },
+               domEventHandlers: Object.assign(Object.assign({}, domEventHandlers), { click: (view, line, event) => {
+                       if (domEventHandlers.click && domEventHandlers.click(view, line, event))
+                           return true;
+                       let folded = findFold(view.state, line.from, line.to);
+                       if (folded) {
+                           view.dispatch({ effects: unfoldEffect.of(folded) });
+                           return true;
+                       }
+                       let range = foldable(view.state, line.from, line.to);
+                       if (range) {
+                           view.dispatch({ effects: foldEffect.of(range) });
+                           return true;
+                       }
+                       return false;
+                   } })
+           }),
+           codeFolding()
+       ];
+   }
+   const baseTheme$1 = /*@__PURE__*/EditorView.baseTheme({
+       ".cm-foldPlaceholder": {
+           backgroundColor: "#eee",
+           border: "1px solid #ddd",
+           color: "#888",
+           borderRadius: ".2em",
+           margin: "0 1px",
+           padding: "0 1px",
+           cursor: "pointer"
+       },
+       ".cm-foldGutter span": {
+           padding: "0 1px",
+           cursor: "pointer"
+       }
+   });
 
    /**
    A highlight style associates CSS styles with higlighting
@@ -17388,6 +17701,66 @@
    const treeHighlighter = /*@__PURE__*/Prec.high(/*@__PURE__*/ViewPlugin.fromClass(TreeHighlighter, {
        decorations: v => v.decorations
    }));
+
+   const baseTheme$2 = /*@__PURE__*/EditorView.baseTheme({
+       "&.cm-focused .cm-matchingBracket": { backgroundColor: "#328c8252" },
+       "&.cm-focused .cm-nonmatchingBracket": { backgroundColor: "#bb555544" }
+   });
+   const DefaultScanDist = 10000, DefaultBrackets = "()[]{}";
+   const bracketMatchingConfig = /*@__PURE__*/Facet.define({
+       combine(configs) {
+           return combineConfig(configs, {
+               afterCursor: true,
+               brackets: DefaultBrackets,
+               maxScanDistance: DefaultScanDist,
+               renderMatch: defaultRenderMatch
+           });
+       }
+   });
+   const matchingMark = /*@__PURE__*/Decoration.mark({ class: "cm-matchingBracket" }), nonmatchingMark = /*@__PURE__*/Decoration.mark({ class: "cm-nonmatchingBracket" });
+   function defaultRenderMatch(match) {
+       let decorations = [];
+       let mark = match.matched ? matchingMark : nonmatchingMark;
+       decorations.push(mark.range(match.start.from, match.start.to));
+       if (match.end)
+           decorations.push(mark.range(match.end.from, match.end.to));
+       return decorations;
+   }
+   const bracketMatchingState = /*@__PURE__*/StateField.define({
+       create() { return Decoration.none; },
+       update(deco, tr) {
+           if (!tr.docChanged && !tr.selection)
+               return deco;
+           let decorations = [];
+           let config = tr.state.facet(bracketMatchingConfig);
+           for (let range of tr.state.selection.ranges) {
+               if (!range.empty)
+                   continue;
+               let match = matchBrackets(tr.state, range.head, -1, config)
+                   || (range.head > 0 && matchBrackets(tr.state, range.head - 1, 1, config))
+                   || (config.afterCursor &&
+                       (matchBrackets(tr.state, range.head, 1, config) ||
+                           (range.head < tr.state.doc.length && matchBrackets(tr.state, range.head + 1, -1, config))));
+               if (match)
+                   decorations = decorations.concat(config.renderMatch(match, tr.state));
+           }
+           return Decoration.set(decorations, true);
+       },
+       provide: f => EditorView.decorations.from(f)
+   });
+   const bracketMatchingUnique = [
+       bracketMatchingState,
+       baseTheme$2
+   ];
+   /**
+   Create an extension that enables bracket matching. Whenever the
+   cursor is next to a bracket, that bracket and the one it matches
+   are highlighted. Or, when no matching bracket is found, another
+   highlighting style is used to indicate this.
+   */
+   function bracketMatching(config = {}) {
+       return [bracketMatchingConfig.of(config), bracketMatchingUnique];
+   }
    /**
    When larger syntax nodes, such as HTML tags, are marked as
    opening/closing, it can be a bit messy to treat the whole node as
@@ -17397,6 +17770,99 @@
    place.
    */
    const bracketMatchingHandle = /*@__PURE__*/new NodeProp();
+   function matchingNodes(node, dir, brackets) {
+       let byProp = node.prop(dir < 0 ? NodeProp.openedBy : NodeProp.closedBy);
+       if (byProp)
+           return byProp;
+       if (node.name.length == 1) {
+           let index = brackets.indexOf(node.name);
+           if (index > -1 && index % 2 == (dir < 0 ? 1 : 0))
+               return [brackets[index + dir]];
+       }
+       return null;
+   }
+   function findHandle(node) {
+       let hasHandle = node.type.prop(bracketMatchingHandle);
+       return hasHandle ? hasHandle(node.node) : node;
+   }
+   /**
+   Find the matching bracket for the token at `pos`, scanning
+   direction `dir`. Only the `brackets` and `maxScanDistance`
+   properties are used from `config`, if given. Returns null if no
+   bracket was found at `pos`, or a match result otherwise.
+   */
+   function matchBrackets(state, pos, dir, config = {}) {
+       let maxScanDistance = config.maxScanDistance || DefaultScanDist, brackets = config.brackets || DefaultBrackets;
+       let tree = syntaxTree(state), node = tree.resolveInner(pos, dir);
+       for (let cur = node; cur; cur = cur.parent) {
+           let matches = matchingNodes(cur.type, dir, brackets);
+           if (matches && cur.from < cur.to) {
+               let handle = findHandle(cur);
+               if (handle && (dir > 0 ? pos >= handle.from && pos < handle.to : pos > handle.from && pos <= handle.to))
+                   return matchMarkedBrackets(state, pos, dir, cur, handle, matches, brackets);
+           }
+       }
+       return matchPlainBrackets(state, pos, dir, tree, node.type, maxScanDistance, brackets);
+   }
+   function matchMarkedBrackets(_state, _pos, dir, token, handle, matching, brackets) {
+       let parent = token.parent, firstToken = { from: handle.from, to: handle.to };
+       let depth = 0, cursor = parent === null || parent === void 0 ? void 0 : parent.cursor();
+       if (cursor && (dir < 0 ? cursor.childBefore(token.from) : cursor.childAfter(token.to)))
+           do {
+               if (dir < 0 ? cursor.to <= token.from : cursor.from >= token.to) {
+                   if (depth == 0 && matching.indexOf(cursor.type.name) > -1 && cursor.from < cursor.to) {
+                       let endHandle = findHandle(cursor);
+                       return { start: firstToken, end: endHandle ? { from: endHandle.from, to: endHandle.to } : undefined, matched: true };
+                   }
+                   else if (matchingNodes(cursor.type, dir, brackets)) {
+                       depth++;
+                   }
+                   else if (matchingNodes(cursor.type, -dir, brackets)) {
+                       if (depth == 0) {
+                           let endHandle = findHandle(cursor);
+                           return {
+                               start: firstToken,
+                               end: endHandle && endHandle.from < endHandle.to ? { from: endHandle.from, to: endHandle.to } : undefined,
+                               matched: false
+                           };
+                       }
+                       depth--;
+                   }
+               }
+           } while (dir < 0 ? cursor.prevSibling() : cursor.nextSibling());
+       return { start: firstToken, matched: false };
+   }
+   function matchPlainBrackets(state, pos, dir, tree, tokenType, maxScanDistance, brackets) {
+       let startCh = dir < 0 ? state.sliceDoc(pos - 1, pos) : state.sliceDoc(pos, pos + 1);
+       let bracket = brackets.indexOf(startCh);
+       if (bracket < 0 || (bracket % 2 == 0) != (dir > 0))
+           return null;
+       let startToken = { from: dir < 0 ? pos - 1 : pos, to: dir > 0 ? pos + 1 : pos };
+       let iter = state.doc.iterRange(pos, dir > 0 ? state.doc.length : 0), depth = 0;
+       for (let distance = 0; !(iter.next()).done && distance <= maxScanDistance;) {
+           let text = iter.value;
+           if (dir < 0)
+               distance += text.length;
+           let basePos = pos + distance * dir;
+           for (let pos = dir > 0 ? 0 : text.length - 1, end = dir > 0 ? text.length : -1; pos != end; pos += dir) {
+               let found = brackets.indexOf(text[pos]);
+               if (found < 0 || tree.resolveInner(basePos + pos, 1).type != tokenType)
+                   continue;
+               if ((found % 2 == 0) == (dir > 0)) {
+                   depth++;
+               }
+               else if (depth == 1) { // Closing
+                   return { start: startToken, end: { from: basePos + pos, to: basePos + pos + 1 }, matched: (found >> 1) == (bracket >> 1) };
+               }
+               else {
+                   depth--;
+               }
+           }
+           if (dir > 0)
+               distance += text.length;
+       }
+       return iter.done ? { start: startToken, matched: false } : null;
+   }
    const noTokens = /*@__PURE__*/Object.create(null);
    const typeArray = [NodeType.none];
    const warned = [];
@@ -17467,6 +17933,234 @@
        rtl: /*@__PURE__*/Decoration.mark({ class: "cm-iso", inclusive: true, attributes: { dir: "rtl" }, bidiIsolate: Direction.RTL }),
        ltr: /*@__PURE__*/Decoration.mark({ class: "cm-iso", inclusive: true, attributes: { dir: "ltr" }, bidiIsolate: Direction.LTR }),
        auto: /*@__PURE__*/Decoration.mark({ class: "cm-iso", inclusive: true, attributes: { dir: "auto" }, bidiIsolate: null })
+   });
+
+   const basicNormalize = typeof String.prototype.normalize == "function"
+       ? x => x.normalize("NFKD") : x => x;
+   /**
+   A search cursor provides an iterator over text matches in a
+   document.
+   */
+   class SearchCursor {
+       /**
+       Create a text cursor. The query is the search string, `from` to
+       `to` provides the region to search.
+       
+       When `normalize` is given, it will be called, on both the query
+       string and the content it is matched against, before comparing.
+       You can, for example, create a case-insensitive search by
+       passing `s => s.toLowerCase()`.
+       
+       Text is always normalized with
+       [`.normalize("NFKD")`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize)
+       (when supported).
+       */
+       constructor(text, query, from = 0, to = text.length, normalize, test) {
+           this.test = test;
+           /**
+           The current match (only holds a meaningful value after
+           [`next`](https://codemirror.net/6/docs/ref/#search.SearchCursor.next) has been called and when
+           `done` is false).
+           */
+           this.value = { from: 0, to: 0 };
+           /**
+           Whether the end of the iterated region has been reached.
+           */
+           this.done = false;
+           this.matches = [];
+           this.buffer = "";
+           this.bufferPos = 0;
+           this.iter = text.iterRange(from, to);
+           this.bufferStart = from;
+           this.normalize = normalize ? x => normalize(basicNormalize(x)) : basicNormalize;
+           this.query = this.normalize(query);
+       }
+       peek() {
+           if (this.bufferPos == this.buffer.length) {
+               this.bufferStart += this.buffer.length;
+               this.iter.next();
+               if (this.iter.done)
+                   return -1;
+               this.bufferPos = 0;
+               this.buffer = this.iter.value;
+           }
+           return codePointAt(this.buffer, this.bufferPos);
+       }
+       /**
+       Look for the next match. Updates the iterator's
+       [`value`](https://codemirror.net/6/docs/ref/#search.SearchCursor.value) and
+       [`done`](https://codemirror.net/6/docs/ref/#search.SearchCursor.done) properties. Should be called
+       at least once before using the cursor.
+       */
+       next() {
+           while (this.matches.length)
+               this.matches.pop();
+           return this.nextOverlapping();
+       }
+       /**
+       The `next` method will ignore matches that partially overlap a
+       previous match. This method behaves like `next`, but includes
+       such matches.
+       */
+       nextOverlapping() {
+           for (;;) {
+               let next = this.peek();
+               if (next < 0) {
+                   this.done = true;
+                   return this;
+               }
+               let str = fromCodePoint(next), start = this.bufferStart + this.bufferPos;
+               this.bufferPos += codePointSize(next);
+               let norm = this.normalize(str);
+               for (let i = 0, pos = start;; i++) {
+                   let code = norm.charCodeAt(i);
+                   let match = this.match(code, pos);
+                   if (i == norm.length - 1) {
+                       if (match) {
+                           this.value = match;
+                           return this;
+                       }
+                       break;
+                   }
+                   if (pos == start && i < str.length && str.charCodeAt(i) == code)
+                       pos++;
+               }
+           }
+       }
+       match(code, pos) {
+           let match = null;
+           for (let i = 0; i < this.matches.length; i += 2) {
+               let index = this.matches[i], keep = false;
+               if (this.query.charCodeAt(index) == code) {
+                   if (index == this.query.length - 1) {
+                       match = { from: this.matches[i + 1], to: pos + 1 };
+                   }
+                   else {
+                       this.matches[i]++;
+                       keep = true;
+                   }
+               }
+               if (!keep) {
+                   this.matches.splice(i, 2);
+                   i -= 2;
+               }
+           }
+           if (this.query.charCodeAt(0) == code) {
+               if (this.query.length == 1)
+                   match = { from: pos, to: pos + 1 };
+               else
+                   this.matches.push(1, pos);
+           }
+           if (match && this.test && !this.test(match.from, match.to, this.buffer, this.bufferStart))
+               match = null;
+           return match;
+       }
+   }
+   if (typeof Symbol != "undefined")
+       SearchCursor.prototype[Symbol.iterator] = function () { return this; };
+
+   const defaultHighlightOptions = {
+       highlightWordAroundCursor: false,
+       minSelectionLength: 1,
+       maxMatches: 100,
+       wholeWords: false
+   };
+   const highlightConfig = /*@__PURE__*/Facet.define({
+       combine(options) {
+           return combineConfig(options, defaultHighlightOptions, {
+               highlightWordAroundCursor: (a, b) => a || b,
+               minSelectionLength: Math.min,
+               maxMatches: Math.min
+           });
+       }
+   });
+   /**
+   This extension highlights text that matches the selection. It uses
+   the `"cm-selectionMatch"` class for the highlighting. When
+   `highlightWordAroundCursor` is enabled, the word at the cursor
+   itself will be highlighted with `"cm-selectionMatch-main"`.
+   */
+   function highlightSelectionMatches(options) {
+       let ext = [defaultTheme, matchHighlighter];
+       if (options)
+           ext.push(highlightConfig.of(options));
+       return ext;
+   }
+   const matchDeco = /*@__PURE__*/Decoration.mark({ class: "cm-selectionMatch" });
+   const mainMatchDeco = /*@__PURE__*/Decoration.mark({ class: "cm-selectionMatch cm-selectionMatch-main" });
+   // Whether the characters directly outside the given positions are non-word characters
+   function insideWordBoundaries(check, state, from, to) {
+       return (from == 0 || check(state.sliceDoc(from - 1, from)) != CharCategory.Word) &&
+           (to == state.doc.length || check(state.sliceDoc(to, to + 1)) != CharCategory.Word);
+   }
+   // Whether the characters directly at the given positions are word characters
+   function insideWord(check, state, from, to) {
+       return check(state.sliceDoc(from, from + 1)) == CharCategory.Word
+           && check(state.sliceDoc(to - 1, to)) == CharCategory.Word;
+   }
+   const matchHighlighter = /*@__PURE__*/ViewPlugin.fromClass(class {
+       constructor(view) {
+           this.decorations = this.getDeco(view);
+       }
+       update(update) {
+           if (update.selectionSet || update.docChanged || update.viewportChanged)
+               this.decorations = this.getDeco(update.view);
+       }
+       getDeco(view) {
+           let conf = view.state.facet(highlightConfig);
+           let { state } = view, sel = state.selection;
+           if (sel.ranges.length > 1)
+               return Decoration.none;
+           let range = sel.main, query, check = null;
+           if (range.empty) {
+               if (!conf.highlightWordAroundCursor)
+                   return Decoration.none;
+               let word = state.wordAt(range.head);
+               if (!word)
+                   return Decoration.none;
+               check = state.charCategorizer(range.head);
+               query = state.sliceDoc(word.from, word.to);
+           }
+           else {
+               let len = range.to - range.from;
+               if (len < conf.minSelectionLength || len > 200)
+                   return Decoration.none;
+               if (conf.wholeWords) {
+                   query = state.sliceDoc(range.from, range.to); // TODO: allow and include leading/trailing space?
+                   check = state.charCategorizer(range.head);
+                   if (!(insideWordBoundaries(check, state, range.from, range.to)
+                       && insideWord(check, state, range.from, range.to)))
+                       return Decoration.none;
+               }
+               else {
+                   query = state.sliceDoc(range.from, range.to).trim();
+                   if (!query)
+                       return Decoration.none;
+               }
+           }
+           let deco = [];
+           for (let part of view.visibleRanges) {
+               let cursor = new SearchCursor(state.doc, query, part.from, part.to);
+               while (!cursor.next().done) {
+                   let { from, to } = cursor.value;
+                   if (!check || insideWordBoundaries(check, state, from, to)) {
+                       if (range.empty && from <= range.from && to >= range.to)
+                           deco.push(mainMatchDeco.range(from, to));
+                       else if (from >= range.to || to <= range.from)
+                           deco.push(matchDeco.range(from, to));
+                       if (deco.length > conf.maxMatches)
+                           return Decoration.none;
+                   }
+               }
+           }
+           return Decoration.set(deco);
+       }
+   }, {
+       decorations: v => v.decorations
+   });
+   const defaultTheme = /*@__PURE__*/EditorView.baseTheme({
+       ".cm-selectionMatch": { backgroundColor: "#99ff7780" },
+       ".cm-searchMatch .cm-selectionMatch": { backgroundColor: "transparent" }
    });
 
    function toSet(chars) {
@@ -22243,11 +22937,13 @@
 
    const initialState = EditorState.create({
      doc: document.querySelector("#content").value,
-     bracketMatching: true,
-     highlightSelectionMatches: true,
 
      extensions: [
-       drawSelection(),
+       bracketMatching(),
+       highlightSelectionMatches(),
+
+       drawSelection(),    
+       foldGutter(),
        lineNumbers(),
        highlightActiveLineGutter(),
        highlightActiveLine(),

@@ -32,7 +32,7 @@
 
 <div id="container">
 
-    <?php if (hasNewVersion()) { ?>
+    <?php if (IS_LOGIN && hasNewVersion()) { ?>
         <div class="tips" style="margin-top: 0 !important">
             <img src="icon/tips.png" alt="">
             Có phiên bản mới! <a href="update.php"><span style="font-weight: bold; font-style: italic">Cập nhật</span></a> ngay!

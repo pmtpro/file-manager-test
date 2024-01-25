@@ -1,6 +1,6 @@
 import { EditorView, basicSetup } from "codemirror"
-
 import { EditorState, Compartment } from "@codemirror/state"
+
 import {
     lineNumbers,
     highlightActiveLine,
@@ -9,6 +9,13 @@ import {
     drawSelection
 } from "@codemirror/view"
 
+import {
+	bracketMatching,
+	foldGutter
+} from "@codemirror/language"
+ 
+ import { highlightSelectionMatches } from "@codemirror/search"
+ 
 // theme
 import { materialDark } from "cm6-theme-material-dark"
 
@@ -29,11 +36,13 @@ const lineWrapConf = new Compartment()
 
 const initialState = EditorState.create({
   doc: document.querySelector("#content").value,
-  bracketMatching: true,
-  highlightSelectionMatches: true,
 
   extensions: [
-    drawSelection(),
+    bracketMatching(),
+    highlightSelectionMatches(),
+
+    drawSelection(),    
+    foldGutter(),
     lineNumbers(),
     highlightActiveLineGutter(),
     highlightActiveLine(),
