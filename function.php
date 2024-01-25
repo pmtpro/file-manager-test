@@ -82,8 +82,21 @@ const FM_COOKIE_NAME = 'fm_php';
 
 { // lay phien ban moi
     define('REMOTE_FILE', 'https://github.com/pmtpro/file-manager-php/archive/main.zip');
+	define('REMOTE_FILE_CURRENT', 'https://github.com/pmtpro/file-manager-php/archive/refs/tags/' . VERSION_MAJOR . '.' . VERSION_MINOR . '.' . VERSION_PATCH . '.zip');
     define('REMOTE_DIR_IN_ZIP', 'file-manager-php-main');
     define('REMOTE_VERSION_FILE', 'https://raw.githubusercontent.com/pmtpro/file-manager-php/main/version.json');
+
+	$version = getNewVersion();
+	$remoteFileNew = REMOTE_FILE_CURRENT;
+
+	if ($version !== false) {
+		$remoteFileNew = 'https://github.com/pmtpro/file-manager-php/archive/refs/tags/' . $version['major'] . '.' . $version['minor'] . '.' . $version['patch'] . '.zip';
+	}
+
+	define('REMOTE_FILE_NEW', $remoteFileNew);
+
+	unset($remoteFileNew);
+	unset($version);
 }
 
 $configs = array();
@@ -269,21 +282,7 @@ function getNewVersion() {
 
 
 function hasNewVersion() {
-    $remoteVersion = getNewVersion();
-
-    if ($remoteVersion === false) {
-        return false;
-    }
-
-    if (
-        intval($remoteVersion['major']) == VERSION_MAJOR
-        && intval($remoteVersion['minor']) == VERSION_MINOR
-        && intval($remoteVersion['patch']) == VERSION_PATCH
-    ) {
-        return false;
-    } 
-
-    return true;
+	return REMOTE_FILE_CURRENT !== REMOTE_FILE_NEW;
 }
 
 

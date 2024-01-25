@@ -13,3 +13,11 @@
 
 </html>
 <?php ob_end_flush(); ?>
+<?php
+/*
+	var_dump(
+		REMOTE_FILE_CURRENT,
+		REMOTE_FILE_NEW
+	);
+*/
+?>
