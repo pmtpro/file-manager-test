@@ -9,15 +9,10 @@
     <span>Version: <?php echo VERSION_MAJOR; ?>.<?php echo VERSION_MINOR; ?>.<?php echo VERSION_PATCH; ?></span>
 </div>
 
-</body>
+<div id="scrollTop" class="scroll-to-top scroll-to-top-up"></div>
+<div id="scrollBottom" class="scroll-to-top scroll-to-top-down"></div>
 
+<script src="<?php asset('script.js') ?>"></script>
+</body>
 </html>
 <?php ob_end_flush(); ?>
-<?php
-/*
-	var_dump(
-		REMOTE_FILE_CURRENT,
-		REMOTE_FILE_NEW
-	);
-*/
-?>

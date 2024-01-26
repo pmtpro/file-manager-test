@@ -1023,6 +1023,12 @@ function debug($o)
     echo('</pre>');
 }
 
+
+function asset($asset) {
+    echo $asset . '?' .  date('YmdH');
+}
+
+
 include_once 'development.inc.php';
 
 $dir       = isset($_GET['dir']) && !empty($_GET['dir']) ? rawurldecode($_GET['dir']) : null;
