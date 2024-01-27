@@ -82,7 +82,7 @@
                 echo '<div id="line">
                     <div id="line_number_' . $i . '">' . htmlspecialchars($lines[$i]) . '</div>
                     <div>
-                        <span id="line_number">[<span>' . $i . '</span>]</span>
+                        <span id="line_number">[<span>' . ($i +1) . '</span>]</span>
                         <a href="edit_line.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '&line=' . $i . $page['paramater_1'] . '">Sửa</a>
                         <span> | </span>
                         <a href="delete_line.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '&line=' . $i . $page['paramater_1'] . '">Xóa</a>
