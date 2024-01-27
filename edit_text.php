@@ -137,7 +137,7 @@
                     </div>
                     
                     <div class="parent_box_edit">
-                        <textarea id="editor" wrap="off" style="white-space: nowrap;" class="box_edit" name="content">' . htmlspecialchars($content) . '</textarea>
+                        <textarea id="editor" wrap="off" style="white-space: nowrap;" class="box_edit" name="content">' . PHP_EOL . htmlspecialchars($content) . '</textarea>
                     </div>
                     
                     <div class="search_replace search">

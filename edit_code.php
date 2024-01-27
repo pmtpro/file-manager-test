@@ -79,7 +79,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
 
         <form id="code_form" action="javascript:void(0)">
             <div>
-                <textarea id="content" style="display: none">' . htmlspecialchars($content) . '</textarea>
+                <textarea id="content" style="display: none">' . PHP_EOL . htmlspecialchars($content) . '</textarea>
                 <div id="editor"></div>
             </div>
             <div class="input_action">
