@@ -71,6 +71,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
 
     echo '</select>
             <span style="float: right">
+                <input type="checkbox" checked="checked" id="code_readonly" /> ReadOnly
                 <input type="checkbox" id="code_wrap" /> Wrap
             </span>
             </div>
@@ -127,10 +128,10 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
 			.cm-activeLine.cm-line ::selection {
 				background-color: #8a8a8a !important;
 			}
-        </style>
+        </style>';
         
-        <script src="edit_code.bundle.js"></script>
-        <script>
+		echo '<script src="' . asset('edit_code.bundle.js') . '"></script>';
+        echo '<script>
             const codeCheckMessageElement = document.getElementById("code_check_message");
             const codeCheckPHPElement = document.getElementById("code_check_php");
             

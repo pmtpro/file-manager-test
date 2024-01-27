@@ -33,6 +33,8 @@ import { yaml } from "@codemirror/lang-yaml"
   
 const languageConf = new Compartment()
 const lineWrapConf = new Compartment()
+const readOnlyConf = new Compartment()
+const editableConf = new Compartment()
 
 const initialState = EditorState.create({
   doc: document.querySelector("#content").value,
@@ -48,6 +50,8 @@ const initialState = EditorState.create({
     highlightActiveLine(),
     highlightSpecialChars(),
 
+    readOnlyConf.of(EditorState.readOnly.of(true)),
+    editableConf.of(EditorView.editable.of(false)),
     lineWrapConf.of([]),
     languageConf.of([]),
 
@@ -102,6 +106,17 @@ codeWrapElement.addEventListener("change", function () {
     
     editor.dispatch({
         effects: lineWrapConf.reconfigure(wrap)
+    })
+});
+
+// che do chi xem
+var codeReadOnlyElement = document.getElementById("code_readonly");
+codeReadOnlyElement.addEventListener("change", function () {
+    editor.dispatch({
+        effects: [
+    		readOnlyConf.reconfigure(EditorState.readOnly.of(codeReadOnlyElement.checked)),
+    		editableConf.reconfigure(EditorView.editable.of(!codeReadOnlyElement.checked))
+		]
     })
 });
 

@@ -1025,7 +1025,7 @@ function debug($o)
 
 
 function asset($asset) {
-    echo $asset . '?' .  date('YmdH');
+    return $asset . '?' .  date('YmdH');
 }
 
 
