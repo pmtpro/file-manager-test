@@ -35,7 +35,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     $dir = processDirectory($dir);
     $path = $dir . '/' . $name;
     $content = file_get_contents($path);
-    $actionEdit = 'edit_code_api.php?dir=' . $dirEncode . '&name=' . $name;
+    $actionEdit = 'edit_api.php?dir=' . $dirEncode . '&name=' . $name;
     $fileExt = getFormat($name);
 
     $codeLang = 'text';

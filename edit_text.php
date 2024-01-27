@@ -25,99 +25,12 @@
             </ul>';
         } else {
             $total = 0;
-            $index = ($page * $configs['page_file_edit']) - $configs['page_file_edit'];
             $dir = processDirectory($dir);
             $path = $dir . '/' . $name;
             $content = file_get_contents($path);
-            $pageLine = $configs['page_file_edit'];
-            $notice = null;
-
-            if (isset($_POST['s_save'])) {
-                if ((empty($_POST['content']) && strlen($content) <= 0 && $pageLine > 0) || (empty($_POST['content']) && $pageLine <= 0)) {
-                    $notice = '<div class="notice_failure">Chưa nhập nội dung</div>';
-                } else {
-                    if ($pageLine > 0) {
-                        $content = str_replace("\r\n", "\n", $content);
-                        $content = str_replace("\r", "\n", $content);
-
-                        if (strpos($content, "\n") !== false) {
-                            $ex = explode("\n", $content);
-                            $count = count($ex);
-                            $end = $index + $configs['page_file_edit'] <= $count ? $index + $configs['page_file_edit'] : $count;
-                            $content = null;
-
-                            if ($index > 0)
-                                for ($i = 0; $i < $index; ++$i)
-                                    $content .= $ex[$i] . "\n";
-
-                            $content .= str_replace("\r", "\n", str_replace("\r\n", "\n", $_POST['content']));
-
-                            if ($page < ceil($count / $configs['page_file_edit']))
-                                for ($i = $end; $i < $count; ++$i)
-                                    $content .= "\n" . $ex[$i];
-                        } else {
-                            $content = $_POST['content'];
-                        }
-                    } else {
-                        $content = $_POST['content'];
-                        $content = str_replace("\r\n", "\n", $content);
-                        $content = str_replace("\r", "\n", $content);
-                    }
-
-                    if (file_put_contents($path, $content)) {
-                        $notice = '<div class="notice_succeed">Lưu lại thành công</div>';
-                    } else {
-                        $notice = '<div class="notice_failure">Lưu lại thất bại</div>';
-                        $content = file_get_contents($path);
-                    }
-                }
-            }
-
-            if (strlen($content) > 0) {
-                $content = str_replace("\r\n", "\n", $content);
-                $content = str_replace("\r", "\n", $content);
-
-                if ($pageLine > 0 && strpos($content, "\n") !== false) {
-                    $ex = explode("\n", $content);
-                    $count = count($ex);
-
-                    if ($count > $configs['page_file_edit']) {
-                        $content = null;
-                        $total = ceil($count / $configs['page_file_edit']);
-                        $end = $index + $configs['page_file_edit'] <= $count ? $index + $configs['page_file_edit'] : $count;
-
-                        for ($i = $index; $i < $end; ++$i) {
-                            if ($i >= $end - 1)
-                                $content .= $ex[$i];
-                            else
-                                $content .= $ex[$i] . "\n";
-                        }
-                    }
-                }
-            }
-
-            $error_syntax = null;
             $isExecute = isFunctionExecEnable();
-
-            if ($isExecute && isset($_POST['s_check_syntax'])) {
-                @exec(getPathPHP() . ' -c -f -l ' . $path, $output, $value);
-
-                if ($value == -1)
-                    $error_syntax = 'Không thể kiểm tra lỗi';
-                else if ($value == 255 || count($output) == 3)
-                    $error_syntax = $output[1];
-                else
-                    $error_syntax = 'Không có lỗi';
-            }
-
-            echo $notice;
-
-            if ($error_syntax != null) {
-                echo '<div class="list">
-                    <span class="bull">&bull; </span><span><strong>Kiểm tra lỗi</strong><hr/>
-                    <div class="break-word">' . $error_syntax . '</div>
-                </div>';
-            }
+            $actionEdit = 'edit_api.php?dir=' . $dirEncode . '&name=' . $name;
+            $actionFormat = 'format_code.php';
 
             echo '<div class="list">
                 <span class="bull">&bull; </span><span>' . printPath($dir, true) . '</span><hr/>
@@ -129,15 +42,16 @@
                         <button class="button">Chế độ sửa code</button>
                     </a><hr />
                 </div>
-                <form action="edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . ($page > 1 ? '&page=' . $page : null) . '" method="post">
+                <form action="javascript:void(0)" id="code_form" method="post">
                     <span class="bull">&bull; </span>Nội dung:
 
                     <div style="display: inline-block; float: right">
+                        <input type="button" id="code_highlight" value="Highlight" />
                         <input type="checkbox" id="code_wrap" /> Wrap
                     </div>
                     
                     <div class="parent_box_edit">
-                        <textarea id="editor" wrap="off" style="white-space: nowrap;" class="box_edit" name="content">' . PHP_EOL . htmlspecialchars($content) . '</textarea>
+                        <textarea id="editor" wrap="off" style="white-space: pre;" class="box_edit" name="content">'. PHP_EOL . htmlspecialchars($content) . '</textarea>
                     </div>
                     
                     <div class="search_replace search">
@@ -148,29 +62,89 @@
                         <span class="bull">&bull; </span>Thay thế:<br/>
                         <input type="text" name="replace" value=""/>
                     </div>
-                    <div class="input_action">' .
-                        ($isExecute && strtolower(getFormat($name)) == 'php' ? '<input type="checkbox" name="s_check_syntax" value="1"' . (isset($_POST['s_check_syntax']) ? ' checked="checked"' : null) . '/>Kiểm tra lỗi' : '') . '<hr/>
+                    <div class="input_action">                    
                         <input type="submit" name="s_save" value="Lưu lại"/>
+                        <span style="margin-right: 12px"></span>'.
+                        ($isExecute && strtolower(getFormat($name)) == 'php' ? '<input type="checkbox" id="code_check_php"/> Kiểm tra lỗi' : '') . '
                     </div>
                 </form>';
-
-                if ($pageLine > 0 && $total > 1) {
-                    echo page(
-                        $page,
-                        $total,
-                        array(
-                            PAGE_URL_DEFAULT => 'edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'],
-                            PAGE_URL_START => 'edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '&page='
-                        )
-                    );
-                }
-
-            echo '</div>';
+                echo '</div>'.
+                    '<div id="code_check_message" class="list"></div>';
+         
             
             echo '<script>
-                var editorElement = document.getElementById("editor");
-                
+                const codeCheckMessageElement = document.getElementById("code_check_message");
+                const codeCheckPHPElement = document.getElementById("code_check_php");
+
+                var editorElement = document.getElementById("editor");                
                 var codeWrapElement = document.getElementById("code_wrap");
+                var codeHighLightElement = document.getElementById("code_highlight");
+                var codeFormElement = document.getElementById("code_form");
+
+                codeFormElement.addEventListener("submit", function (event) {                    
+                    var data = new FormData();
+                    data.append("requestApi", 1);
+                    data.append("content", editorElement.value);
+                    codeCheckMessageElement.style.display = "none";
+                    codeCheckMessageElement.innerHTML = "";
+                    if (codeCheckPHPElement && codeCheckPHPElement.checked) {
+                        data.append("check", 1);
+                    } else {
+                        data.append("check", 0);
+                    }
+
+                    fetch("' . $actionEdit . '", {
+                        method: "POST",
+                        body: data,
+                        cache: "no-cache"
+                    }).then(function (response) {
+                        if (response.status != 200) {
+                            alert("Lỗi kết nối!");
+                            return false;
+                        }
+                    
+                        return response.json();
+                    }).then((data) => {
+                        alert(data.message)
+
+                        if (data.error) {
+                            codeCheckMessageElement.innerHTML = data.error;
+                            codeCheckMessageElement.style.display = "block";
+                        }
+                    });
+
+                    event.preventDefault();
+                    return false;
+                });
+
+
+                codeHighLightElement.addEventListener("click", function () {
+                    if(!window.confirm("Chức năng có thể thay đổi cấu trúc code, xác nhận dùng!")) {
+                        return;
+                    }
+                    var data = new FormData();
+                    data.append("requestApi", 1);
+                    data.append("content", editorElement.value);
+                    fetch("'. $actionFormat .'", {
+                        method: "POST",
+                        body: data,
+                        cache: "no-cache"
+                    }).then(function (response) {
+                        if (response.status != 200) {
+                            alert("Lỗi kết nối!");
+                            return false;
+                        }                    
+                        return response.json();
+                    }).then((data) => {
+                        if(!data.error) {
+                            editorElement.value = data.highlight;
+                        } else {
+                            alert(data.error);
+                        }
+                    });                  
+                });
+
+
                 codeWrapElement.addEventListener("change", function () {
                     if (codeWrapElement.checked) {
                         editorElement.removeAttribute("wrap");
@@ -181,19 +155,15 @@
                     }
                 });
             </script>';
-            
+            echo '<style>
+                #code_check_message, #code_check_highlight {
+                    display:none;
+                }
+            </style>';
             echo '<div class="title">Chức năng</div>
-            <ul class="list">
-                <li><img src="icon/edit_text_line.png"/> <a href="edit_text_line.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Sửa theo dòng</a></li>
-                <li><img src="icon/download.png"/> <a href="file_download.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Tải về</a></li>
-                <li><img src="icon/info.png"/> <a href="file.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Thông tin</a></li>
-                <li><img src="icon/rename.png"/> <a href="file_rename.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Đổi tên</a></li>
-                <li><img src="icon/copy.png"/> <a href="file_copy.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Sao chép</a></li>
-                <li><img src="icon/move.png"/> <a href="file_move.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Di chuyển</a></li>
-                <li><img src="icon/delete.png"/> <a href="file_delete.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Xóa</a></li>
-                <li><img src="icon/access.png"/> <a href="file_chmod.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Chmod</a></li>
-                <li><img src="icon/list.png"/> <a href="index.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Danh sách</a></li>
-            </ul>';
+                <ul class="list">
+                    <li><img src="icon/info.png"/> <a href="file.php?dir='      . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Thông tin</a></li>
+                </ul>';
         }
 
         include_once 'footer.php';

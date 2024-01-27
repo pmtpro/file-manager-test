@@ -34,7 +34,7 @@ if (isset($_POST['requestApi'])) {
                 $data['message'] = 'Lưu lại thành công';
                 
                 if ($checkPHP) {
-                    $error_syntax = 'Không thể kiểm tra lỗi';
+                    $error_syntax = 'Lưu thành công! Không thể kiểm tra lỗi';
                     $isExecute = isFunctionExecEnable();
     
                     if ($isExecute) {
@@ -42,7 +42,7 @@ if (isset($_POST['requestApi'])) {
     
                         if ($value == -1) {
                         } else if ($value == 255 || count($output) == 3) {
-                            $error_syntax = 'Lỗi!';
+                            $error_syntax = 'Lưu thành công! Có lỗi!';
 
                             $data['error'] = $output[1];
                         } else {
