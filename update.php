@@ -2,9 +2,9 @@
 
 define('ACCESS', true);
 
-require 'update.class.php';
 require_once __DIR__ . '/lib/pclzip.class.php';
 include_once 'function.php';
+require 'update.class.php';
 
 define('FORMATS', $formats);
 
@@ -78,19 +78,20 @@ if ($remoteVersion === false) {
                               PCLZIP_OPT_REPLACE_NEWER
                           ) != false
                       ) {
+                          @rename($thisver .'/'. REMOTE_DIR_IN_ZIP, $thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
                           @unlink($file);
                       }
                 } else {
                   echo  $lastElement . ' không được cập nhật!<hr />';       
                 } 
             }
-            echo '<a style="color:blue" href="/'. REMOTE_DIR_IN_ZIP .'">Trang chủ</a></div>';
+            echo '<a style="color:blue" href="index.php">Trang chủ</a></div>';
         }
 
         if(isset($_POST['all'])) {
-            copy_folder_recursive(__DIR__ . '/tmp/'. REMOTE_DIR_IN_ZIP, __DIR__);
-            @remove_dir(__DIR__ .'/tmp/'. REMOTE_DIR_IN_ZIP);
-            @remove_dir($thisver .'/'. REMOTE_DIR_IN_ZIP);
+            copy_folder_recursive(__DIR__ . '/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER, __DIR__);
+            @remove_dir(__DIR__ .'/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
+            @remove_dir($thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
             $file = 'manager-' . time() . '.zip';           
             import(REMOTE_FILE, $file);    
             $zip = new PclZip($file);
@@ -101,8 +102,8 @@ if ($remoteVersion === false) {
                     PCLZIP_OPT_REPLACE_NEWER
                 ) != false
             ) {
-                if(unlink($file)) {
-                    goURL('index.php');
+                if(unlink($file) && @rename($thisver .'/'. REMOTE_DIR_IN_ZIP, $thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER)) {
+                    goURL('/'. REMOTE_DIR_IN_ZIP);
                 }
             }
         }
@@ -128,7 +129,8 @@ if ($remoteVersion === false) {
                     PCLZIP_OPT_REPLACE_NEWER
                 ) != false
             ) {
-                @unlink($file);                                                              
+                @rename(__DIR__ .'/tmp/'. REMOTE_DIR_IN_ZIP, __DIR__ .'/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
+                @unlink($file);                                               
             } else {
                 echo '<div class="list">Lỗi! Không thể cài đặt bản cập nhật</div>';
             }
@@ -139,7 +141,7 @@ if ($remoteVersion === false) {
         $token = time();
         $_SESSION['token'] = $token;
         $old = __DIR__;
-        $new = __DIR__ . '/tmp/'. REMOTE_DIR_IN_ZIP;
+        $new = __DIR__ . '/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER;
         echo '<div class="list" style="padding:5px;font-size:xsmall;"><details>           
             <summary><b>Bảng thông tin file update!</b></summary><hr />';
         echo '<button style="display:none;" class="button" value="1" name="hidden_file" id="hidden_file" onClick="javascript:hidden_same();">Đóng file không update!</button><br />';
@@ -203,8 +205,7 @@ if ($remoteVersion === false) {
             }
             button.innerText = button.value === \'1\' ? \'Mở file không update!\' : \'Đóng file không update!\';
             button.value = button.value === \'1\' ? \'0\' : \'1\';
-          }
-         // hidden_same();'.
+          }'.
         '</script>';
         if($remoteVersion['major'] . '.' . $remoteVersion['minor'] . '.' . $remoteVersion['patch'] !== VERSION_MAJOR .'.'. VERSION_MINOR .'.'. VERSION_PATCH) {
             echo '<div class="list">
