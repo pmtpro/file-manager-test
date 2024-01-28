@@ -631,8 +631,14 @@ function readDirectoryIterator(
         }, $excludes);
   
         foreach ($excludes as $exclude) {
+            $exclude = trim($exclude);
+
+            if (empty($exclude)) {
+                continue;
+            }
+
             $fileName = $current->getFilename();
-            
+
             if (
                 substr($exclude, -1) == '/'
                 && $current->isDir()

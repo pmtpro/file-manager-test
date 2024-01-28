@@ -51,7 +51,6 @@ if (
         $error = false;
         $excludes = explode(PHP_EOL, $exclude);
 
-
         if (empty($search)) {
             echo $error = 'Chưa nhập nội dung!';            
         }
