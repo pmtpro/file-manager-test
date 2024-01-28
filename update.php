@@ -2,6 +2,7 @@
 
 define('ACCESS', true);
 
+
 require_once __DIR__ . '/lib/pclzip.class.php';
 include_once 'function.php';
 require 'update.class.php';
@@ -63,11 +64,11 @@ if ($remoteVersion === false) {
             foreach ($select as $value) {
                 $name = explode('/',$value);
                 $lastElement = array_pop($name);
-                $folder = __DIR__ .'/tmp/'. REMOTE_DIR_IN_ZIP . str_replace('/'. $lastElement,'',$value);
+                $folder = __DIR__ .'/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER . str_replace('/'. $lastElement,'',$value);
                 $save = __DIR__ . str_replace('/'. $lastElement,'',$value);
                 if($update->exec($lastElement, $folder, $save)) {
                       echo $lastElement . ' đã được cập nhật!<hr />';
-                      @remove_dir($thisver .'/'. REMOTE_DIR_IN_ZIP);
+                      @remove_dir($thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
                       $file = 'manager-' . time() . '.zip';                                         
                       import(REMOTE_FILE, $file);
                       $zip = new PclZip($file);
@@ -103,18 +104,18 @@ if ($remoteVersion === false) {
                 ) != false
             ) {
                 if(unlink($file) && @rename($thisver .'/'. REMOTE_DIR_IN_ZIP, $thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER)) {
-                    goURL('/'. REMOTE_DIR_IN_ZIP);
+                    goURL('/index.php');
                 }
             }
         }
     } else {
+        @remove_dir(__DIR__ .'/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
 
         if (!hasNewVersion()) {
             echo '<div class="list">
                     Bạn đang sử dụng phiên bản manager mới nhất!<br />
                 </div>';
         }
-
         if (!is_dir(__DIR__ . '/tmp')) {
           mkdir(__DIR__ . '/tmp', 0777);
         }
@@ -205,7 +206,7 @@ if ($remoteVersion === false) {
             }
             button.innerText = button.value === \'1\' ? \'Mở file không update!\' : \'Đóng file không update!\';
             button.value = button.value === \'1\' ? \'0\' : \'1\';
-          }'.
+          }
         '</script>';
         if($remoteVersion['major'] . '.' . $remoteVersion['minor'] . '.' . $remoteVersion['patch'] !== VERSION_MAJOR .'.'. VERSION_MINOR .'.'. VERSION_PATCH) {
             echo '<div class="list">
