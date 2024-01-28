@@ -1,6 +1,6 @@
 <?php
 
-// Doan ma cai dat file manger
+// Doan ma cai dat file manager
 // va luu vao 1 thu muc dinh san ($path)
 // Yeu cau: ext-zip
 
