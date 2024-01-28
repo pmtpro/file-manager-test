@@ -46,7 +46,7 @@
                     <span class="bull">&bull; </span>Nội dung:
 
                     <div style="display: inline-block; float: right">
-                        <input type="button" id="code_highlight" value="Highlight" />
+                        <input type="button" id="code_highlight" value="Format" />
                         <input type="checkbox" id="code_wrap" /> Wrap
                     </div>
                     
