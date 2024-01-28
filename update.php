@@ -104,7 +104,7 @@ if ($remoteVersion === false) {
                 ) != false
             ) {
                 if(unlink($file) && @rename($thisver .'/'. REMOTE_DIR_IN_ZIP, $thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER)) {
-                    goURL('/index.php');
+                    goURL('index.php');
                 }
             }
         }
