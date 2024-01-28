@@ -29,3 +29,6 @@ Bạn có tên miền `localhost.com` và thư mục web tương ứng là `publ
 
 ![image](screenshot.png)
 ![image](screenshot1.png)
+
+## Format code
+- Để sử dụng chức năng **format** code, vui lòng chạy lệnh `composer install` ở thư mục manager
