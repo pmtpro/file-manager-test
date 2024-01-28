@@ -4,10 +4,10 @@
 // va luu vao 1 thu muc dinh san ($path)
 // Yeu cau: ext-zip
 
-$fileUrl = 'https://github.com/pmtpro/file-manager-php/archive/main.zip';
+$fileUrl = 'https://github.com/pmtpro/file-manager/archive/main.zip';
 $saveTo = 'manager-' . time() . '.zip';
 $path = './';
-$pathUrl = 'file-manager-php-main';
+$pathUrl = 'file-manager-main';
 $userAgent = 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
 
 $fp = fopen($saveTo, "w+");
