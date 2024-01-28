@@ -206,7 +206,7 @@ if ($remoteVersion === false) {
             }
             button.innerText = button.value === \'1\' ? \'Mở file không update!\' : \'Đóng file không update!\';
             button.value = button.value === \'1\' ? \'0\' : \'1\';
-          }
+          }'.
         '</script>';
         if($remoteVersion['major'] . '.' . $remoteVersion['minor'] . '.' . $remoteVersion['patch'] !== VERSION_MAJOR .'.'. VERSION_MINOR .'.'. VERSION_PATCH) {
             echo '<div class="list">
