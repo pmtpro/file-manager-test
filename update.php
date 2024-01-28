@@ -102,7 +102,7 @@ if ($remoteVersion === false) {
                 ) != false
             ) {
                 if(unlink($file)) {
-                    goURL('/'. REMOTE_DIR_IN_ZIP);
+                    goURL('index.php');
                 }
             }
         }
@@ -128,11 +128,7 @@ if ($remoteVersion === false) {
                     PCLZIP_OPT_REPLACE_NEWER
                 ) != false
             ) {
-                @unlink($file);
-               // $file_update = $update->get_changle('/tmp/'. REMOTE_DIR_IN_ZIP,__DIR__ . '/tmp/' . REMOTE_DIR_IN_ZIP);               
-               // if(!isset($_POST['select']) && $file_update !== false) 
-                   // echo '<div class="list">'. $file_update .'</div>';
-                                               
+                @unlink($file);                                                              
             } else {
                 echo '<div class="list">Lỗi! Không thể cài đặt bản cập nhật</div>';
             }
