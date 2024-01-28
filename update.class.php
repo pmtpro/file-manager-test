@@ -98,7 +98,7 @@
             $file .= '<div class="fileNew file" style="padding:5px;padding-left:10px;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;">'. $checkbox .' <img src="icon/mime/' . $icon . '.png" alt="file" /> '.$value.' <font color="blue">[update]</font></div>';
           else if($check == 3) // new and remove
             $file .= '<div class="fileNew file" style="padding:5px;padding-left:10px;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;">'. $checkbox .' <img src="icon/mime/' . $icon . '.png" alt="file" /> '.$value.' '. $notif .'</div>';
-          else if($check == 4) // add
+          else if($check == 4 && is_dir(__DIR__ .'/tmp/thisversion/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER)) // add
             $file .= '<div class="fileNew file" style="padding:5px;padding-left:10px;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;"><img src="icon/mime/' . $icon . '.png" alt="file" /> '.$value.' <font color="Purple">[you add]</font></div>';
           else if($check == 5) // edit
             $file .= '<div class="fileNew file" style="padding:5px;padding-left:10px;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;"><img src="icon/mime/' . $icon . '.png" alt="file" /> '.$value.' <font color="pink">[youedit]</font></div>';
@@ -132,8 +132,8 @@
       return false;
     }
     public function checkFile($dir, $dirOne , $type){
-      $thisver = __DIR__ .'/tmp/thisversion/'. REMOTE_DIR_IN_ZIP . str_replace(__DIR__,'',$dir);
-      if($type == 2) $dirOne = __DIR__ .'/tmp/thisversion/'. REMOTE_DIR_IN_ZIP . str_replace(__DIR__,'',$dirOne);;
+      $thisver = __DIR__ .'/tmp/thisversion/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER . str_replace(__DIR__,'',$dir);
+      if($type == 2 && is_dir(__DIR__ .'/tmp/thisversion/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER)) $dirOne = __DIR__ .'/tmp/thisversion/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER . str_replace(__DIR__,'',$dirOne);;
       $value = file_get_contents($dir);
       $edit = 0;
       if($type == 1) {
@@ -165,8 +165,8 @@
       return 2;
     }
     public function checkDir($dir,$type){
-      if($type == 1) {
-        $thisver = __DIR__ .'/tmp/thisversion/'. REMOTE_DIR_IN_ZIP . str_replace(__DIR__ .'/tmp/'. REMOTE_DIR_IN_ZIP,'',$dir);
+      if($type == 1 && is_dir(__DIR__ .'/tmp/thisversion/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER)) {
+        $thisver = __DIR__ .'/tmp/thisversion/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER . str_replace(__DIR__ .'/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER,'',$dir);
         if(!is_dir($thisver))
           return 2;
       }
@@ -175,3 +175,4 @@
       return 0;
     }
   }
+
