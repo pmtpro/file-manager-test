@@ -27,13 +27,13 @@ if (
     $dir = processDirectory($dir);
     $search = isset($_POST['search']) ? $_POST['search'] : '';
     $case = isset($_POST['case']) ? (bool) $_POST['case'] : false;
-    $exclude = isset($_POST['exclude']) ? $_POST['exclude'] : 'node_module/' . PHP_EOL . 'vendor/';
+    $exclude = isset($_POST['exclude']) ? $_POST['exclude'] : '.git/' . PHP_EOL . 'node_modules/' . PHP_EOL . 'vendor/';
 
     echo '<div class="list">
         <span>' . printPath($dir, true) . '</span><hr/>
         <form method="post">
             Nội dung tìm kiếm:<br />
-            <input type="text" name="search" value="' . htmlspecialchars($search) . '" style="width: 100%" /><br />
+            <input type="text" name="search" value="' . htmlspecialchars($search) . '" style="width: 80%" /><br />
             <input type="checkbox" name="case" ' . ($case ? 'checked="checked"' : '') . ' />
             Phân biệt chữ hoa<br /><br />
 
@@ -113,10 +113,14 @@ if (
         
                 if ($file_have_search) {
                     echo '</div><div>
-                            <span id="line_number"><span>&bull; <a style="color: red" href="edit_text.php?dir=' . dirname($file_path) . '&name=' . $file_name . $pages['paramater_1'] . '">' . htmlspecialchars($file_path_sort) . '</a></span></span>
+                            <span id="line_number">
+                                <span>&bull; <a style="color: red" href="edit_text.php?dir=' . rawurlencode(dirname($file_path)) . '&name=' . $file_name . $pages['paramater_1'] . '">'
+                                . htmlspecialchars($file_path_sort) . '</a>
+                                </span>
+                            </span>
                             <span> | </span>
-                        </div>
-                        </div>';
+                    </div>
+                    </div>';
                 }
             }
 
