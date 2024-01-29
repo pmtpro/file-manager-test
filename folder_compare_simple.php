@@ -29,23 +29,23 @@ $folder2 = isset($_POST['folder2']) ? rtrim(processDirectory($_POST['folder2']),
 $exclude = isset($_POST['exclude']) ? $_POST['exclude'] : '.git/' . PHP_EOL . 'node_modules/' . PHP_EOL . 'vendor/';
 
 echo '<div class="list">
-        <form method="post" autocomplete="off">
-            Thư mục 1:<br />
-            <input type="text" name="folder1" value="' . htmlspecialchars($folder1) . '" style="width: 80%" /><br />
+    <form method="post" autocomplete="off">
+        Thư mục 1:<br />
+        <input type="text" name="folder1" value="' . htmlspecialchars($folder1) . '" style="width: 80%" /><br />
 
-            Thư mục 2:<br />
-            <input type="text" name="folder2" value="' . htmlspecialchars($folder2) . '" style="width: 80%" /><br />
+        Thư mục 2:<br />
+        <input type="text" name="folder2" value="' . htmlspecialchars($folder2) . '" style="width: 80%" /><br />
 
-            Loại trừ theo biểu thức:<br />
-            <textarea name="exclude" rows="5" style="width: 60%">' . htmlspecialchars($exclude) . '</textarea><br />
-            <p style="font-size: small">
-                Thư mục thì thêm / vào sau tên: <b>vendor/</b><br />
-                Chỉ hỗ trợ loại trừ 1 cấp! Như: "vendor/" gồm("*/vendor/"). Không hỗ trợ "abc/vendor/".
-            </p>
+        Loại trừ theo biểu thức:<br />
+        <textarea name="exclude" rows="5" style="width: 60%">' . htmlspecialchars($exclude) . '</textarea><br />
+        <p style="font-size: small">
+            Thư mục thì thêm / vào sau tên: <b>vendor/</b><br />
+            Chỉ hỗ trợ loại trừ 1 cấp! Như: "vendor/" gồm("*/vendor/"). Không hỗ trợ "abc/vendor/".
+        </p>
 
-            <input type="submit" name="submit" value="So sánh" />
-        </form>
-        </div>';
+        <input type="submit" name="submit" value="So sánh" />
+    </form>
+</div>';
 
 if (isset($_POST['submit'])) {
     $excludes = explode(PHP_EOL, $exclude);
@@ -104,22 +104,37 @@ if (isset($_POST['submit'])) {
     // Hiển thị
     display:
 
+
+    echo '<style>
+        #folder_compare a:link,
+        #folder_compare a:visited {
+            color: blue !important;
+        }
+    </style>';
+
+    echo '<div id="folder_compare">';
+
     echo '<div class="list">
-                <a href="#only1"><span style="color: blue;">Em</span></a>
-                &bull;
-                <a href="#only2"><span style="color: blue;">Anh</span></a>
-                &bull;
-                <a href="#diff"><span style="color: blue;">Chúng ta</span></a>
-            </div>';
+        <a href="#only1">Em</a>
+        &bull;
+        <a href="#only2">Anh</a>
+        &bull;
+        <a href="#diff">Chúng ta</a>
+    </div>';
 
     // only 1
     echo '<div id="only1" class="title">Em</div>';
     echo '<ul class="list">';
     foreach ($files1_only as $file) {
+        $full_path = $folder1 . $file;
+        $dir_url = rawurlencode(dirname($full_path));
+        $name = basename($full_path);
+
         echo '<li>
-                    <span class="bull">&bull;</span> '
-        . ltrim($file, '/')
-        . '</li>';
+            <span class="bull">&bull;</span> '
+            . ltrim($file, '/')
+            . ' [<a href="file.php?dir=' . $dir_url . '&name=' . $name . '">1</a>]
+        </li>';
     }
     if (empty($files1_only)) {
         echo '<li>Trống</li>';
@@ -130,10 +145,15 @@ if (isset($_POST['submit'])) {
     echo '<div id="only2" class="title">Anh</div>';
     echo '<ul class="list">';
     foreach ($files2_only as $file) {
+        $full_path = $folder2 . $file;
+        $dir_url = rawurlencode(dirname($full_path));
+        $name = basename($full_path);
+
         echo '<li>
-                    <span class="bull">&bull;</span> '
-        . ltrim($file, '/')
-        . '</li>';
+            <span class="bull">&bull;</span> '
+            . ltrim($file, '/')
+            . ' [<a href="file.php?dir=' . $dir_url . '&name=' . $name . '">2</a>]
+        </li>';
     }
     if (empty($files2_only)) {
         echo '<li>Trống</li>';
@@ -144,20 +164,32 @@ if (isset($_POST['submit'])) {
     echo '<div id="diff" class="title">Chung đường nhưng khác lối</div>';
     echo '<ul class="list">';
     foreach ($files_intersect_final as $file) {
+        $full_path1 = $folder1 . $file;
+        $dir_url1 = rawurlencode(dirname($full_path1));
+        $name1 = basename($full_path1);
+
+        $full_path2 = $folder2 . $file;
+        $dir_url2 = rawurlencode(dirname($full_path2));
+        $name2 = basename($full_path2);
+
         echo '<li>
-                    <span class="bull">&bull;</span> '
-        . ltrim($file, '/')
-        . '</li>';
+            <span class="bull">&bull;</span> '
+            . ltrim($file, '/')
+            . ' [<a href="file.php?dir=' . $dir_url1 . '&name=' . $name1 . '">1</a>]'
+            . ' [<a href="file.php?dir=' . $dir_url2 . '&name=' . $name2 . '">2</a>]
+        </li>';
     }
     if (empty($files_intersect_final)) {
         echo '<li>Trống</li>';
     }
     echo '</ul>';
+    
+    echo '</div>';
 }
 
 echo '<div class="title">Chức năng</div>
-    <ul class="list">
-        <li><img src="icon/list.png"/> <a href="index.php">Danh sách</a></li>
-    </ul>';
+<ul class="list">
+    <li><img src="icon/list.png"/> <a href="index.php">Danh sách</a></li>
+</ul>';
 
 require_once 'footer.php';
