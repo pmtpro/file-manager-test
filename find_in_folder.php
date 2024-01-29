@@ -4,11 +4,7 @@ define('ACCESS', true);
 
 include_once 'function.php';
 
-if (!IS_LOGIN) {
-    goURL('login.php');
-}
-
-$title = 'Tìm trong file';
+$title = 'Tìm trong thư mục';
 
 require_once 'header.php';
 
@@ -25,8 +21,10 @@ if (
     </ul>';
 } else {
     $dir = processDirectory($dir);
-    $search = isset($_POST['search']) ? $_POST['search'] : '';
+    $search = isset($_POST['search']) ? ltrim($_POST['search'], '/') : '';
     $case = isset($_POST['case']) ? (bool) $_POST['case'] : false;
+    $only_dir  = isset($_POST['only_dir'])  ? (bool) $_POST['only_dir']  : false;
+    $only_file = isset($_POST['only_file']) ? (bool) $_POST['only_file'] : false;
     $exclude = isset($_POST['exclude']) ? $_POST['exclude'] : '.git/' . PHP_EOL . 'node_modules/' . PHP_EOL . 'vendor/';
 
     echo '<div class="list">
@@ -34,8 +32,15 @@ if (
         <form method="post">
             Nội dung tìm kiếm:<br />
             <input type="text" name="search" value="' . htmlspecialchars($search) . '" style="width: 80%" /><br />
+
             <input type="checkbox" name="case" ' . ($case ? 'checked="checked"' : '') . ' />
-            Phân biệt chữ hoa<br /><br />
+            Phân biệt chữ hoa<br />
+
+            <input type="checkbox" name="only_dir" ' . ($only_dir ? 'checked="checked"' : '') . ' />
+            Chỉ tìm tên thư mục<br />
+
+            <input type="checkbox" name="only_file" ' . ($only_file ? 'checked="checked"' : '') . ' />
+            Chỉ tìm tên file<br /><br />
 
             Loại trừ theo biểu thức:<br />
             <textarea name="exclude" rows="5" style="width: 60%">' . htmlspecialchars($exclude) . '</textarea><br />
@@ -45,97 +50,192 @@ if (
             </p>
             <input type="submit" name="submit" value="Tìm kiếm"/>
         </form>
-        </div>';
+    </div>';
 
     if (isset($_POST['submit'])) {
         $error = false;
         $excludes = explode(PHP_EOL, $exclude);
 
         if (empty($search)) {
-            echo $error = 'Chưa nhập nội dung!';            
+            echo $error = '<div class="notice_failure">Chưa nhập nội dung!</div>';
         }
         
         if ($error === false) {
             $files = readDirectoryIterator($dir, $excludes);
             $files_search_count = 0;
 
-            echo '<div class="list_line">';
+            echo '<div id="find_list">';
 
             foreach ($files as $file) {
-                if (!$file->isFile()) {
-                    continue;
-                }
-
-                $fileObj = $file->openFile();
-                $file_name = $fileObj->getFilename();
-                $file_path = $fileObj->getPathname();
+                // lấy thông tin cần thiết
+                $file_name = $file->getFilename();
+                $file_path = $file->getPathname();
                 $file_path = processDirectory($file_path);
                 $file_path_sort = str_replace($dir, '', $file_path);
                 $file_path_sort = ltrim($file_path_sort, '/');
+
+                // xử lý loại tìm kiếm
+                if ($only_dir) {
+                    if (!$file->isDir()) {
+                        continue;
+                    }
+                    
+                    // phân biệt chữ hoa
+                    if ($case) {
+                        $haveSearch = strpos($file_path_sort, $search);
+                    } else {
+                        $haveSearch = stripos($file_path_sort, $search);
+                    }
+
+                    if ($haveSearch !== false) {
+                        // cộng 1 vào số file tìm được
+                        $files_search_count += 1;
+
+                        echo '<div class="item">';
+                        echo '<div class="item-title">';
+                        echo '<span class="bull">&bull;</span>
+                            <a style="color: red" href="index.php?dir=' . rawurlencode($file_path) . '">'
+                                . htmlspecialchars($file_path_sort)
+                            . '</a>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+
+                    continue;
+                } else if ($only_file) {
+                    if (!$file->isFile()) {
+                        continue;
+                    }
+                    
+                    // phân biệt chữ hoa
+                    if ($case) {
+                        $haveSearch = strpos($file_path_sort, $search);
+                    } else {
+                        $haveSearch = stripos($file_path_sort, $search);
+                    }
+
+                    if ($haveSearch !== false) {
+                        // cộng 1 vào số file tìm được
+                        $files_search_count += 1;
+
+                        echo '<div class="item">';
+                        echo '<div class="item-title">';
+                        echo '<span class="bull">&bull;</span>
+                            <a style="color: red" href="file.php?dir=' . rawurlencode(dirname($file_path)) . '&name=' . $file_name . '">'
+                            . htmlspecialchars($file_path_sort)
+                        . '</a>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                    
+                    continue;
+                } else {
+                    if (!$file->isFile()) {
+                        continue;
+                    }
+                }
+
+                // đọc và tìm nội dung theo từng dòng
+                $fileObj = $file->openFile();
                 $file_have_search = false;
+                $display = false;
 
                 while (!$fileObj->eof()) {
                     $line = $fileObj->fgets();
                     $line_number = $fileObj->key() + 1;
 
+                    // phân biệt chữ hoa
                     if ($case) {
                         $haveSearch = strpos($line, $search);
                     } else {
                         $haveSearch = stripos($line, $search);
                     }
 
+                    // tìm thấy
                     if ($haveSearch !== false) {
-                        if (!$file_have_search) {
-                            $file_have_search = true;
+                        if (!$display) {
+                            $display = true;
+
+                            // cộng 1 vào số file tìm được
                             $files_search_count += 1;
 
-                            echo '<div id="line">
-                                <div id="line_number_' . $line_number . '">';
+                            echo '<div class="item">';
+                            echo '<div class="item-title">';
+                            echo '<span class="bull">&bull;</span>
+                                <a style="color: red" href="edit_text.php?dir=' . rawurlencode(dirname($file_path)) . '&name=' . $file_name . '">'
+                                    . htmlspecialchars($file_path_sort)
+                                . '</a>';
+                            echo '</div>';
+                            echo '<div class="item-content">';
                         }
 
-                        if ($case) {
-                            $line = str_replace(
-                                htmlspecialchars($search),
-                                '<span style="background-color: yellow">' . htmlspecialchars($search) . '</span>',
-                                htmlspecialchars($line)
-                            );
-                        } else {
-                            $line = preg_replace(
-                                '/(' . preg_quote(htmlspecialchars($search)) . ')/i',
-                                '<span style="background-color: yellow">${1}</span>',
-                                htmlspecialchars($line)
-                            );
-                        }
-                        
-                        echo '<b>' . $line_number . ':</b> ' . $line . '<hr />';
+                        echo '<div class="item-content-item">
+                            <b>' . $line_number . ':</b> '
+                            . (
+                                $case
+                                ? str_replace(
+                                    htmlspecialchars($search),
+                                    '<span style="background-color: yellow">' . htmlspecialchars($search) . '</span>',
+                                    htmlspecialchars($line)
+                                )
+                                : preg_replace(
+                                    '/(' . preg_quote(htmlspecialchars($search)) . ')/i',
+                                    '<span style="background-color: yellow">${1}</span>',
+                                    htmlspecialchars($line)
+                                )
+                            )
+                        . '</div>';
+                    } // end tìm thấy
+                    
+                    if ($fileObj->eof() && $display) {
+                        // phải dời ra ngoài vì để ở trong
+                        // sẽ bị đóng trước khi đọc hết
+                        echo '</div>';
+                        echo '</div>';
                     }
-                }
-        
-                if ($file_have_search) {
-                    echo '</div><div>
-                            <span id="line_number">
-                                <span>&bull; <a style="color: red" href="edit_text.php?dir=' . rawurlencode(dirname($file_path)) . '&name=' . $file_name . $pages['paramater_1'] . '">'
-                                . htmlspecialchars($file_path_sort) . '</a>
-                                </span>
-                            </span>
-                            <span> | </span>
-                    </div>
-                    </div>';
-                }
-            }
+                } // end read line
+            } // end loop all file
 
             echo '</div>';
 
             echo '<div class="list">
-                Tổng: <b>' . $files_search_count . '</b> file.
+                Tổng: <b>' . $files_search_count . '</b> mục.
             </div>';
-        }
-    }
+        } // end check error
+    } // end submit
 
     echo '<div class="title">Chức năng</div>
     <ul class="list">
         <li><img src="icon/list.png"/> <a href="index.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Danh sách</a></li>
     </ul>';
 }
+
+echo '<style>
+    #find_list {
+        margin: 5px;
+    }
+    
+    #find_list .item {
+        border: 1px solid #eeeeee;
+        margin-bottom: 10px;
+    }
+
+    #find_list .item-title {
+        padding: 7px;
+    }
+
+    #find_list .item-content {
+        padding-left: 7px;
+        padding-right: 7px;
+        padding-bottom: 0;
+        background-color: #eeeeee;        
+    }
+    
+    #find_list .item-content .item-content-item {
+        padding-top: 7px;
+        padding-bottom: 7px;
+        border-bottom: 1px dotted #dddddd;
+    }
+</style>';
 
 require_once 'footer.php';
