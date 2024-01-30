@@ -95,7 +95,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
         .codeload::-webkit-scrollbar {
             display:none;
         }
-        .linecode, .code, .code span {
+        .linecode, .code {
             display: inline-block;
         }              
         pre code.hljs, coce.hljs { 
