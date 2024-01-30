@@ -4,10 +4,6 @@ define('ACCESS', true);
 
 include_once 'function.php';
 
-if (!IS_LOGIN) {
-    goURL('login.php');
-}
-
 $title = 'Tìm error_log';
 
 require_once 'header.php';
@@ -49,7 +45,7 @@ if (
         
         echo '<li>
             <span class="bull">&bull;</span>
-            <a style="color: red" href="edit_text.php?dir=' . rawurlencode(dirname($file->getPathname())) . '&name=' . $file->getFilename() . '">'
+            <a style="color: red" href="file.php?dir=' . rawurlencode(dirname($file->getPathname())) . '&name=' . $file->getFilename() . '">'
             . htmlspecialchars(ltrim(
                 str_replace_first($dir, '', $file->getPathname())
             , '/'))

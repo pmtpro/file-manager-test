@@ -31,6 +31,26 @@ ob_start();
 }
 
 
+// tạo tmp nếu chưa có
+{
+	$tmp_dir = __DIR__ . '/tmp';
+	$tmp_file = $tmp_dir . '/.htaccess';
+
+	if (!is_dir($tmp_dir)) {
+		mkdir($tmp_dir);
+	}
+
+	if (!file_exists($tmp_file)) {
+		file_put_contents(
+			$tmp_file,
+			'deny from all'
+		);
+	}
+
+	unset($tmp_dir);
+	unset($tmp_file);
+}
+
 {
     $dir = getenv('SCRIPT_NAME');
     $dir = str_replace('\\', '/', $dir);
