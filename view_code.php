@@ -6,9 +6,11 @@ include_once 'function.php';
 
 
 $themes = ['a11y-light','a11y-dark','vs','xcode','github-dark-dimmed','github'];
-$coder = ['Auto','php','javascript','html','css','json','text'];
+$coder = ['Auto','php','javascript','html','json','text'];
 
 function highlightStringWithLineNumbers($code) {
+    $code = str_replace("\r\n", "\n", $code);
+    $code = str_replace("\r", "\n", $code);
     $lines = explode("\n", $code);
     $lineCount = count($lines);
     $result = [];
@@ -66,6 +68,55 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     $path = $dir . '/' . $name;
     $content = file_get_contents($path);
 
+    echo '<link id="classHl" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs.min.css">
+    <style>
+        pre {
+            width:80%;
+            white-space: wrap;
+            overflow-x: auto;
+        }
+        code {
+            line-height: 1.4;
+            text-align: left;
+            font-size:14px!important;
+            padding:0!important;
+            width:100%;
+        }
+        .code {            
+            margin-top:0;
+        }
+        .code div {
+            border-bottom:0.5px solid #fff;
+        }
+        .code, .linecode {     
+            margin-top:0;               
+            vertical-align: top;
+        }
+        .codeload::-webkit-scrollbar {
+            display:none;
+        }
+        .linecode, .code, .code span {
+            display: inline-block;
+        }              
+        pre code.hljs, coce.hljs { 
+            padding:0px;
+            margin-top:0;
+        }          
+        .line {
+            line-height: 1.4;
+            font-family: monospace;
+            font-size:14px;
+            padding-right: 5px;
+            display: block;
+            text-align: right; 
+            color: #999; 
+            border-right: 1px solid red;
+            background: white;
+        }
+    </style>';
+
+
+
     echo '<div class="list">
         <span class="bull">&bull; </span><span>' . printPath($dir, true) . '</span><hr/>
         <div class="ellipsis break-word">
@@ -104,8 +155,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     }
     echo '</select>
         </div>';
-    echo '<link id="classHl" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
         <!-- and it\'s easy to individually load additional languages -->
         <script>
             hljs.configure({        
@@ -113,54 +163,8 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
             });
             hljs.highlightAll();
         </script>';
-
-    echo '<style>
-        code {
-            text-align: left;
-            font-size:14px;
-            padding-top:0;
-        }
-        .codeload {               
-            overflow-y: auto;
-        }
-        .code { 
-            width:100%;
-            margin-top:0;
-        }
-        .code div {
-            border-bottom:0.5px solid #fff;
-        }
-        .code, .linecode {     
-            margin-top:0;               
-            vertical-align: top;
-            white-space: nowrap;
-        }
-        .codeload::-webkit-scrollbar {
-            display:none;
-        }
-        .linecode, .code, .code span {
-            display: inline-block;
-        }              
-        pre code.hljs, coce.hljs { 
-            padding:0px;
-            margin-top:0;
-        }          
-        .line {
-            font-family: monospace;
-            font-size:14px;
-            padding-right: 5px;
-            display: block;
-            text-align: right; 
-            color: #999; 
-            border-right: 1px solid red;
-            background: white;
-        }
-    </style>';
-
     echo '<script>
-        var codeElements = document.querySelector("code");
-        var code = document.querySelector("code").innerHTML;
-
+        var codeElements = document.querySelector("code");       
         document.addEventListener("DOMContentLoaded", function() {                        
             var lineElements = document.querySelectorAll(".line");
             var maxWidth = 0;
@@ -177,10 +181,6 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
                 lineElement.style.width = maxWidth + "px";
             });
             document.querySelector("pre").style.width = (percentWidth-15) + "px";
-            setTimeout(() => {
-                document.querySelector("pre").style.width = (percentWidth-15) + "px";
-                document.querySelector("pre").style.height = document.querySelector(".linecode").offsetHeight + "px";
-            },1000);
         });
  
         var elementTheme = document.querySelector("#themes");
