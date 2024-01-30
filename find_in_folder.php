@@ -10,6 +10,34 @@ require_once 'header.php';
 
 echo '<div class="title">' . $title . '</div>';
 
+echo '<style>
+    #find_list {
+        margin: 5px;
+    }
+    
+    #find_list .item {
+        border: 1px solid #eeeeee;
+        margin-bottom: 10px;
+    }
+
+    #find_list .item-title {
+        padding: 7px;
+    }
+
+    #find_list .item-content {
+        padding-left: 7px;
+        padding-right: 7px;
+        padding-bottom: 0;
+        background-color: #eeeeee;        
+    }
+    
+    #find_list .item-content .item-content-item {
+        padding-top: 7px;
+        padding-bottom: 7px;
+        border-bottom: 1px dotted #dddddd;
+    }
+</style>';
+
 if (
     $dir == null
     || !is_dir(processDirectory($dir))
@@ -209,33 +237,5 @@ if (
         <li><img src="icon/list.png"/> <a href="index.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Danh sách</a></li>
     </ul>';
 }
-
-echo '<style>
-    #find_list {
-        margin: 5px;
-    }
-    
-    #find_list .item {
-        border: 1px solid #eeeeee;
-        margin-bottom: 10px;
-    }
-
-    #find_list .item-title {
-        padding: 7px;
-    }
-
-    #find_list .item-content {
-        padding-left: 7px;
-        padding-right: 7px;
-        padding-bottom: 0;
-        background-color: #eeeeee;        
-    }
-    
-    #find_list .item-content .item-content-item {
-        padding-top: 7px;
-        padding-bottom: 7px;
-        border-bottom: 1px dotted #dddddd;
-    }
-</style>';
 
 require_once 'footer.php';

@@ -10,6 +10,12 @@ require_once 'header.php';
 
 echo '<div class="title">' . $title . '</div>';
 
+echo '<style>
+	ul.info > li {
+		white-space: normal !important;
+	}
+</style>';
+
 if (
     $dir == null
     || !is_dir(processDirectory($dir))
