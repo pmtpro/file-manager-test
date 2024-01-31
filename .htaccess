@@ -1,5 +1,7 @@
 RedirectMatch 403 tmp/.*
 
+DirectoryIndex index.php
+
 # Du phong
 RewriteEngine On
 
