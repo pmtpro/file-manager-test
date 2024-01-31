@@ -96,6 +96,8 @@ select:focus,
 select:hover,
 textarea:focus,
 textarea:hover,
+textarea.box_edit:focus,
+textarea.box_edit:hover,
 .button:focus,
 .button:hover, {
     color: #555555;
