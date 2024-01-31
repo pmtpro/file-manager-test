@@ -96,10 +96,8 @@ select:focus,
 select:hover,
 textarea:focus,
 textarea:hover,
-textarea.box_edit:focus,
-textarea.box_edit:hover,
 .button:focus,
-.button:hover, {
+.button:hover {
     color: #555555;
     border: 1px solid #eaaa11;
 }
@@ -516,6 +514,12 @@ textarea.box_edit, textarea.box_edit_normal {
     width: 100%;
     margin: 0;
     padding: 4px;
+}
+
+textarea.box_edit:hover,
+textarea.box_edit:focus {
+    color: #555555;
+    border: 1px solid #eaaa11;
 }
 
 textarea.box_edit_normal {
