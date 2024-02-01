@@ -49,7 +49,7 @@
           $isUpdate = '';
           if($types == 2) {
             if($this->fileFolderUpdate($link, $linkOne)) {
-              $isUpdate = '<font color="Brown">[file in update]</font>';
+              $isUpdate = '<font color="Brown">[new or updated files]</font>';
             }
           }
           $rand = rand(1,10000000000);
@@ -124,7 +124,8 @@
           return $this->fileFolderUpdate($dir.'/'. $value, $dirOne.'/'. $value);
         }   
         if(file_exists($dir .'/'. $value)) {
-          if($this->checkFile($dir .'/'. $value, $dirOne .'/'. $value, 2) == 2) {
+          $check = $this->checkFile($dir .'/'. $value, $dirOne .'/'. $value, 2);
+          if($check == 2 || $check == 3) {
             return true;
           }
         }
