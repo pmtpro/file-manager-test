@@ -67,21 +67,7 @@ if ($remoteVersion === false) {
                 $folder = __DIR__ .'/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER . str_replace('/'. $lastElement,'',$value);
                 $save = __DIR__ . str_replace('/'. $lastElement,'',$value);
                 if($update->exec($lastElement, $folder, $save)) {
-                      echo $lastElement . ' đã được cập nhật!<hr />';
-                      @remove_dir($thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
-                      $file = 'manager-' . time() . '.zip';                                         
-                      import(REMOTE_FILE, $file);
-                      $zip = new PclZip($file);
-                      if (
-                          $zip->extract(
-                              PCLZIP_OPT_PATH,
-                              $thisver,
-                              PCLZIP_OPT_REPLACE_NEWER
-                          ) != false
-                      ) {
-                          @rename($thisver .'/'. REMOTE_DIR_IN_ZIP, $thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
-                          @unlink($file);
-                      }
+                    echo $lastElement . ' đã được cập nhật!<hr />';
                 } else {
                   echo  $lastElement . ' không được cập nhật!<hr />';       
                 } 
