@@ -25,7 +25,7 @@
                 <li><a href="database_disconnect.php"><img src="icon/disconnect.png"/></a></li>
             <?php } ?>
             <li><a href="setting.php"><img src="icon/setting.png" /></a></li>
-            <li><a href="exit.php"><img src="icon/exit.png" /></a></li>
+            <li><a href="logout.php"><img src="icon/exit.png" /></a></li>
         <?php } ?>
     </ul>
 </div>
