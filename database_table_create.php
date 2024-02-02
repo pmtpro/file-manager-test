@@ -15,15 +15,15 @@
 
             include_once 'header.php';
 
-            $table = null;
-            $column = null;
-            $default = null;
-            $length = null;
-            $type = null;
-            $collection = null;
-            $attributes = null;
-            $engine_storage = null;
-            $field_key = null;
+            $table = '';
+            $column = '';
+            $default = '';
+            $length = '';
+            $type = '';
+            $collection = '';
+            $attributes = '';
+            $engine_storage = '';
+            $field_key = '';
             $is_null = false;
             $auto_increment = false;
             $notice = null;
@@ -51,38 +51,38 @@
                 } else if (!empty($length) && !preg_match('#\\b[0-9]+\\b#', $length)) {
                     $notice .= 'Độ dài không hợp lệ';
                 } else {
-                    $type_put = $type . (empty($length) == false ? "($length)" : null);
-                    $collection_put = $collection == MYSQL_COLLECTION_NONE ? null : 'CHARACTER SET ' . $matches[1] . ' COLLATE ' . $matches[2];
-                    $attributes_put = $attributes == MYSQL_ATTRIBUTES_NONE ? null : $attributes;
+                    $type_put = $type . (empty($length) == false ? "($length)" : '');
+                    $collection_put = $collection == MYSQL_COLLECTION_NONE ? '' : 'CHARACTER SET ' . $matches[1] . ' COLLATE ' . $matches[2];
+                    $attributes_put = $attributes == MYSQL_ATTRIBUTES_NONE ? '' : $attributes;
                     $null_put = $is_null ? 'NULL' : 'NOT NULL';
-                    $default_put = $default == null ? null : "DEFAULT '$default'";
-                    $auto_increment_put = $auto_increment ? 'AUTO_INCREMENT' : null;
-                    $field_key_put = $field_key == MYSQL_FIELD_KEY_NONE ? null : ", $field_key(`$column`)";
+                    $default_put = $default == '' ? '' : "DEFAULT '$default'";
+                    $auto_increment_put = $auto_increment ? 'AUTO_INCREMENT' : '';
+                    $field_key_put = $field_key == MYSQL_FIELD_KEY_NONE ? '' : ", $field_key(`$column`)";
 
                     $sql = "CREATE TABLE `$table` ";
                     $sql .= "(`$column` ";
                     $sql .= $type_put;
 
-                    if ($attributes_put != null)
+                    if ($attributes_put != '')
                         $sql .= ' ' . $attributes_put;
 
                     $sql .= ' ' . $null_put;
 
-                    if ($default_put != null)
+                    if ($default_put != '')
                         $sql .= ' ' . $default_put;
 
-                    if ($auto_increment_put != null)
+                    if ($auto_increment_put != '')
                         $sql .= ' ' . $auto_increment_put;
 
-                    if ($field_key_put != null)
+                    if ($field_key_put != '')
                         $sql .= $field_key_put;
 
                     $sql .= ') ENGINE=' . $engine_storage;
 
-                    if ($collection_put != null)
+                    if ($collection_put != '')
                         $sql .= ' ' . $collection_put;
 
-                    if ($auto_increment_put != null)
+                    if ($auto_increment_put != '')
                         $sql .= ' ' . $auto_increment_put . '=1';
 
                     if (!mysqli_query($MySQLi, $sql))
@@ -118,8 +118,8 @@
                     <span class="bull">&bull;</span>Khóa:
                     <br/>' . printFieldKey('field_key', stripslashes($field_key)) . '<br/>
                     <span class="bull">&bull;</span>Thêm:<br/>
-                    <input type="checkbox" name="is_null" value="1"' . ($is_null ? ' checked="checked"' : null) . '/>Null<br/>
-                    <input type="checkbox" name="auto_increment" value="1"' . ($auto_increment ? ' checked="checked"' : null) . '/>Tự tăng giá trị<hr/>
+                    <input type="checkbox" name="is_null" value="1"' . ($is_null ? ' checked="checked"' : '') . '/>Null<br/>
+                    <input type="checkbox" name="auto_increment" value="1"' . ($auto_increment ? ' checked="checked"' : '') . '/>Tự tăng giá trị<hr/>
                     <input type="submit" name="submit" value="Tạo"/>
                 </form>
             </div>
