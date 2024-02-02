@@ -151,6 +151,8 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
         });
         hljs.highlightAll();
 
+        const codeElements = document.querySelector("code");
+
         // doi theme
         var elementTheme = document.querySelector("#themes");
         elementTheme.addEventListener("change", function () {
