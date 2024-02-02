@@ -38,7 +38,7 @@
           return strcasecmp($a, $b);
         } 
       });
-      if($start != 0 && !count($scan)) return '<span style="margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;">Thư mục trống!</span></div></div>';
+      if($start != 0 && !count($scan)) return '<span style="padding: 5px 0;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;">Thư mục trống!</span></div></div>';
       foreach($scan as $key=>$keys) {        
         $value = $keys;
         $folder = $file = '';
@@ -53,14 +53,14 @@
             }
           }
           $rand = rand(1,10000000000);
-          $folder .= '<div style="margin-bottom:10px;margin-left:'. (($start == 0) ? 20 : ($start + 10)) .'px;border-left:0.5px dashed #aaa;"><div class="spoilerhead" onclick="var _m=document.querySelector(\'.'.$value . $rand .'\');var _n=document.querySelector(\'#'.$value . $rand .'\');if(_n.style.display==\'none\'){_n.style.display=\'\';_m.innerHTML=\'<b>-</b>\';}else{_n.style.display=\'none\';_m.innerHTML=\'<b>+</b>\';}">';
+          $folder .= '<div style="margin-top:5px;margin-bottom:5px;margin-left:'. (($start == 0) ? 20 : ($start + 10)) .'px;border-left:0.5px dashed #aaa;padding-left: 5px;"><div class="spoilerhead" onclick="var _m=document.querySelector(\'.'.$value . $rand .'\');var _n=document.querySelector(\'#'.$value . $rand .'\');if(_n.style.display==\'none\'){_n.style.display=\'\';_m.innerHTML=\'<b>-</b>\';}else{_n.style.display=\'none\';_m.innerHTML=\'<b>+</b>\';}">';
           if($check == 0) // new and remove
             $folder .= '<span><span class="'.$value . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> '. $notif .'</span><br />';
           else if($check == 1) // same
             $folder .= '<span><span class="'.$value . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> '. $isUpdate .'</span><br />';
           else if($check == 2) // add
             $folder .= '<span><span class="'.$value . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> <font color="Purple">[you add]</font></span><br />';
-          $folder .= '</div><div id="'.$value . $rand .'" class="spoilerbody" style="display:none">';
+          $folder .= '</div><div id="'.$value . $rand .'" class="folder spoilerbody" style="display:none">';
         } else {
           $checkbox = '';
           if($types == 2) {
@@ -105,10 +105,10 @@
           else if($check == 6) // edit and update
             $file .= '<div class="fileNew file" style="padding:5px;padding-left:10px;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;"><img src="icon/mime/' . $icon . '.png" alt="file" /> '.$value.' <font color="Brown">[youedit and new update]</font></div>';
           else // same
-            $file .= '<div class="fileSame file" style="display:block;padding:5px;padding-left:10px;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;"><img src="icon/mime/' . $icon . '.png" alt="file" /> '.$value.'</div>';
+            $file .= '<div class="fileSame file" style="display:none;padding:5px;padding-left:10px;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;"><img src="icon/mime/' . $icon . '.png" alt="file" /> '.$value.'</div>';
         }          
         if($start != 0 && $key === count($scan) - 1) {
-          $file .= '<span class="emptys" style="display:none;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;">Thư mục trống!</span>';
+          $file .= '<span class="emptys" style="display:none;padding: 5px 0;margin-left:'. (($start == 0) ? 10 : ($start + 10)) .'px;">Thư mục trống!</span>';
           $file .= '</div></div>';  
         }
         $out .= $folder . $file;
