@@ -2,8 +2,7 @@
 
 define('ACCESS', true);
 
-include_once 'function.php';
-
+require_once 'function.php';
 
 $themes = ['a11y-light','a11y-dark','vs','xcode','github-dark-dimmed','github'];
 $coder = ['Auto','php','javascript','html','json','text'];
@@ -44,10 +43,8 @@ function detectCodeType($code) {
 
 
 $title = 'Xem tập tin';
-$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$page = $page <= 0 ? 1 : $page;
 
-include_once 'header.php';
+require_once 'header.php';
 
 echo '<div class="title">' . $title . '</div>';
 
@@ -67,41 +64,19 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     $dir = processDirectory($dir);
     $path = $dir . '/' . $name;
     $content = file_get_contents($path);
+    $hightlight = highlightStringWithLineNumbers($content);
 
     echo '<link id="classHl" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs.min.css">
-    <style>
-        pre {
-            width:80%;
-            white-space: wrap;
-            overflow-x: auto;
-        }
-        code {
+    <style>        
+        pre code.hljs {
             line-height: 1.4;
             text-align: left;
-            font-size:14px!important;
-            padding:0!important;
-            width:100%;
+            font-size: 14px !important;
+            padding: 0 !important;
+            padding-left: 4px !important;
+            margin: 0;
         }
-        .code {            
-            margin-top:0;
-        }
-        .code div {
-            border-bottom:0.5px solid #fff;
-        }
-        .code, .linecode {     
-            margin-top:0;               
-            vertical-align: top;
-        }
-        .codeload::-webkit-scrollbar {
-            display:none;
-        }
-        .linecode, .code {
-            display: inline-block;
-        }              
-        pre code.hljs, coce.hljs { 
-            padding:0px;
-            margin-top:0;
-        }          
+        
         .line {
             line-height: 1.4;
             font-family: monospace;
@@ -111,30 +86,41 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
             text-align: right; 
             color: #999; 
             border-right: 1px solid red;
-            background: white;
+            background-color: #fff;
+        }
+        
+        #view_code {
+            display: flex;
+        }
+
+        #code_content {
+            width: 0%;
+            flex-grow: 1;
+            overflow-x: scroll;
+        }
+
+        #code_content pre {
+            margin: 0;
         }
     </style>';
-
-
 
     echo '<div class="list">
         <span class="bull">&bull; </span><span>' . printPath($dir, true) . '</span><hr/>
         <div class="ellipsis break-word">
-            <span class="bull">&bull; </span>Tập tin: <strong class="file_name_edit">' . $name . '</strong><hr/>
+            <span class="bull">&bull; </span>Tập tin: <strong class="file_name_edit">' . $name . '</strong>
         </div>
     </div>';
 
-    echo '<div class="list codeload" style="padding:0;">
-        <span class="linecode">
-            '. highlightStringWithLineNumbers($content)['line'] .'
-        </span>
-        <pre class="code">
-			<code wrap="off" style="white-space: pre;" class="language-' . detectCodeType($content) .'">'
-				. htmlspecialchars($content)
-				. highlightStringWithLineNumbers($content)['text']
-			. '</code>
-		</pre>
+    echo '<div class="list" id="view_code">
+        <div id="line_number">'. $hightlight['line'] .'</div>
+        <div id="code_content">
+            <pre><code class="language-' . detectCodeType($content) .'">'
+                . htmlspecialchars($content)
+				. $hightlight['text']
+            . '</code></pre>
+        </div>
     </div>';
+
     echo '<div class="title">Tùy chỉnh</div>
         <div class="list">
         Giao diện<br />';
@@ -155,34 +141,17 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     }
     echo '</select>
         </div>';
-    echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-        <!-- and it\'s easy to individually load additional languages -->
-        <script>
-            hljs.configure({        
-	        ignoreUnescapedHTML: true
-            });
-            hljs.highlightAll();
-        </script>';
+
+    echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>';
+
     echo '<script>
-        var codeElements = document.querySelector("code");       
-        document.addEventListener("DOMContentLoaded", function() {                        
-            var lineElements = document.querySelectorAll(".line");
-            var maxWidth = 0;
-            var percentWith = 0;
-            lineElements.forEach(function(lineElement) {
-                var currentWidth = lineElement.offsetWidth;
-                if (currentWidth > maxWidth) {
-                    maxWidth = currentWidth;
-                    percentWidth = document.querySelector(".codeload").offsetWidth - document.querySelector(".linecode").offsetWidth;
-                }
-            });   
-            
-            lineElements.forEach(function(lineElement) {
-                lineElement.style.width = maxWidth + "px";
-            });
-            document.querySelector("pre").style.width = (percentWidth-15) + "px";
+    document.addEventListener("DOMContentLoaded", function() {
+        hljs.configure({
+            ignoreUnescapedHTML: true
         });
- 
+        hljs.highlightAll();
+
+        // doi theme
         var elementTheme = document.querySelector("#themes");
         elementTheme.addEventListener("change", function () {
             var currentHref = document.getElementById("classHl").href;
@@ -190,18 +159,112 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
             document.getElementById("classHl").href = newHref + ".min.css";
         });
 
+        // doi cu phap
         var elementCode = document.querySelector("#coder");
         elementCode.addEventListener("change", function () {
             codeElements.className = elementCode.value;
             delete codeElements.dataset.highlighted;
             hljs.highlightAll();
-        });                     
+        });
+    });
     </script>';
 
+    /*
+    echo '<div class="list codeload" style="padding:0;">
+        <span class="linecode">
+            '. $hightlight['line'] .'
+        </span>
+        <pre class="code">
+			<code >'
+				. htmlspecialchars($content)
+				. $hightlight['text']
+			. '</code>
+		</pre>
+    </div>';
+
+    echo '<style>        
+        pre {                   
+            margin:0!important;
+            width:80%;
+            overflow-x: auto;
+        }
+        code {
+            line-height: 1.4;
+            text-align: left;
+            font-size:14px!important;
+            padding:0!important;
+            width:100%;
+        }
+        .line:hover {
+            background-color: #e0e0e0;
+        }
+        .code, .linecode {                    
+            vertical-align: top;
+        }
+        .codeload::-webkit-scrollbar {
+            display:none;
+        }
+        .codeload {
+            background-color: #e0e0e0;
+            display:none;
+        }
+        .linecode, .code {
+            display: inline-grid;
+        }              
+        pre code .hljs, coce.hljs { 
+            padding:0px;
+            margin-top:0;
+        }          
+        .line {
+            line-height: 1.4;
+            font-family: monospace;
+            font-size:14px;
+            padding-right: 5px;
+            display: block;
+            text-align: right; 
+            color: #999; 
+            border-right: 1px solid red;
+            background: white;
+        }
+    </style>';
+    
+    echo '<script>
+        var codeElements = document.querySelector("code");       
+        document.addEventListener("DOMContentLoaded", function() {  
+            hljs.highlightAll();
+
+            document.querySelector(".codeload").style.display = "block";  
+                              
+            var lineElements = document.querySelectorAll(".line");
+            var maxWidth = 0;
+            lineElements.forEach(function(lineElement) {
+                var currentWidth = lineElement.offsetWidth;
+                if (currentWidth > maxWidth) {
+                    maxWidth = currentWidth;
+                }
+            });   
+              
+            lineElements.forEach(function(lineElement) {
+                lineElement.style.width = maxWidth + "px";
+            });
+        });
+        
+        var percentWith = 0;
+        const targetElement = document.querySelector(".codeload");
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                percentWidth = document.querySelector(".codeload").offsetWidth - document.querySelector(".linecode").offsetWidth;
+                document.querySelector("pre").style.width = (percentWidth - 10) + "px";
+            }
+        });
+        resizeObserver.observe(targetElement);              
+    </script>';
+    */
+
     echo '<div class="title">Chức năng</div>
-        <ul class="list">
-            <li><img src="icon/info.png"/> <a href="file.php?dir='      . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Thông tin</a></li>
-        </ul>';
+    <ul class="list">
+        <li><img src="icon/info.png"/> <a href="file.php?dir='      . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">Thông tin</a></li>
+    </ul>';
 }
 
-include_once 'footer.php';
+require_once 'footer.php';
