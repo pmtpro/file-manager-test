@@ -143,24 +143,26 @@ if (isset($_POST['submit'])) {
         echo '<input type="submit" name="submit" value="Cập nhật file đã chọn"/>';
     }
 
-    echo '<div style="overflow-x: scroll">';
-    echo '<table style="width: 100%; height: 500px; white-space: nowrap; margin-top:0;">
-        <tr>';
+    echo '<table style="table-layout:fixed; width:100%; height:500px; white-space:nowrap; margin-top:0;">';
+    echo '<tr>';
 
-    echo '<td style="width: 50%; border-right:1px solid red;word-break: break-all;text-align:left;margin: 0; vertical-align: top;">
-        <b style="margin-left: 5px">Bản hiện tại</b><br /><br />';
+    echo '<td style="width: 50%; border-right:1px solid red;text-align:left;margin: 0; vertical-align: top;">';
+    echo '<div style="overflow-x: scroll; height:100%; ">';
+    echo '<b style="margin-left: 5px">Bản hiện tại</b><br /><br />';
     echo $update->compareAll($old, $new,1);
-    echo '</td>';
-
-    echo '<td style="width: 50%; word-break: break-all;border-left:1px solid red;text-align:left;margin: 0; vertical-align: top;">
-        <b style="margin-left: 10px">Bản mới</b><br /><br />';
-    echo $update->compareAll($new, $old,2);
-    echo '</td>';
-
-    echo '</tr>
-        </table>';
     echo '</div>';
-        
+    echo '</td>';
+
+    echo '<td style="width: 50%; border-left:1px solid red;text-align:left;margin: 0; vertical-align: top;">';
+    echo '<div style="overflow-x: scroll; height:100%;">';
+    echo '<b style="margin-left: 10px">Bản mới</b><br /><br />';
+    echo $update->compareAll($new, $old,2);
+    echo '</div>';
+    echo '</td>';
+
+    echo '</tr>';
+    echo '</table>';
+
     echo '</form>
         </details>
     </div>';
