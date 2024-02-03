@@ -428,7 +428,7 @@
 
                     while ($assoc = mysqli_fetch_assoc($query)) {
                         $array[$assoc['Field']] = $assoc;
-                        $data[$assoc['Field']] = null;
+                        $data[$assoc['Field']] = '';
                     }
 
                     if (isset($_POST['continue']) || isset($_POST['create'])) {
@@ -437,7 +437,7 @@
                         $cnt = count($data);
                         $i = 1;
 
-                        foreach ($data AS $key => $value) {
+                        foreach ($data as $key => $value) {
                             $data[$key] = addslashes($_POST[$key]);
                             $split = $i < $count ? ',' : null;
                             $sql .= " `$key`='{$data[$key]}'{$split}";
@@ -449,7 +449,7 @@
                         } else {
                             if (isset($_POST['continue'])) {
                                 foreach ($data AS $key => $value)
-                                    $data[$key] = null;
+                                    $data[$key] = '';
 
                                 echo '<div class="notice_succeed">Tạo dữ liệu thành công</div>';
                             } else if (isset($_POST['create'])) {
@@ -461,7 +461,7 @@
                     echo '<div class="list">
                         <form action="database_table.php?action=add_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1'] . '" method="post">';
 
-                        foreach ($array AS $key => $value) {
+                        foreach ($array as $key => $value) {
                             echo '<span class="bull">&bull;</span>Cột (<strong class="name_columns_create_data">' . $key . '</strong>):<br/>';
 
                             if (preg_match('/^([a-zA-Z0-9\-_]+)(\(+|\s+|\\b)/', $value['Type'], $matches) && isDataTypeHasLength($matches[1]) == false)
