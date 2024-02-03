@@ -69,9 +69,9 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
         echo "<option {$cSeleted} value=\"{$cType}\">{$cValue}</option>";
     }
 
+    // <input type="checkbox" checked="checked" id="code_readonly" /> ReadOnly
     echo '</select>
             <span style="float: right">
-                <input type="checkbox" checked="checked" id="code_readonly" /> ReadOnly
                 <input type="checkbox" id="code_wrap" /> Wrap
             </span>
             </div>

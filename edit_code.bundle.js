@@ -17674,16 +17674,20 @@
            this.markCache = Object.create(null);
            this.tree = syntaxTree(view.state);
            this.decorations = this.buildDeco(view, getHighlighters(view.state));
+           this.decoratedTo = view.viewport.to;
        }
        update(update) {
            let tree = syntaxTree(update.state), highlighters = getHighlighters(update.state);
            let styleChange = highlighters != getHighlighters(update.startState);
-           if (tree.length < update.view.viewport.to && !styleChange && tree.type == this.tree.type) {
+           let { viewport } = update.view, decoratedToMapped = update.changes.mapPos(this.decoratedTo, 1);
+           if (tree.length < viewport.to && !styleChange && tree.type == this.tree.type && decoratedToMapped >= viewport.to) {
                this.decorations = this.decorations.map(update.changes);
+               this.decoratedTo = decoratedToMapped;
            }
            else if (tree != this.tree || update.viewportChanged || styleChange) {
                this.tree = tree;
                this.decorations = this.buildDeco(update.view, highlighters);
+               this.decoratedTo = viewport.to;
            }
        }
        buildDeco(view, highlighters) {
@@ -22934,8 +22938,8 @@
 
    const languageConf = new Compartment();
    const lineWrapConf = new Compartment();
-   const readOnlyConf = new Compartment();
-   const editableConf = new Compartment();
+   //const readOnlyConf = new Compartment()
+   //const editableConf = new Compartment()
 
    const initialState = EditorState.create({
      doc: document.querySelector("#content").value,
@@ -22951,8 +22955,8 @@
        highlightActiveLine(),
        highlightSpecialChars(),
 
-       readOnlyConf.of(EditorState.readOnly.of(true)),
-       editableConf.of(EditorView.editable.of(false)),
+   //    readOnlyConf.of(EditorState.readOnly.of(true)),
+   //    editableConf.of(EditorView.editable.of(false)),
        lineWrapConf.of([]),
        languageConf.of([]),
 
@@ -23011,6 +23015,7 @@
    });
 
    // che do chi xem
+   /*
    var codeReadOnlyElement = document.getElementById("code_readonly");
    codeReadOnlyElement.addEventListener("change", function () {
        editor.dispatch({
@@ -23018,8 +23023,9 @@
        		readOnlyConf.reconfigure(EditorState.readOnly.of(codeReadOnlyElement.checked)),
        		editableConf.reconfigure(EditorView.editable.of(!codeReadOnlyElement.checked))
    		]
-       });
+       })
    });
+   */
 
    // xuat bien toan cau
    window.editor = editor;

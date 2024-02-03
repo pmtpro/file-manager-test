@@ -24,17 +24,14 @@ import { css } from "@codemirror/lang-css"
 import { html } from "@codemirror/lang-html"
 import { javascript } from "@codemirror/lang-javascript"
 import { json } from "@codemirror/lang-json"
-import { markdown } from "@codemirror/lang-markdown"
 import { php } from "@codemirror/lang-php"
 import { sass } from "@codemirror/lang-sass"
 import { sql } from "@codemirror/lang-sql"
-import { xml } from "@codemirror/lang-xml"
-import { yaml } from "@codemirror/lang-yaml"
   
 const languageConf = new Compartment()
 const lineWrapConf = new Compartment()
-const readOnlyConf = new Compartment()
-const editableConf = new Compartment()
+//const readOnlyConf = new Compartment()
+//const editableConf = new Compartment()
 
 const initialState = EditorState.create({
   doc: document.querySelector("#content").value,
@@ -50,8 +47,8 @@ const initialState = EditorState.create({
     highlightActiveLine(),
     highlightSpecialChars(),
 
-    readOnlyConf.of(EditorState.readOnly.of(true)),
-    editableConf.of(EditorView.editable.of(false)),
+//    readOnlyConf.of(EditorState.readOnly.of(true)),
+//    editableConf.of(EditorView.editable.of(false)),
     lineWrapConf.of([]),
     languageConf.of([]),
 
@@ -110,6 +107,7 @@ codeWrapElement.addEventListener("change", function () {
 });
 
 // che do chi xem
+/*
 var codeReadOnlyElement = document.getElementById("code_readonly");
 codeReadOnlyElement.addEventListener("change", function () {
     editor.dispatch({
@@ -119,6 +117,7 @@ codeReadOnlyElement.addEventListener("change", function () {
 		]
     })
 });
+*/
 
 // xuat bien toan cau
 window.editor = editor;
