@@ -2,6 +2,7 @@ import { EditorView, basicSetup } from "codemirror"
 import { EditorState, Compartment } from "@codemirror/state"
 
 import {
+    keymap,
     lineNumbers,
     highlightActiveLine,
     highlightSpecialChars,
@@ -49,6 +50,20 @@ const initialState = EditorState.create({
 
 //    readOnlyConf.of(EditorState.readOnly.of(true)),
 //    editableConf.of(EditorView.editable.of(false)),
+    keymap.of([
+        {
+            key: "Tab",
+            preventDefault: true,
+            run: ({state, dispatch}) => {
+                dispatch(state.update(
+                    state.replaceSelection("    "),
+                    { scrollIntoView: true, userEvent: "input" }
+                ))
+
+                return true
+            }
+        }
+    ]),
     lineWrapConf.of([]),
     languageConf.of([]),
 
@@ -85,8 +100,15 @@ function getLang(mode) {
     let lang = [];
     
     switch (mode) {
+        case 'html': lang = html(); break;
+        case 'css': lang = css(); break;
+        case 'sass': lang = sass(); break;
+
         case 'javascript': lang = javascript(); break;
+        case 'json': lang = json(); break;
+
         case 'php': lang = php(); break;
+        case 'sql': lang = sql(); break;
     }
     
     return lang;
