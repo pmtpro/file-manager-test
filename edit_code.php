@@ -45,8 +45,17 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
         'javascript' => 'JavaScript',
     ];
 
-    if (array_key_exists($fileExt, $codeType)) {
-        $codeLang = $fileExt;
+    $forCM = [
+        'mjs' => 'javascript',
+        'js' => 'javascript'
+    ];
+    $fileExtForCM = str_replace(array_keys($forCM), array_values($forCM), $fileExt);
+
+    if (array_key_exists(
+        $fileExtForCM,
+        $codeType
+    )) {
+        $codeLang = $fileExtForCM;
     }
 
     echo '<div class="list">
@@ -130,7 +139,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
 			}
         </style>';
         
-		echo '<script src="' . asset('edit_code.bundle.js') . '"></script>';
+		echo '<script src="' . asset('js/edit_code.bundle.js') . '"></script>';
         echo '<script>
             const codeCheckMessageElement = document.getElementById("code_check_message");
             const codeCheckPHPElement = document.getElementById("code_check_php");
