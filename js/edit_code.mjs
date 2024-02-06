@@ -10,6 +10,8 @@ import {
     drawSelection
 } from "@codemirror/view"
 
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
+
 import {
 	bracketMatching,
 	foldGutter
@@ -41,6 +43,7 @@ const initialState = EditorState.create({
     bracketMatching(),
     highlightSelectionMatches(),
 
+    history(),
     drawSelection(),    
     foldGutter(),
     lineNumbers(),
@@ -50,7 +53,9 @@ const initialState = EditorState.create({
 
 //    readOnlyConf.of(EditorState.readOnly.of(true)),
 //    editableConf.of(EditorView.editable.of(false)),
+
     keymap.of([
+        /*
         {
             key: "Tab",
             preventDefault: true,
@@ -63,7 +68,11 @@ const initialState = EditorState.create({
                 return true
             }
         }
+        */
+        ...defaultKeymap,
+        ...historyKeymap
     ]),
+
     lineWrapConf.of([]),
     languageConf.of([]),
 

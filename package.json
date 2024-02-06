@@ -1,4 +1,8 @@
 {
+  "private": true,
+  "scripts": {
+    "build": "rollup js/edit_code.mjs -f iife -o js/edit_code.bundle.js -p @rollup/plugin-node-resolve"
+  },
   "dependencies": {
     "@codemirror/lang-css": "^6.2.1",
     "@codemirror/lang-html": "^6.4.8",
