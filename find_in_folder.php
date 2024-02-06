@@ -207,7 +207,7 @@ if (
                                     htmlspecialchars($line)
                                 )
                                 : preg_replace(
-                                    '/(' . preg_quote(htmlspecialchars($search)) . ')/i',
+                                    '#(' . preg_quote(htmlspecialchars($search)) . ')#i',
                                     '<span style="background-color: yellow">${1}</span>',
                                     htmlspecialchars($line)
                                 )

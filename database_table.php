@@ -788,7 +788,7 @@
                             goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . ($page['total'] <= 1 ? null : '&page=' . $page['total']) . $order['paramater_1']);
                     }
 
-                    echo '<script language="javascript" src="checkbox.js"></script>';
+                    echo '<script language="javascript" src="' . asset('js/checkbox.js') . '"></script>';
                     echo '<form action="database_table.php?action=selected_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1']  . $order['paramater_1'] . '" method="post" name="form"><ul class="list">';
 
                     {

@@ -76,7 +76,7 @@
     style="display: block; visibility: visible; opacity: 0.5; display: none;"
 ></div>
 
-<script src="<?php echo asset('script.js') ?>"></script>
+<script src="<?php echo asset('js/script.js') ?>"></script>
 
 </body>
 </html>

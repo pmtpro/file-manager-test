@@ -96,7 +96,7 @@ if (!IS_INSTALL_ROOT_DIRECTORY && $dir != '/' && strpos($dir, '/') !== false) {
 }
 
 if (!IS_INSTALL_ROOT_DIRECTORY) {
-    echo '<script language="javascript" src="checkbox.js"></script>';
+    echo '<script language="javascript" src="' . asset('js/checkbox.js') . '"></script>';
     echo '<div class="title">' . $html . '</div>';
 }
 
