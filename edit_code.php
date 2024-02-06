@@ -43,13 +43,23 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
         'text' => 'Text',
         'php' => 'PHP',
         'javascript' => 'JavaScript',
+        'html' => 'HTML',
+        'css' => 'CSS',
+        'sass' => 'SASS',
+        'sql' => 'SQL',
+        'json' => 'JSON'
     ];
 
     $forCM = [
         'mjs' => 'javascript',
-        'js' => 'javascript'
+        'js' => 'javascript',
+        'scss' => 'sass'
     ];
-    $fileExtForCM = str_replace(array_keys($forCM), array_values($forCM), $fileExt);
+    
+    $fileExtForCM = $fileExt;
+    if (array_key_exists($fileExt, $forCM)) {
+        $fileExtForCM = str_replace($fileExt, $forCM[$fileExt], $fileExtForCM);
+    }
 
     if (array_key_exists(
         $fileExtForCM,
