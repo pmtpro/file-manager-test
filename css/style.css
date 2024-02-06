@@ -516,10 +516,15 @@ textarea.box_edit, textarea.box_edit_normal {
     padding: 4px;
 }
 
-textarea.box_edit:hover,
-textarea.box_edit:focus {
+textarea.box_edit:hover {
     color: #555555;
     border: 1px solid #eaaa11;
+}
+
+textarea.box_edit:focus {
+    color: #555555;
+    border: 1px solid #cecece;
+    outline: none;
 }
 
 textarea.box_edit_normal {
