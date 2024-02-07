@@ -30,7 +30,6 @@
             $content = file_get_contents($path);
             $isExecute = isFunctionExecEnable();
             $actionEdit = 'edit_api.php?dir=' . $dirEncode . '&name=' . $name;
-            $actionFormat = 'format_code.php';
 
             echo '<div class="list">
                 <span class="bull">&bull; </span><span>' . printPath($dir, true) . '</span><hr/>
@@ -122,10 +121,13 @@
                     if(!window.confirm("Chức năng có thể thay đổi cấu trúc code, xác nhận dùng!")) {
                         return;
                     }
+
                     var data = new FormData();
                     data.append("requestApi", 1);
+                    data.append("format_php", 1);
                     data.append("content", editorElement.value);
-                    fetch("'. $actionFormat .'", {
+
+                    fetch("'. $actionEdit .'", {
                         method: "POST",
                         body: data,
                         cache: "no-cache"
@@ -136,8 +138,8 @@
                         }                    
                         return response.json();
                     }).then((data) => {
-                        if(!data.error) {
-                            editorElement.value = data.highlight;
+                        if (!data.error) {
+                            editorElement.value = data.format;
                         } else {
                             alert(data.error);
                         }
