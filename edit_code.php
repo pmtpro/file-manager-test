@@ -91,6 +91,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     // <input type="checkbox" checked="checked" id="code_readonly" /> ReadOnly
     echo '</select>
             <span style="float: right">
+                <button class="button" id="code_format">Format</button>
                 <input type="checkbox" id="code_wrap" /> Wrap
             </span>
             </div>
@@ -189,6 +190,44 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
                 event.preventDefault();
                 return false;
             });
+
+            
+            // format code
+            var codeFormatElement = document.getElementById("code_format");
+            codeFormatElement.addEventListener("click", function () {
+                    if (!window.confirm("Chức năng có thể thay đổi cấu trúc code, xác nhận dùng!")) {
+                        return;
+                    }
+
+                    var data = new FormData();
+                    data.append("requestApi", 1);
+                    data.append("format_php", 1);
+                    data.append("content", editor.state.doc.toString());
+
+                    fetch("'. $actionEdit .'", {
+                        method: "POST",
+                        body: data,
+                        cache: "no-cache"
+                    }).then(function (response) {
+                        if (response.status != 200) {
+                            alert("Lỗi kết nối!");
+                            return false;
+                        }                    
+                        return response.json();
+                    }).then((data) => {
+                        if (!data.error) {
+                            editor.dispatch({
+                                changes: {
+                                    from: 0,
+                                    to: editor.state.doc.length,
+                                    insert: data.format
+                                }
+                            })
+                        } else {
+                            alert(data.error);
+                        }
+                    });                  
+                });
         </script>
 
         <div class="title">Chức năng</div>
