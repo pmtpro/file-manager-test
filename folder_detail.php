@@ -25,15 +25,35 @@ if (
     </ul>';
 } else {
     $dir = processDirectory($dir);
+    $files = readDirectoryIterator($dir);
+
+    $dir_size = 0;
+    $total_file = 0;
+    $total_dir = 0;
+
+    foreach ($files as $file) {
+        if ($file->isFile()) {
+            $total_file += 1;
+            $dir_size += $file->getSize();
+        }
+        
+        if ($file->isDir()) {
+            $total_dir += 1;
+        }
+    }
 
     echo '<ul class="info">';
+    
     echo '<li class="not_ellipsis"><span class="bull">&bull; </span><strong>Đường dẫn</strong>: <span>' . printPath($dir, true) . '</span></li>';
-    echo '<li><span class="bull">&bull; </span><strong>Tên</strong>: <span>' . basename($dir) . '</span></li>
-        <li><span class="bull">&bull; </span><strong>Kích thước thư mục</strong>: <span>' . size(filesize($dir)) . '</span></li>
-        <li><span class="bull">&bull; </span><strong>Dung lượng thư mục</strong>: <span>' . size(dirSize($dir)) . '</span></li>
-        <li><span class="bull">&bull; </span><strong>Chmod</strong>: <span>' . getChmod($dir) . '</span></li>
-        <li><span class="bull">&bull; </span><strong>Ngày sửa</strong>: <span>' . @date('d.m.Y - H:i', filemtime($dir)) . '</span></li>
-    </ul>';
+    echo '<li><span class="bull">&bull; </span><strong>Tên</strong>: <span>' . basename($dir) . '</span></li>';
+    echo '<li><span class="bull">&bull; </span><strong>Kích thước thư mục</strong>: <span>' . size(filesize($dir)) . '</span></li>';
+    echo '<li><span class="bull">&bull; </span><strong>Dung lượng thư mục</strong>: <span>' . size($dir_size) . '</span></li>';
+    echo '<li><span class="bull">&bull; </span><strong>Chmod</strong>: <span>' . getChmod($dir) . '</span></li>';
+    echo '<li><span class="bull">&bull; </span><strong>Ngày sửa</strong>: <span>' . @date('d.m.Y - H:i', filemtime($dir)) . '</span></li>';
+    echo '<li><span class="bull">&bull; </span><strong>Tổng số thư mục</strong>: <span>' . $total_dir . '</span></li>';    
+    echo '<li><span class="bull">&bull; </span><strong>Tổng số file</strong>: <span>' . $total_file . '</span></li>';
+    
+    echo '</ul>';
 
     echo '<div class="title">Chức năng</div>
     <ul class="list">
