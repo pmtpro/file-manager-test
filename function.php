@@ -1,8 +1,6 @@
 <?php
 
-if (!defined('ACCESS')) {
-    die('Not access');
-}
+defined('ACCESS') or exit('Not access');
 
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
@@ -65,15 +63,18 @@ ob_start();
     unset($dir);
 }
 
+// cau hinh
 define('REALPATH', realpath('./'));
 const PATH_CONFIG = 'config.inc.php';
 const PATH_DATABASE = 'database.inc.php';
+
 const LOGIN_USERNAME_DEFAULT = 'Admin';
 const LOGIN_PASSWORD_DEFAULT = '12345';
-const PAGE_LIST_DEFAULT = 10000000;
-const PAGE_FILE_EDIT_DEFAULT = 10000000;
-const PAGE_FILE_EDIT_LINE_DEFAULT = 10000000;
-const PAGE_DATABASE_LIST_ROWS_DEFAULT = 10000000;
+
+const PAGE_LIST_DEFAULT = 1000;
+const PAGE_FILE_EDIT_DEFAULT = 1000000;
+const PAGE_FILE_EDIT_LINE_DEFAULT = 100;
+const PAGE_DATABASE_LIST_ROWS_DEFAULT = 100;
 
 const PAGE_NUMBER      = 7;
 const PAGE_URL_DEFAULT = 'default';
