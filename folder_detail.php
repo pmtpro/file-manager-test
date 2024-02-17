@@ -15,7 +15,7 @@ require_once 'header.php';
 echo '<div class="title">' . $title . '</div>';
 
 if (
-    $dir == null
+    empty($dir)
     || !is_dir(processDirectory($dir))
 ) {
     echo '<div class="list"><span>Đường dẫn không tồn tại</span></div>

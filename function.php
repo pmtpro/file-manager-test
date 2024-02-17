@@ -1058,8 +1058,8 @@ function asset($asset) {
 
 include_once 'development.inc.php';
 
-$dir       = isset($_GET['dir']) && !empty($_GET['dir']) ? rawurldecode($_GET['dir']) : null;
-$name      = isset($_GET['name']) && !empty($_GET['name']) ? $_GET['name'] : null;
-$dirEncode = $dir != null ? rawurlencode($dir) : null;
+$dir = isset($_GET['dir']) && !empty($_GET['dir']) ? rawurldecode($_GET['dir']) : null;
+$name = isset($_GET['name']) && !empty($_GET['name']) ? $_GET['name'] : null;
+$dirEncode = !empty($dir) ? rawurlencode($dir) : '';
 
 require_once 'permission.inc.php';

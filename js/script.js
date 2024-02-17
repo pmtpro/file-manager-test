@@ -39,3 +39,13 @@ window.addEventListener('scroll', function () {
         topButtons.style.display = 'none';
     }, 3000)
 });
+
+
+// sao chep duong dan thu muc
+const copyDirPathButton = document.querySelector("#copyDirPath");
+copyDirPathButton?.addEventListener("click", function () {
+    let path = copyDirPathButton.getAttribute("data-path");
+    path = decodeURIComponent(path);
+    
+    navigator.clipboard.writeText(path);
+});
