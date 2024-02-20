@@ -1,74 +1,75 @@
 <?php
 
-    define('ACCESS', true);
-    define('PHPMYADMIN', true);
+define('ACCESS', true);
+define('PHPMYADMIN', true);
 
-    include_once 'function.php';
+include_once 'function.php';
 
-    if (IS_LOGIN) {
-        $title = 'Bảng';
-        $name = isset($_GET['name']) ? addslashes($_GET['name']) : null;
+$title = 'Bảng';
+$name = isset($_GET['name']) ? addslashes($_GET['name']) : null;
 
-        $page = array('current' => 0, 'total' => 1, 'paramater_0' => null, 'paramater_1' => null);
-        $page['current'] = isset($_GET['page']) ? intval($_GET['page']) : 1;
-        $page['current'] = $page['current'] <= 0 ? 1 : $page['current'];
+$page = array('current' => 0, 'total' => 1, 'paramater_0' => null, 'paramater_1' => null);
+$page['current'] = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$page['current'] = $page['current'] <= 0 ? 1 : $page['current'];
 
-        $order = array('desc' => false, 'name' => null, 'paramater_0' => null, 'paramater_1' => null);
-        $order['desc'] = isset($_GET['order']) && intval($_GET['order']) == 1;
-        $order['name'] = $order['desc'] ? 'DESC' : 'ASC';
-        $order['paramater_0'] = $order['desc'] ? '?order=1' : null;
-        $order['paramater_1'] = $order['desc'] ? '&order=1' : null;
+$order = array('desc' => false, 'name' => null, 'paramater_0' => null, 'paramater_1' => null);
+$order['desc'] = isset($_GET['order']) && intval($_GET['order']) == 1;
+$order['name'] = $order['desc'] ? 'DESC' : 'ASC';
+$order['paramater_0'] = $order['desc'] ? '?order=1' : null;
+$order['paramater_1'] = $order['desc'] ? '&order=1' : null;
 
-        $isTableExists = false;
+$isTableExists = false;
 
-        include_once 'database_connect.php';
+include_once 'database_connect.php';
 
-        if (IS_CONNECT && $name != null && ($isTableExists = isTableExists($name))) {
-            if (isset($_GET['action']) && trim($_GET['action']) == 'rename') {
-                $title = 'Đổi tên bảng: ' . DATABASE_NAME . ' > ' . $name;
-                $table = $name;
+if (IS_CONNECT && $name != null && ($isTableExists = isTableExists($name))) {
+    if (isset($_GET['action']) && trim($_GET['action']) == 'rename') {
+        $title = 'Đổi tên bảng: ' . DATABASE_NAME . ' > ' . $name;
+        $table = $name;
 
-                include_once 'header.php';
+        include_once 'header.php';
 
-                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
-                if (isset($_POST['submit'])) {
-                    $table = addslashes($_POST['table']);
+        if (isset($_POST['submit'])) {
+            $table = addslashes($_POST['table']);
 
-                    if (empty($table))
-                        echo '<div class="notice_failure">Chưa nhập tên bảng</div>';
-                    else if (isTableExists($table, $name, true))
-                        echo '<div class="notice_failure">Tên bảng đã tồn tại</div>';
-                    else if (!mysqli_query($MySQLi, "RENAME TABLE `$name` TO `$table`"))
-                        echo '<div class="notice_failure">Đổi tên thất bại</div>';
-                    else
-                        goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
-                }
+            if (empty($table)) {
+                echo '<div class="notice_failure">Chưa nhập tên bảng</div>';
+            } elseif (isTableExists($table, $name, true)) {
+                echo '<div class="notice_failure">Tên bảng đã tồn tại</div>';
+            } elseif (!mysqli_query($MySQLi, "RENAME TABLE `$name` TO `$table`")) {
+                echo '<div class="notice_failure">Đổi tên thất bại</div>';
+            } else {
+                goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
+            }
+        }
 
-                echo '<div class="list">
+        echo '<div class="list">
                     <form action="database_table.php?action=rename&name=' . $name . DATABASE_NAME_PARAMATER_1 . '" method="post">
                         <span class="bull">&bull;</span>Tên bảng:<br/>
                         <input type="text" name="table" value="' . stripslashes($table) . '" size="18"/><br/>
                         <input type="submit" name="submit" value="Đổi tên"/>
                     </form>
                 </div>';
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'delete') {
-                $title = 'Xóa bảng: ' . DATABASE_NAME . ' > ' . $name;
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'delete') {
+        $title = 'Xóa bảng: ' . DATABASE_NAME . ' > ' . $name;
 
-                include_once 'header.php';
+        include_once 'header.php';
 
-                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
-                if (isset($_POST['accept'])) {
-                    if (!mysqli_query($MySQLi, "DROP TABLE `$name`"))
-                        echo '<div class="notice_failure">Xóa bảng thất bại</div>';
-                    else
-                        goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
-                } else if (isset($_POST['not'])) {
-                    goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
-                }
+        if (isset($_POST['accept'])) {
+            if (!mysqli_query($MySQLi, "DROP TABLE `$name`")) {
+                echo '<div class="notice_failure">Xóa bảng thất bại</div>';
+            } else {
+                goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
+            }
+        } elseif (isset($_POST['not'])) {
+            goURL('database_tables.php' . DATABASE_NAME_PARAMATER_0);
+        }
 
-                echo '<div class="list">
+        echo '<div class="list">
                     <form action="database_table.php?action=delete&name=' . $name . DATABASE_NAME_PARAMATER_1 . '" method="post">
                         <span>Bạn có thực sự muốn xóa bảng không dữ liệu của bảng sẽ bị xóa cùng?</span><hr/>
                         <center>
@@ -77,19 +78,19 @@
                         </center>
                     </form>
                 </div>';
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'list_struct') {
-                $title = 'Danh sách cột: ' . DATABASE_NAME . ' > ' . $name;
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'list_struct') {
+        $title = 'Danh sách cột: ' . DATABASE_NAME . ' > ' . $name;
 
-                include_once 'header.php';
+        include_once 'header.php';
 
-                $query = mysqli_query($MySQLi, 'SHOW COLUMNS FROM `' . $name . '`');
+        $query = mysqli_query($MySQLi, 'SHOW COLUMNS FROM `' . $name . '`');
 
-                if ($query) {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+        if ($query) {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                     <ul class="list_database">';
 
-                    while ($assoc = mysqli_fetch_assoc($query)) {
-                        echo '<li>
+            while ($assoc = mysqli_fetch_assoc($query)) {
+                echo '<li>
                             <p>
                                 <img src="icon/columns.png"/>
                                 <a href="database_table.php?action=edit_columns&name=' . $name . DATABASE_NAME_PARAMATER_1 . '&columns='. $assoc['Field'] . '">
@@ -100,126 +101,135 @@
                                 <span>' . $assoc['Type'] . '</span>
                             </p>
                         </li>';
+            }
+
+            echo '</ul>';
+        }
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'add_columns') {
+        $title = 'Tạo cột: ' . DATABASE_NAME . ' > ' . $name;
+
+        include_once 'header.php';
+
+        $column = null;
+        $default = null;
+        $length = null;
+        $type = null;
+        $collection = null;
+        $attributes = null;
+        $position = null;
+        $field_key = null;
+        $is_null = false;
+        $auto_increment = false;
+        $notice = null;
+
+        if (isset($_POST['continue']) || isset($_POST['create'])) {
+            $column = addslashes($_POST['column']);
+            $default = addslashes($_POST['default']);
+            $length = addslashes($_POST['length']);
+            $type = addslashes($_POST['type']);
+            $collection = addslashes($_POST['collection']);
+            $attributes = addslashes($_POST['attributes']);
+            $position = addslashes($_POST['position']);
+            $field_key = addslashes($_POST['field_key']);
+            $is_null = isset($_POST['is_null']);
+            $auto_increment = isset($_POST['auto_increment']);
+            $notice = '<div class="notice_failure">';
+
+            if ($collection != MYSQL_COLLECTION_NONE && !preg_match('#^(.+?)' . MYSQL_COLLECTION_SPLIT . '(.+?)$#i', $collection, $matches)) {
+                $notice .= 'Mã hóa - Đối chiếu không hợp lệ';
+            } elseif ($position != MYSQL_AFTER_FIRST && $position != MYSQL_AFTER_LAST && !preg_match('#^' . MYSQL_AFTER_POSITION . MYSQL_AFTER_SPLIT . '(.+?)$#', $position, $positions)) {
+                $notice .= 'Vị trí không hợp lệ';
+            } elseif (empty($column)) {
+                $notice .= 'Chưa nhập tên cột';
+            } elseif (isColumnsExists($column, $name, null, true)) {
+                $notice .= 'Tên cột đã tồn tại';
+            } elseif (!empty($length) && !preg_match('#\\b[0-9]+\\b#', $length)) {
+                $notice .= 'Độ dài không hợp lệ';
+            } else {
+                $type_put = $type . (empty($length) == false ? "($length)" : null);
+                $collection_put = $collection == MYSQL_COLLECTION_NONE ? null : 'CHARACTER SET ' . $matches[1] . ' COLLATE ' . $matches[2];
+                $attributes_put = $attributes == MYSQL_ATTRIBUTES_NONE ? null : $attributes;
+                $null_put = $is_null ? 'NULL' : 'NOT NULL';
+                $default_put = $default == null ? null : "DEFAULT '$default'";
+                $auto_increment_put = $auto_increment ? 'AUTO_INCREMENT' : null;
+                $field_key_put = $field_key == MYSQL_FIELD_KEY_NONE ? null : $field_key;
+                $after_put = $position == MYSQL_AFTER_FIRST ? 'FIRST' : ($position == MYSQL_AFTER_LAST ? null : 'AFTER `' . $positions[1] . '`');
+
+                $sql = "ALTER TABLE `$name` ADD `$column` $type_put";
+
+                if ($attributes_put != null) {
+                    $sql .= ' ' . $attributes_put;
+                }
+
+                if ($collection_put != null) {
+                    $sql .= ' ' . $collection_put;
+                }
+
+                $sql .= ' ' . $null_put;
+
+                if ($default_put != null) {
+                    $sql .= ' ' . $default_put;
+                }
+
+                if ($auto_increment_put != null) {
+                    $sql .= ' ' . $auto_increment_put;
+                }
+
+                if ($field_key_put != null) {
+                    $sql .= ' ' . $field_key_put;
+                }
+
+                if ($after_put != null) {
+                    $sql .= ' ' . $after_put;
+                }
+
+                if (!mysqli_query($MySQLi, $sql)) {
+                    $notice .= 'Lỗi tạo cột: ' . mysqli_error($MySQLi);
+                } else {
+                    if (isset($_POST['continue'])) {
+                        $column = null;
+                        $default = null;
+                        $length = null;
+                        $type = null;
+                        $collection = null;
+                        $attributes = null;
+                        $position = null;
+                        $field_key = null;
+                        $is_null = false;
+                        $auto_increment = false;
+                        $notice = '<div class="notice_succeed">Tạo cột thành công';
                     }
 
-                    echo '</ul>';
-                }
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'add_columns') {
-                $title = 'Tạo cột: ' . DATABASE_NAME . ' > ' . $name;
-
-                include_once 'header.php';
-
-                $column = null;
-                $default = null;
-                $length = null;
-                $type = null;
-                $collection = null;
-                $attributes = null;
-                $position = null;
-                $field_key = null;
-                $is_null = false;
-                $auto_increment = false;
-                $notice = null;
-
-                if (isset($_POST['continue']) || isset($_POST['create'])) {
-                    $column = addslashes($_POST['column']);
-                    $default = addslashes($_POST['default']);
-                    $length = addslashes($_POST['length']);
-                    $type = addslashes($_POST['type']);
-                    $collection = addslashes($_POST['collection']);
-                    $attributes = addslashes($_POST['attributes']);
-                    $position = addslashes($_POST['position']);
-                    $field_key = addslashes($_POST['field_key']);
-                    $is_null = isset($_POST['is_null']);
-                    $auto_increment = isset($_POST['auto_increment']);
-                    $notice = '<div class="notice_failure">';
-
-                    if ($collection != MYSQL_COLLECTION_NONE && !preg_match('#^(.+?)' . MYSQL_COLLECTION_SPLIT . '(.+?)$#i', $collection, $matches)) {
-                        $notice .= 'Mã hóa - Đối chiếu không hợp lệ';
-                    } else if ($position != MYSQL_AFTER_FIRST && $position != MYSQL_AFTER_LAST && !preg_match('#^' . MYSQL_AFTER_POSITION . MYSQL_AFTER_SPLIT . '(.+?)$#', $position, $positions)) {
-                        $notice .= 'Vị trí không hợp lệ';
-                    } else if (empty($column)) {
-                        $notice .= 'Chưa nhập tên cột';
-                    } else if (isColumnsExists($column, $name, null, true)) {
-                        $notice .= 'Tên cột đã tồn tại';
-                    } else if (!empty($length) && !preg_match('#\\b[0-9]+\\b#', $length)) {
-                        $notice .= 'Độ dài không hợp lệ';
-                    } else {
-                        $type_put = $type . (empty($length) == false ? "($length)" : null);
-                        $collection_put = $collection == MYSQL_COLLECTION_NONE ? null : 'CHARACTER SET ' . $matches[1] . ' COLLATE ' . $matches[2];
-                        $attributes_put = $attributes == MYSQL_ATTRIBUTES_NONE ? null : $attributes;
-                        $null_put = $is_null ? 'NULL' : 'NOT NULL';
-                        $default_put = $default == null ? null : "DEFAULT '$default'";
-                        $auto_increment_put = $auto_increment ? 'AUTO_INCREMENT' : null;
-                        $field_key_put = $field_key == MYSQL_FIELD_KEY_NONE ? null : $field_key;
-                        $after_put = $position == MYSQL_AFTER_FIRST ? 'FIRST' : ($position == MYSQL_AFTER_LAST ? null : 'AFTER `' . $positions[1] . '`');
-
-                        $sql = "ALTER TABLE `$name` ADD `$column` $type_put";
-
-                        if ($attributes_put != null)
-                            $sql .= ' ' . $attributes_put;
-
-                        if ($collection_put != null)
-                            $sql .= ' ' . $collection_put;
-
-                        $sql .= ' ' . $null_put;
-
-                        if ($default_put != null)
-                            $sql .= ' ' . $default_put;
-
-                        if ($auto_increment_put != null)
-                            $sql .= ' ' . $auto_increment_put;
-
-                        if ($field_key_put != null)
-                            $sql .= ' ' . $field_key_put;
-
-                        if ($after_put != null)
-                            $sql .= ' ' . $after_put;
-
-                        if (!mysqli_query($MySQLi, $sql)) {
-                            $notice .= 'Lỗi tạo cột: ' . mysqli_error($MySQLi);
-                        } else {
-                            if (isset($_POST['continue'])) {
-                                $column = null;
-                                $default = null;
-                                $length = null;
-                                $type = null;
-                                $collection = null;
-                                $attributes = null;
-                                $position = null;
-                                $field_key = null;
-                                $is_null = false;
-                                $auto_increment = false;
-                                $notice = '<div class="notice_succeed">Tạo cột thành công';
-                            }
-
-                            if (isset($_POST['create']))
-                                goURL('database_table.php?action=list_struct&name=' . $name . DATABASE_NAME_PARAMATER_1);
-                        }
+                    if (isset($_POST['create'])) {
+                        goURL('database_table.php?action=list_struct&name=' . $name . DATABASE_NAME_PARAMATER_1);
                     }
-
-                    $collection = $collection != MYSQL_COLLECTION_NONE && isset($matches) ? $matches[2] : MYSQL_COLLECTION_NONE;
-                    $notice .= '</div>';
                 }
+            }
 
-                $query = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
-                $position_list = null;
+            $collection = $collection != MYSQL_COLLECTION_NONE && isset($matches) ? $matches[2] : MYSQL_COLLECTION_NONE;
+            $notice .= '</div>';
+        }
 
-                if ($query !== false && mysqli_num_rows($query) > 0) {
-                    $position_list = '<optgroup label="Cột">';
+        $query = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
+        $position_list = null;
 
-                    while ($assoc = mysqli_fetch_assoc($query))
-                        $position_list .= '<option value="' . MYSQL_AFTER_POSITION . MYSQL_AFTER_SPLIT. $assoc['Field'] . '"' . ($position == MYSQL_AFTER_POSITION . MYSQL_AFTER_SPLIT . $assoc['Field'] ? ' selected="selected"' : null) . '>' . $assoc['Field'] . '</option>';
+        if ($query !== false && mysqli_num_rows($query) > 0) {
+            $position_list = '<optgroup label="Cột">';
 
-                    $position_list .= '</optgroup>';
-                }
+            while ($assoc = mysqli_fetch_assoc($query)) {
+                $position_list .= '<option value="' . MYSQL_AFTER_POSITION . MYSQL_AFTER_SPLIT. $assoc['Field'] . '"' . ($position == MYSQL_AFTER_POSITION . MYSQL_AFTER_SPLIT . $assoc['Field'] ? ' selected="selected"' : null) . '>' . $assoc['Field'] . '</option>';
+            }
 
-                if (mysqli_num_rows(mysqli_query($MySQLi, "SHOW INDEXES FROM `$name` WHERE `Key_name`='PRIMARY'")) > 0 && $field_key == null)
-                    $field_key = MYSQL_FIELD_KEY_NONE;
+            $position_list .= '</optgroup>';
+        }
 
-                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
-                echo $notice;
-                echo '<div class="list">
+        if (mysqli_num_rows(mysqli_query($MySQLi, "SHOW INDEXES FROM `$name` WHERE `Key_name`='PRIMARY'")) > 0 && $field_key == null) {
+            $field_key = MYSQL_FIELD_KEY_NONE;
+        }
+
+        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+        echo $notice;
+        echo '<div class="list">
                     <form action="database_table.php?action=add_columns&name=' . $name . DATABASE_NAME_PARAMATER_1 . '" method="post">
                         <span class="bull">&bull;</span>Tên cột:<br/>
                         <input type="text" name="column" value="' . stripslashes($column) . '" size="18"/><br/>
@@ -251,104 +261,110 @@
                 <div class="tips">
                     <img src="icon/tips.png"/> Ấn tiếp tục để tạo và tạo tiếp, ấn tạo để tạo và về danh sách cột
                 </div>';
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'edit_columns') {
-                $info = null;
-                $title = 'Sửa cột: ' . DATABASE_NAME . ' > ' . $name;
-                $columns = isset($_GET['columns']) && empty($_GET['columns']) == false ? addslashes($_GET['columns']) : null;
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'edit_columns') {
+        $info = null;
+        $title = 'Sửa cột: ' . DATABASE_NAME . ' > ' . $name;
+        $columns = isset($_GET['columns']) && empty($_GET['columns']) == false ? addslashes($_GET['columns']) : null;
 
-                include_once 'header.php';
+        include_once 'header.php';
 
-                if ($columns != null && isColumnsExists($columns, $name, null, true, $info)) {
-                    $column = null;
-                    $default = null;
-                    $length = null;
-                    $type = null;
-                    $collection = null;
-                    $attributes = null;
-                    $is_null = false;
-                    $auto_increment = false;
-                    $notice = null;
+        if ($columns != null && isColumnsExists($columns, $name, null, true, $info)) {
+            $column = null;
+            $default = null;
+            $length = null;
+            $type = null;
+            $collection = null;
+            $attributes = null;
+            $is_null = false;
+            $auto_increment = false;
+            $notice = null;
 
-                    if (isset($_POST['submit'])) {
-                        $column = addslashes($_POST['column']);
-                        $default = addslashes($_POST['default']);
-                        $length = addslashes($_POST['length']);
-                        $type = addslashes($_POST['type']);
-                        $collection = addslashes($_POST['collection']);
-                        $attributes = addslashes($_POST['attributes']);
-                        $is_null = isset($_POST['is_null']);
-                        $auto_increment = isset($_POST['auto_increment']);
-                        $notice = '<div class="notice_failure">';
+            if (isset($_POST['submit'])) {
+                $column = addslashes($_POST['column']);
+                $default = addslashes($_POST['default']);
+                $length = addslashes($_POST['length']);
+                $type = addslashes($_POST['type']);
+                $collection = addslashes($_POST['collection']);
+                $attributes = addslashes($_POST['attributes']);
+                $is_null = isset($_POST['is_null']);
+                $auto_increment = isset($_POST['auto_increment']);
+                $notice = '<div class="notice_failure">';
 
-                        if ($collection != MYSQL_COLLECTION_NONE && !preg_match('#^(.+?)' . MYSQL_COLLECTION_SPLIT . '(.+?)$#i', $collection, $matches)) {
-                            $notice .= 'Mã hóa - Đối chiếu không hợp lệ';
-                        } else if (empty($column)) {
-                            $notice .= 'Chưa nhập tên cột';
-                        } else if (isColumnsExists($column, $name, $columns, true)) {
-                            $notice .= 'Tên cột đã tồn tại';
-                        } else if (!empty($length) && !preg_match('#\\b[0-9]+\\b#', $length)) {
-                            $notice .= 'Độ dài không hợp lệ';
-                        } else {
-                            $type_put = $type . (empty($length) == false ? "($length)" : null);
-                            $collection_put = $collection == MYSQL_COLLECTION_NONE ? null : 'CHARACTER SET ' . $matches[1] . ' COLLATE ' . $matches[2];
-                            $attributes_put = $attributes == MYSQL_ATTRIBUTES_NONE ? null : $attributes;
-                            $null_put = $is_null ? 'NULL' : 'NOT NULL';
-                            $default_put = $default == null ? null : "DEFAULT '$default'";
-                            $auto_increment_put = $auto_increment ? 'AUTO_INCREMENT' : null;
+                if ($collection != MYSQL_COLLECTION_NONE && !preg_match('#^(.+?)' . MYSQL_COLLECTION_SPLIT . '(.+?)$#i', $collection, $matches)) {
+                    $notice .= 'Mã hóa - Đối chiếu không hợp lệ';
+                } elseif (empty($column)) {
+                    $notice .= 'Chưa nhập tên cột';
+                } elseif (isColumnsExists($column, $name, $columns, true)) {
+                    $notice .= 'Tên cột đã tồn tại';
+                } elseif (!empty($length) && !preg_match('#\\b[0-9]+\\b#', $length)) {
+                    $notice .= 'Độ dài không hợp lệ';
+                } else {
+                    $type_put = $type . (empty($length) == false ? "($length)" : null);
+                    $collection_put = $collection == MYSQL_COLLECTION_NONE ? null : 'CHARACTER SET ' . $matches[1] . ' COLLATE ' . $matches[2];
+                    $attributes_put = $attributes == MYSQL_ATTRIBUTES_NONE ? null : $attributes;
+                    $null_put = $is_null ? 'NULL' : 'NOT NULL';
+                    $default_put = $default == null ? null : "DEFAULT '$default'";
+                    $auto_increment_put = $auto_increment ? 'AUTO_INCREMENT' : null;
 
-                            $sql = "ALTER TABLE `$name` CHANGE `$columns` `$column` $type_put";
+                    $sql = "ALTER TABLE `$name` CHANGE `$columns` `$column` $type_put";
 
-                            if ($attributes_put != null)
-                                $sql .= ' ' . $attributes_put;
-
-                            if ($collection_put != null)
-                                $sql .= ' ' . $collection_put;
-
-                            $sql .= ' ' . $null_put;
-
-                            if ($default_put != null)
-                                $sql .= ' ' . $default_put;
-
-                            if ($auto_increment_put != null)
-                                $sql .= ' ' . $auto_increment_put;
-
-                            if (!mysqli_query($MySQLi, $sql))
-                                $notice .= 'Lỗi sửa cột: ' . mysqli_error($MySQLi);
-                            else
-                                goURL('database_table.php?action=list_struct&name=' . $name . DATABASE_NAME_PARAMATER_1);
-                        }
-
-                        $collection = $collection != MYSQL_COLLECTION_NONE && isset($matches) ? $matches[2] : MYSQL_COLLECTION_NONE;
-                        $notice .= '</div>';
-                    } else {
-                        $column = $info['Field'];
-                        $type = $info['Type'];
-
-                        if (strpos($info['Type'], ' ')) {
-                            $type = explode(' ', $info['Type']);
-                            $attributes = strtoupper($type[1]);
-                            $type = $type[0];
-                        }
-
-                        if (preg_match('#(\w+)\s*\((\d+)\)#i', $type, $matches)) {
-                            $type = strtoupper($matches[1]);
-                            $length = intval($matches[2]);
-                        } else {
-                            $type = strtoupper($type);
-                        }
-
-                        $default = htmlspecialchars($info['Default']);
-                        $is_null = strtolower($info['Null']) != 'no';
-                        $auto_increment = strtolower($info['Extra']) == 'auto_increment';
-                        $isDataTypeNumeric = isDataTypeNumeric($type);
-
-                        if ($isDataTypeNumeric)
-                            $collection = MYSQL_COLLECTION_NONE;
+                    if ($attributes_put != null) {
+                        $sql .= ' ' . $attributes_put;
                     }
 
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
-                    echo $notice;
-                    echo '<div class="list">
+                    if ($collection_put != null) {
+                        $sql .= ' ' . $collection_put;
+                    }
+
+                    $sql .= ' ' . $null_put;
+
+                    if ($default_put != null) {
+                        $sql .= ' ' . $default_put;
+                    }
+
+                    if ($auto_increment_put != null) {
+                        $sql .= ' ' . $auto_increment_put;
+                    }
+
+                    if (!mysqli_query($MySQLi, $sql)) {
+                        $notice .= 'Lỗi sửa cột: ' . mysqli_error($MySQLi);
+                    } else {
+                        goURL('database_table.php?action=list_struct&name=' . $name . DATABASE_NAME_PARAMATER_1);
+                    }
+                }
+
+                $collection = $collection != MYSQL_COLLECTION_NONE && isset($matches) ? $matches[2] : MYSQL_COLLECTION_NONE;
+                $notice .= '</div>';
+            } else {
+                $column = $info['Field'];
+                $type = $info['Type'];
+
+                if (strpos($info['Type'], ' ')) {
+                    $type = explode(' ', $info['Type']);
+                    $attributes = strtoupper($type[1]);
+                    $type = $type[0];
+                }
+
+                if (preg_match('#(\w+)\s*\((\d+)\)#i', $type, $matches)) {
+                    $type = strtoupper($matches[1]);
+                    $length = intval($matches[2]);
+                } else {
+                    $type = strtoupper($type);
+                }
+
+                $default = htmlspecialchars($info['Default']);
+                $is_null = strtolower($info['Null']) != 'no';
+                $auto_increment = strtolower($info['Extra']) == 'auto_increment';
+                $isDataTypeNumeric = isDataTypeNumeric($type);
+
+                if ($isDataTypeNumeric) {
+                    $collection = MYSQL_COLLECTION_NONE;
+                }
+            }
+
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+            echo $notice;
+            echo '<div class="list">
                         <span class="bull">&bull;</span>Cột: <strong class="name_columns_edit">' . $columns . '</strong><hr/>
                         <form action="database_table.php?action=edit_columns&name=' . $name . DATABASE_NAME_PARAMATER_1 . '&columns=' . $columns . '" method="post">
                             <span class="bull">&bull;</span>Tên cột:<br/>
@@ -370,31 +386,32 @@
                             <a href="database_table.php?action=delete_columns' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '&columns=' . $columns . '" id="href_delete_columns">Xóa</a>
                         </form>
                     </div>';
-                } else {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+        } else {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                     <div class="list">Tên cột không tồn tại</div>';
+        }
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'delete_columns') {
+        $info = null;
+        $title = 'Sửa cột: ' . DATABASE_NAME . ' > ' . $name;
+        $columns = isset($_GET['columns']) && empty($_GET['columns']) == false ? addslashes($_GET['columns']) : null;
+
+        include_once 'header.php';
+
+        if ($columns != null && isColumnsExists($columns, $name, null, true, $info)) {
+
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+
+            if (isset($_POST['accept'])) {
+                if (!mysqli_query($MySQLi, "ALTER TABLE `$name` DROP `$columns`")) {
+                    echo '<div class="notice_failure">Xóa cột thất bại: ' . mysqli_error($MySQLi) . '</div>';
+                } else {
+                    goURL('database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name);
                 }
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'delete_columns') {
-                $info = null;
-                $title = 'Sửa cột: ' . DATABASE_NAME . ' > ' . $name;
-                $columns = isset($_GET['columns']) && empty($_GET['columns']) == false ? addslashes($_GET['columns']) : null;
+            } elseif (isset($_POST['not'])) {
+                goURL('database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name);
+            }
 
-                include_once 'header.php';
-
-                if ($columns != null && isColumnsExists($columns, $name, null, true, $info)) {
-
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
-
-                    if (isset($_POST['accept'])) {
-                        if (!mysqli_query($MySQLi, "ALTER TABLE `$name` DROP `$columns`"))
-                            echo '<div class="notice_failure">Xóa cột thất bại: ' . mysqli_error($MySQLi) . '</div>';
-                        else
-                            goURL('database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name);
-                    } else if (isset($_POST['not'])) {
-                        goURL('database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name);
-                    }
-
-                    echo '<div class="list">
+            echo '<div class="list">
                         <form action="database_table.php?action=delete_columns' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '&columns=' . $columns . '" method="post">
                             <span>Bạn có thực sự muốn xóa cột <strong class="name_columns_delete">' . $info['Field'] . '</strong> này không?</span><hr/>
                             <center>
@@ -404,108 +421,111 @@
                             </center>
                         </form>
                     </div>';
-                } else {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+        } else {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                     <div class="list">Tên cột không tồn tại</div>';
+        }
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'add_data') {
+        $title = 'Tạo dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
+        $query = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
+        $count = mysqli_num_rows($query);
+
+        if ($page['current'] > 1) {
+            $page['paramater_0'] = '?page=' . $page['current'];
+            $page['paramater_1'] = '&page=' . $page['current'];
+        }
+
+        include_once 'header.php';
+
+        if ($query && $count > 0) {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+
+            $array = array();
+            $data = array();
+
+            while ($assoc = mysqli_fetch_assoc($query)) {
+                $array[$assoc['Field']] = $assoc;
+                $data[$assoc['Field']] = '';
+            }
+
+            if (isset($_POST['continue']) || isset($_POST['create'])) {
+                $sql = "INSERT INTO `$name` SET";
+                $split = null;
+                $cnt = count($data);
+                $i = 1;
+
+                foreach ($data as $key => $value) {
+                    $data[$key] = addslashes($_POST[$key]);
+                    $split = $i < $count ? ',' : null;
+                    $sql .= " `$key`='{$data[$key]}'{$split}";
+                    $i++;
                 }
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'add_data') {
-                $title = 'Tạo dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
-                $query = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
-                $count = mysqli_num_rows($query);
 
-                if ($page['current'] > 1) {
-                    $page['paramater_0'] = '?page=' . $page['current'];
-                    $page['paramater_1'] = '&page=' . $page['current'];
-                }
-
-                include_once 'header.php';
-
-                if ($query && $count > 0) {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
-
-                    $array = array();
-                    $data = array();
-
-                    while ($assoc = mysqli_fetch_assoc($query)) {
-                        $array[$assoc['Field']] = $assoc;
-                        $data[$assoc['Field']] = '';
-                    }
-
-                    if (isset($_POST['continue']) || isset($_POST['create'])) {
-                        $sql = "INSERT INTO `$name` SET";
-                        $split = null;
-                        $cnt = count($data);
-                        $i = 1;
-
+                if (!mysqli_query($MySQLi, $sql)) {
+                    echo '<div class="notice_failure">Tạo dữ liệu thất bại: ' . mysqli_error($MySQLi) . '</div>';
+                } else {
+                    if (isset($_POST['continue'])) {
                         foreach ($data as $key => $value) {
-                            $data[$key] = addslashes($_POST[$key]);
-                            $split = $i < $count ? ',' : null;
-                            $sql .= " `$key`='{$data[$key]}'{$split}";
-                            $i++;
+                            $data[$key] = '';
                         }
 
-                        if (!mysqli_query($MySQLi, $sql)) {
-                            echo '<div class="notice_failure">Tạo dữ liệu thất bại: ' . mysqli_error($MySQLi) . '</div>';
-                        } else {
-                            if (isset($_POST['continue'])) {
-                                foreach ($data AS $key => $value)
-                                    $data[$key] = '';
-
-                                echo '<div class="notice_succeed">Tạo dữ liệu thành công</div>';
-                            } else if (isset($_POST['create'])) {
-                                goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
-                            }
-                        }
+                        echo '<div class="notice_succeed">Tạo dữ liệu thành công</div>';
+                    } elseif (isset($_POST['create'])) {
+                        goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
                     }
+                }
+            }
 
-                    echo '<div class="list">
+            echo '<div class="list">
                         <form action="database_table.php?action=add_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1'] . '" method="post">';
 
-                        foreach ($array as $key => $value) {
-                            echo '<span class="bull">&bull;</span>Cột (<strong class="name_columns_create_data">' . $key . '</strong>):<br/>';
+            foreach ($array as $key => $value) {
+                echo '<span class="bull">&bull;</span>Cột (<strong class="name_columns_create_data">' . $key . '</strong>):<br/>';
 
-                            if (preg_match('/^([a-zA-Z0-9\-_]+)(\(+|\s+|\\b)/', $value['Type'], $matches) && isDataTypeHasLength($matches[1]) == false)
-                                echo '<textarea cols="18" rows="5" name="' . $key . '">' . htmlspecialchars(stripslashes($data[$key])) . '</textarea>';
-                            else
-                                echo '<input type="text" name="' . $key . '" value="' . htmlspecialchars(stripslashes($data[$key])) . '" size="18"/>';
+                if (preg_match('/^([a-zA-Z0-9\-_]+)(\(+|\s+|\\b)/', $value['Type'], $matches) && isDataTypeHasLength($matches[1]) == false) {
+                    echo '<textarea cols="18" rows="5" name="' . $key . '">' . htmlspecialchars(stripslashes($data[$key])) . '</textarea>';
+                } else {
+                    echo '<input type="text" name="' . $key . '" value="' . htmlspecialchars(stripslashes($data[$key])) . '" size="18"/>';
+                }
 
-                            echo '<br/>';
-                        }
+                echo '<br/>';
+            }
 
-                            echo '<hr/><input type="submit" name="continue" value="Tiếp tục"/> <input type="submit" name="create" value="Tạo"/>
+            echo '<hr/><input type="submit" name="continue" value="Tiếp tục"/> <input type="submit" name="create" value="Tạo"/>
                         </form>
                     </div>
                     <div class="tips">
                         <img src="icon/tips.png"/> Ấn tiếp tục để tạo và tạo tiếp, ấn tạo để tạo và về danh sách dữ liệu
                     </div>';
-                } else if ($count <= 0) {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+        } elseif ($count <= 0) {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                     <div class="list">
                         <span>Danh sách cột trống</span>
                     </div>';
-                } else {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+        } else {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                     <div class="list">
                         <span>Không thể lấy danh sách cột</span>
                     </div>';
-                }
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'truncate') {
-                $title = 'Xóa sạch dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
+        }
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'truncate') {
+        $title = 'Xóa sạch dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
 
-                include_once 'header.php';
+        include_once 'header.php';
 
-                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
-                if (isset($_POST['accept'])) {
-                    if (!mysqli_query($MySQLi, "TRUNCATE TABLE `$name`"))
-                        echo '<div class="notice_failure">Xóa sạch dữ liệu bảng thất bại</div>';
-                    else
-                        goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $order['paramater_1']);
-                } else if (isset($_POST['not'])) {
-                    goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
-                }
+        if (isset($_POST['accept'])) {
+            if (!mysqli_query($MySQLi, "TRUNCATE TABLE `$name`")) {
+                echo '<div class="notice_failure">Xóa sạch dữ liệu bảng thất bại</div>';
+            } else {
+                goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $order['paramater_1']);
+            }
+        } elseif (isset($_POST['not'])) {
+            goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
+        }
 
-                echo '<div class="list">
+        echo '<div class="list">
                     <form action="database_table.php?action=truncate&name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1'] . '" method="post">
                         <span>Bạn có thực sự muốn xóa sạch dữ liệu của bảng không, các cột sẽ không bị xóa?</span><hr/>
                         <center>
@@ -514,18 +534,18 @@
                         </center>
                     </form>
                 </div>';
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'view_data') {
-                $title = 'Xem dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
-                $where = isset($_GET['where']) && empty($_GET['where']) == false ? addslashes(rawurldecode($_GET['where'])) : null;
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'view_data') {
+        $title = 'Xem dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
+        $where = isset($_GET['where']) && empty($_GET['where']) == false ? addslashes(rawurldecode($_GET['where'])) : null;
 
-                include_once 'header.php';
+        include_once 'header.php';
 
-                if ($where != null) {
-                    $key = getColumnsKey($name);
-                    $info = mysqli_fetch_assoc(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1"));
+        if ($where != null) {
+            $key = getColumnsKey($name);
+            $info = mysqli_fetch_assoc(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1"));
 
-                    if ($info != false) {
-                        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+            if ($info != false) {
+                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                         <div class="list">
                             <span class="bull">&bull;</span>[<strong class="name_columns_edit">' . htmlspecialchars($key) . '</strong>] => <span>' . htmlspecialchars(stripslashes($where)) . '</span><hr/>
                             <center>
@@ -536,8 +556,8 @@
                         </div>
                         <div class="list_line">';
 
-                        foreach ($info AS $key => $value) {
-                            echo '<div id="line">
+                foreach ($info as $key => $value) {
+                    echo '<div id="line">
                                 <div>
                                     <span>' . htmlspecialchars((string) $value) . '</span>
                                 </div>
@@ -545,115 +565,121 @@
                                     [<strong class="name_columns_edit">' . htmlspecialchars((string) $key) . '</strong>]
                                 </div>
                             </div>';
-                        }
-
-                        echo '</div>';
-                    } else {
-                        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
-                        <div class="list">Lỗi khóa dữ liệu không đúng hoặc dữ liệu không tồn tại</div>';
-                    }
-                } else {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
-                    <div class="list">Lỗi khóa dữ liệu không đúng hoặc dữ liệu không tồn tại</div>';
                 }
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'edit_data') {
-                $title = 'Sửa dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
-                $where = isset($_GET['where']) && empty($_GET['where']) == false ? addslashes(rawurldecode($_GET['where'])) : null;
 
-                include_once 'header.php';
+                echo '</div>';
+            } else {
+                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+                        <div class="list">Lỗi khóa dữ liệu không đúng hoặc dữ liệu không tồn tại</div>';
+            }
+        } else {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+                    <div class="list">Lỗi khóa dữ liệu không đúng hoặc dữ liệu không tồn tại</div>';
+        }
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'edit_data') {
+        $title = 'Sửa dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
+        $where = isset($_GET['where']) && empty($_GET['where']) == false ? addslashes(rawurldecode($_GET['where'])) : null;
 
-                if ($where != null) {
-                    $key = getColumnsKey($name);
-                    $data = mysqli_fetch_assoc(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1"));
-                    $columns = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
+        include_once 'header.php';
 
-                    if ($data != false && $columns) {
-                        $array = array();
-                        $count = 0;
-                        $i = 0;
+        if ($where != null) {
+            $key = getColumnsKey($name);
+            $data = mysqli_fetch_assoc(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1"));
+            $columns = mysqli_query($MySQLi, "SHOW COLUMNS FROM `$name`");
 
-                        while ($assoc = mysqli_fetch_assoc($columns))
-                            $array[$assoc['Field']] = $assoc;
+            if ($data != false && $columns) {
+                $array = array();
+                $count = 0;
+                $i = 0;
 
-                        $count = count($array);
+                while ($assoc = mysqli_fetch_assoc($columns)) {
+                    $array[$assoc['Field']] = $assoc;
+                }
 
-                        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+                $count = count($array);
 
-                        if (isset($_POST['submit'])) {
-                            $sql = "UPDATE `$name` SET";
+                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
 
-                            foreach ($array AS $k => $v) {
-                                $data[$k] = addslashes($_POST[$k]);
-                                $sql .= " `$k`='{$data[$k]}'";
+                if (isset($_POST['submit'])) {
+                    $sql = "UPDATE `$name` SET";
 
-                                if ($i < $count - 1)
-                                    $sql .= ', ';
+                    foreach ($array as $k => $v) {
+                        $data[$k] = addslashes($_POST[$k]);
+                        $sql .= " `$k`='{$data[$k]}'";
 
-                                $i++;
-                            }
-
-                            $sql .= " WHERE `$key`='$where' LIMIT 1";
-                            $i = 0;
-
-                            if (!mysqli_query($MySQLi, $sql))
-                                echo '<div class="notice_failure">Lưu thất bại: ' . mysqli_error($MySQLi) . '</div>';
-                            else
-                                goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
+                        if ($i < $count - 1) {
+                            $sql .= ', ';
                         }
 
-                        echo '<div class="list">
+                        $i++;
+                    }
+
+                    $sql .= " WHERE `$key`='$where' LIMIT 1";
+                    $i = 0;
+
+                    if (!mysqli_query($MySQLi, $sql)) {
+                        echo '<div class="notice_failure">Lưu thất bại: ' . mysqli_error($MySQLi) . '</div>';
+                    } else {
+                        goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
+                    }
+                }
+
+                echo '<div class="list">
                             <span class="bull">&bull;</span>[<strong class="name_columns_edit">' . htmlspecialchars((string) $key) . '</strong>] => <span>' . htmlspecialchars(stripslashes($where)) . '</span><hr/>
                             <form action="database_table.php?action=edit_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . '&where=' . rawurlencode($where) . $page['paramater_1'] . $order['paramater_1'] . '" method="post">';
 
-                            foreach ($array AS $k => $v) {
-                                echo '<span class="bull">&bull;</span>Cột (<strong class="name_columns_create_data">' . $k . '</strong>):<br/>';
+                foreach ($array as $k => $v) {
+                    echo '<span class="bull">&bull;</span>Cột (<strong class="name_columns_create_data">' . $k . '</strong>):<br/>';
 
-                                if (preg_match('/^([a-zA-Z0-9\-_]+)(\(+|\s+|\\b)/', $v['Type'], $matches) && isDataTypeHasLength($matches[1]) == false)
-                                    echo '<textarea cols="18" rows="5" name="' . $k . '">' . htmlspecialchars(stripslashes((string) $data[$k])) . '</textarea>';
-                                else
-                                    echo '<input type="text" name="' . $k . '" value="' . htmlspecialchars(stripslashes((string) $data[$k])) . '" size="18"/>';
+                    if (preg_match('/^([a-zA-Z0-9\-_]+)(\(+|\s+|\\b)/', $v['Type'], $matches) && isDataTypeHasLength($matches[1]) == false) {
+                        echo '<textarea cols="18" rows="5" name="' . $k . '">' . htmlspecialchars(stripslashes((string) $data[$k])) . '</textarea>';
+                    } else {
+                        echo '<input type="text" name="' . $k . '" value="' . htmlspecialchars(stripslashes((string) $data[$k])) . '" size="18"/>';
+                    }
 
-                                if ($i < $count - 1)
-                                    echo '<br/>';
-                                else
-                                    echo '<hr/>';
+                    if ($i < $count - 1) {
+                        echo '<br/>';
+                    } else {
+                        echo '<hr/>';
+                    }
 
-                                $i++;
-                            }
+                    $i++;
+                }
 
-                                echo '<input type="submit" name="submit" value="Lưu"/>
+                echo '<input type="submit" name="submit" value="Lưu"/>
                                 <a href="database_table.php?action=delete_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . '&where=' . rawurlencode($where) . $page['paramater_1'] . $order['paramater_1'] . '" id="href_delete_columns">Xóa</a>
                                 <a href="database_table.php?action=view_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . '&where=' . rawurlencode($where) . $page['paramater_1'] . $order['paramater_1'] . '" id="href_edit_columns">Xem</a>
                             </form>
                         </div>';
-                    } else {
-                        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+            } else {
+                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                         <div class="list">Lỗi khóa dữ liệu không đúng hoặc dữ liệu không tồn tại</div>';
-                    }
-                } else {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+            }
+        } else {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                     <div class="list">Lỗi khóa dữ liệu không đúng hoặc dữ liệu không tồn tại</div>';
+        }
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'delete_data') {
+        $title = 'Xóa dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
+        $where = isset($_GET['where']) && empty($_GET['where']) == false ? addslashes(rawurldecode($_GET['where'])) : null;
+
+        include_once 'header.php';
+
+        if ($where != null) {
+            $key = getColumnsKey($name);
+
+            if (mysqli_num_rows(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1")) > 0) {
+                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+
+                if (isset($_POST['submit'])) {
+                    if (!mysqli_query($MySQLi, "DELETE FROM `$name` WHERE `$key`='$where' LIMIT 1")) {
+                        echo '<div class="notice_failure">Xóa thất bại: ' . mysqli_error($MySQLi) . '</div>';
+                    } else {
+                        goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
+                    }
                 }
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'delete_data') {
-                $title = 'Xóa dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
-                $where = isset($_GET['where']) && empty($_GET['where']) == false ? addslashes(rawurldecode($_GET['where'])) : null;
 
-                include_once 'header.php';
-
-                if ($where != null) {
-                    $key = getColumnsKey($name);
-
-                    if (mysqli_num_rows(mysqli_query($MySQLi, "SELECT * FROM `$name` WHERE `$key`='$where' LIMIT 1")) > 0) {
-                        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
-
-                        if (isset($_POST['submit'])) {
-                            if (!mysqli_query($MySQLi, "DELETE FROM `$name` WHERE `$key`='$where' LIMIT 1"))
-                                echo '<div class="notice_failure">Xóa thất bại: ' . mysqli_error($MySQLi) . '</div>';
-                            else
-                                goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
-                        }
-
-                        echo '<div class="list">
+                echo '<div class="list">
                             <span class="bull">&bull;</span>[<strong class="name_columns_edit">' . htmlspecialchars($key) . '</strong>] => <span>' . htmlspecialchars(stripslashes($where)) . '</span><hr/>
                             <form action="database_table.php?action=delete_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . '&where=' . rawurlencode($where) . $page['paramater_1'] . $order['paramater_1'] . '" method="post">
                                 <span>Bạn có thật sự muốn xóa dữ liệu này không?</span><hr/>
@@ -664,62 +690,63 @@
                                 </center>
                             </form>
                         </div>';
-                    } else {
-                        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+            } else {
+                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                         <div class="list">Lỗi khóa dữ liệu không đúng hoặc dữ liệu không tồn tại</div>';
-                    }
-                } else {
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+            }
+        } else {
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
                     <div class="list">Lỗi khóa dữ liệu không đúng hoặc dữ liệu không tồn tại</div>';
+        }
+    } elseif (isset($_GET['action']) && trim($_GET['action']) == 'selected_data') {
+        $title = 'Chọn lựa: ' . DATABASE_NAME . ' > ' . $name;
+        $entrys = isset($_POST['entry']) && is_array($_POST['entry']) && count($_POST['entry']) > 0 ? $_POST['entry'] : null;
+
+        if (isset($_POST['delete']) && $entry != null) {
+            $title = 'Xóa dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
+            $key = getColumnsKey($name);
+            $isAllExists = true;
+            $entryHtml = null;
+            $listEntryHtml = null;
+
+            foreach ($entrys as $v) {
+                if (mysqli_num_rows(mysqli_query($MySQLi, "SELECT `$key` FROM `$name` WHERE `$key`='" . addslashes($v) ."' LIMIT 1")) == 0) {
+                    $isAllExists = false;
+                    break;
+                } else {
+                    $entryHtml .= '<input type="hidden" name="entry[]" value="' . $v . '"/>';
+                    $listEntryHtml .= '<li><img src="icon/rows.png"/> <span>' . $v . '</span></li>';
                 }
-            } else if (isset($_GET['action']) && trim($_GET['action']) == 'selected_data') {
-                $title = 'Chọn lựa: ' . DATABASE_NAME . ' > ' . $name;
-                $entrys = isset($_POST['entry']) && is_array($_POST['entry']) && count($_POST['entry']) > 0 ? $_POST['entry'] : null;
+            }
 
-                if (isset($_POST['delete']) && $entry != null) {
-                    $title = 'Xóa dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
-                    $key = getColumnsKey($name);
-                    $isAllExists = true;
-                    $entryHtml = null;
-                    $listEntryHtml = null;
+            include_once 'header.php';
 
-                    foreach ($entrys AS $v) {
-                        if (mysqli_num_rows(mysqli_query($MySQLi, "SELECT `$key` FROM `$name` WHERE `$key`='" . addslashes($v) ."' LIMIT 1")) == 0) {
-                            $isAllExists = false;
-                            break;
+            if ($isAllExists) {
+                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+
+                if (isset($_POST['accept'])) {
+                    $isDeleteAll = true;
+
+                    foreach ($entrys as $v) {
+                        if (!mysqli_query($MySQLi, "DELETE FROM `$name` WHERE `$key`='" . addslashes($v) . "' LIMIT 1")) {
+                            $isDeleteAll = false;
+
+                            echo '<div class="notice_failure">Xóa [<strong>' . $v . '</strong>] thất bại: ' . mysqli_error($MySQLi) . '</div>';
                         } else {
-                            $entryHtml .= '<input type="hidden" name="entry[]" value="' . $v . '"/>';
-                            $listEntryHtml .= '<li><img src="icon/rows.png"/> <span>' . $v . '</span></li>';
+                            echo '<div class="notice_succeed">Xóa [<strong>' . $v . '</strong>] thành công</div>';
                         }
                     }
 
-                    include_once 'header.php';
+                    if ($isDeleteAll) {
+                        goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
+                    }
+                } elseif (isset($_POST['not'])) {
+                    goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
+                }
 
-                    if ($isAllExists) {
-                        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+                echo '<ul class="list">' . $listEntryHtml . '</ul>';
 
-                        if (isset($_POST['accept'])) {
-                            $isDeleteAll = true;
-
-                            foreach ($entrys AS $v) {
-                                if (!mysqli_query($MySQLi, "DELETE FROM `$name` WHERE `$key`='" . addslashes($v) . "' LIMIT 1")) {
-                                    $isDeleteAll = false;
-
-                                    echo '<div class="notice_failure">Xóa [<strong>' . $v . '</strong>] thất bại: ' . mysqli_error($MySQLi) . '</div>';
-                                } else {
-                                    echo '<div class="notice_succeed">Xóa [<strong>' . $v . '</strong>] thành công</div>';
-                                }
-                            }
-
-                            if ($isDeleteAll)
-                                goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
-                        } else if (isset($_POST['not'])) {
-                            goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1']);
-                        }
-
-                        echo '<ul class="list">' . $listEntryHtml . '</ul>';
-
-                        echo '<div class="list">
+                echo '<div class="list">
                             <form action="database_table.php?action=selected_data&name=' . $name . DATABASE_NAME_PARAMATER_1  . $page['paramater_1'] . $order['paramater_1'] . '" method="post">
                                 <span>Bạn có thật sự muốn xóa những dữ liệu đã chọn không?</span><hr/>
                                 <input type="hidden" name="delete" value="1"/>
@@ -730,87 +757,92 @@
                                 </center>
                             </form>
                         </div>';
-                    } else {
-                        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
-                        <div class="list">Dữ liệu không tồn tại</div>';
-                    }
-                } else if ($entrys == null) {
-                    include_once 'header.php';
-
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
-                    <div class="list">Không có mục nào được chọn</div>';
-                } else {
-                    include_once 'header.php';
-
-                    echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
-                    <div class="list">Không có lựa chọn</div>';
-                }
             } else {
-                $title = 'Danh sách dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
-                $by = getColumnsKey($name);
+                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+                        <div class="list">Dữ liệu không tồn tại</div>';
+            }
+        } elseif ($entrys == null) {
+            include_once 'header.php';
 
-                include_once 'header.php';
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+                    <div class="list">Không có mục nào được chọn</div>';
+        } else {
+            include_once 'header.php';
 
-                $page['start'] = 0;
-                $page['end'] = $configs['page_database_list_rows'];
+            echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>
+                    <div class="list">Không có lựa chọn</div>';
+        }
+    } else {
+        $title = 'Danh sách dữ liệu: ' . DATABASE_NAME . ' > ' . $name;
+        $by = getColumnsKey($name);
 
-                if ($page['current'] > 1 && $configs['page_database_list_rows'] > 0) {
-                    $page['start'] = ($page['current'] * $configs['page_database_list_rows']) - $configs['page_database_list_rows'];
-                    $page['end'] = $configs['page_database_list_rows'];
+        include_once 'header.php';
 
-                    $page['paramater_0'] = '?page=' . $page['current'];
-                    $page['paramater_1'] = '&page=' . $page['current'];
-                }
+        $page['start'] = 0;
+        $page['end'] = $configs['page_database_list_rows'];
 
-                if ($configs['page_database_list_rows'] > 0 && empty($by) == false)
-                    $query = mysqli_query($MySQLi, "SELECT * FROM `$name` ORDER BY `$by` {$order['name']} LIMIT {$page['start']}, {$page['end']}");
-                else if (empty($by) == false)
-                    $query = mysqli_query($MySQLi, "SELECT * FROM `$name` ORDER BY `$by` {$order['name']}");
+        if ($page['current'] > 1 && $configs['page_database_list_rows'] > 0) {
+            $page['start'] = ($page['current'] * $configs['page_database_list_rows']) - $configs['page_database_list_rows'];
+            $page['end'] = $configs['page_database_list_rows'];
 
-                $count = empty($by) == false ? mysqli_query($MySQLi, "SELECT * FROM `$name`")->num_rows : 0;
+            $page['paramater_0'] = '?page=' . $page['current'];
+            $page['paramater_1'] = '&page=' . $page['current'];
+        }
 
-                if ($count <= 0 && isset($_GET['start']))
-                    goURL('database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . $order['paramater_1']);
+        if ($configs['page_database_list_rows'] > 0 && empty($by) == false) {
+            $query = mysqli_query($MySQLi, "SELECT * FROM `$name` ORDER BY `$by` {$order['name']} LIMIT {$page['start']}, {$page['end']}");
+        } elseif (empty($by) == false) {
+            $query = mysqli_query($MySQLi, "SELECT * FROM `$name` ORDER BY `$by` {$order['name']}");
+        }
 
-                echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+        $count = empty($by) == false ? mysqli_query($MySQLi, "SELECT * FROM `$name`")->num_rows : 0;
 
-                if ($count <= 0) {
-                    echo '<ul class="list">
+        if ($count <= 0 && isset($_GET['start'])) {
+            goURL('database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . $order['paramater_1']);
+        }
+
+        echo '<div class="title"><div class="ellipsis">' . $title . '</div></div>';
+
+        if ($count <= 0) {
+            echo '<ul class="list">
                         <li>
                             <img src="icon/empty.png"/> Không có dữ liệu
                         </li>
                     </ul>';
+        } else {
+            if ($configs['page_database_list_rows'] > 0) {
+                $page['total'] = ceil($count / $configs['page_database_list_rows']);
+
+                if ($page['current'] > $page['total']) {
+                    goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . ($page['total'] <= 1 ? null : '&page=' . $page['total']) . $order['paramater_1']);
+                }
+            }
+
+            echo '<script language="javascript" src="' . asset('js/checkbox.js') . '"></script>';
+            echo '<form action="database_table.php?action=selected_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1']  . $order['paramater_1'] . '" method="post" name="form"><ul class="list">';
+
+            {
+                echo '<li><center>';
+
+                if ($order['desc'] == true) {
+                    echo '<a href="database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . '"><strong class="order_query_href">ASC</strong></a>';
                 } else {
-                    if ($configs['page_database_list_rows'] > 0) {
-                        $page['total'] = ceil($count / $configs['page_database_list_rows']);
+                    echo '<strong class="order_query">ASC</strong>';
+                }
 
-                        if ($page['current'] > $page['total'])
-                            goURL('database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . ($page['total'] <= 1 ? null : '&page=' . $page['total']) . $order['paramater_1']);
-                    }
+                echo ' <span> | </span> ';
 
-                    echo '<script language="javascript" src="' . asset('js/checkbox.js') . '"></script>';
-                    echo '<form action="database_table.php?action=selected_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1']  . $order['paramater_1'] . '" method="post" name="form"><ul class="list">';
+                if ($order['desc'] == false) {
+                    echo '<a href="database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . '&order=1"><strong class="order_query_href">DESC</strong></a>';
+                } else {
+                    echo '<strong class="order_query">DESC</strong>';
+                }
 
-                    {
-                        echo '<li><center>';
+                echo '</center></li>';
+            }
 
-                        if ($order['desc'] == true)
-                            echo '<a href="database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . '"><strong class="order_query_href">ASC</strong></a>';
-                        else
-                            echo '<strong class="order_query">ASC</strong>';
-
-                        echo ' <span> | </span> ';
-
-                        if ($order['desc'] == false)
-                            echo '<a href="database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . '&order=1"><strong class="order_query_href">DESC</strong></a>';
-                        else
-                            echo '<strong class="order_query">DESC</strong>';
-
-                        echo '</center></li>';
-                    }
-
-                    while ($assoc = mysqli_fetch_assoc($query))
-                        echo '<li>
+            while ($assoc = mysqli_fetch_assoc($query)) {
+                echo '<li>
                             <input type="checkbox" name="entry[]" value="' . $assoc[$by] . '"/>
                             <a href="database_table.php?action=edit_data&name=' . $name . DATABASE_NAME_PARAMATER_1 . '&where=' . rawurlencode($assoc[$by]) . $page['paramater_1'] . $order['paramater_1'] . '">
                                 <img src="icon/rows.png"/>
@@ -819,88 +851,94 @@
                                 <span>' . htmlspecialchars($assoc[$by]) . '</span>
                             </a>
                         </li>';
+            }
 
-                    echo '<li><input type="checkbox" name="all" value="1" onClick="javascript:onCheckItem();"/> <strong class="form_checkbox_all">Chọn tất cả</strong></li>';
+            echo '<li><input type="checkbox" name="all" value="1" onClick="javascript:onCheckItem();"/> <strong class="form_checkbox_all">Chọn tất cả</strong></li>';
 
-                    if ($page['total'] > 1)
-                        echo '<li class="page">' . page($page['current'], $page['total'], array(PAGE_URL_DEFAULT => 'database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $order['paramater_1'], PAGE_URL_START => 'database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $order['paramater_1'] . '&page=')) . '</li>';
+            if ($page['total'] > 1) {
+                echo '<li class="page">' . page($page['current'], $page['total'], array(PAGE_URL_DEFAULT => 'database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $order['paramater_1'], PAGE_URL_START => 'database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $order['paramater_1'] . '&page=')) . '</li>';
+            }
 
-                    echo '</ul>
+            echo '</ul>
                         <div class="list">
                             <input type="submit" name="delete" value="Xóa"/>
                         </div>
                     </form>';
-                }
-            }
+        }
+    }
 
-            echo '<div class="title">Chức năng</div>
+    echo '<div class="title">Chức năng</div>
             <ul class="list">';
 
-                if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'add_columns'))
-                    echo '<li><img src="icon/create.png"/> <a href="database_table.php?action=add_columns' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '">Tạo cột</a></li>';
+    if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'add_columns')) {
+        echo '<li><img src="icon/create.png"/> <a href="database_table.php?action=add_columns' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '">Tạo cột</a></li>';
+    }
 
-                if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'add_data'))
-                    echo '<li><img src="icon/insert_query.png"/> <a href="database_table.php?action=add_data' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . $page['paramater_1'] . $order['paramater_1'] . '">Tạo dữ liệu</a></li>';
+    if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'add_data')) {
+        echo '<li><img src="icon/insert_query.png"/> <a href="database_table.php?action=add_data' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . $page['paramater_1'] . $order['paramater_1'] . '">Tạo dữ liệu</a></li>';
+    }
 
-                if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'rename'))
-                    echo '<li><img src="icon/rename.png"/> <a href="database_table.php?action=rename' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '">Đổi tên bảng</a></li>';
+    if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'rename')) {
+        echo '<li><img src="icon/rename.png"/> <a href="database_table.php?action=rename' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '">Đổi tên bảng</a></li>';
+    }
 
-                if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'delete'))
-                    echo '<li><img src="icon/delete.png"/> <a href="database_table.php?action=delete' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '">Xóa bảng</a></li>';
+    if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'delete')) {
+        echo '<li><img src="icon/delete.png"/> <a href="database_table.php?action=delete' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '">Xóa bảng</a></li>';
+    }
 
-                if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'truncate'))
-                    echo '<li><img src="icon/clear.png"/> <a href="database_table.php?action=truncate&name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1'] . '">Xóa sạch dữ liệu</a></li>';
+    if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'truncate')) {
+        echo '<li><img src="icon/clear.png"/> <a href="database_table.php?action=truncate&name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1'] . '">Xóa sạch dữ liệu</a></li>';
+    }
 
-                if (isset($_GET['action']) && empty($_GET['action']) == false)
-                    echo '<li><img src="icon/rows.png"/> <a href="database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1'] . '">Danh sách dữ liệu</a></li>';
+    if (isset($_GET['action']) && empty($_GET['action']) == false) {
+        echo '<li><img src="icon/rows.png"/> <a href="database_table.php?name=' . $name . DATABASE_NAME_PARAMATER_1 . $page['paramater_1'] . $order['paramater_1'] . '">Danh sách dữ liệu</a></li>';
+    }
 
-                if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'list_struct'))
-                    echo '<li><img src="icon/columns.png"/> <a href="database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '">Danh sách cột</a></li>';
+    if (isset($_GET['action']) == false || (isset($_GET['action']) && $_GET['action'] != 'list_struct')) {
+        echo '<li><img src="icon/columns.png"/> <a href="database_table.php?action=list_struct' . DATABASE_NAME_PARAMATER_1 . '&name=' . $name . '">Danh sách cột</a></li>';
+    }
 
-                echo '<li><img src="icon/database_table.png"/> <a href="database_tables.php' . DATABASE_NAME_PARAMATER_0 . '">Danh sách bảng</a></li>';
+    echo '<li><img src="icon/database_table.png"/> <a href="database_tables.php' . DATABASE_NAME_PARAMATER_0 . '">Danh sách bảng</a></li>';
 
-                if (IS_DATABASE_ROOT)
-                    echo '<li><img src="icon/database.png"/> <a href="database_lists.php">Danh sách database</a></li>';
+    if (IS_DATABASE_ROOT) {
+        echo '<li><img src="icon/database.png"/> <a href="database_lists.php">Danh sách database</a></li>';
+    }
 
-            echo '</ul>';
-        } else if ($name == null || $isTableExists == false) {
-            include_once 'header.php';
+    echo '</ul>';
+} elseif ($name == null || $isTableExists == false) {
+    include_once 'header.php';
 
-            echo '<div class="title">' . $title . '</div>
+    echo '<div class="title">' . $title . '</div>
             <div class="list">Tên bảng không tồn tại</div>
             <div class="title">Chức năng</div>
             <ul class="list">
                 <li><img src="icon/database_table.png"/> <a href="database_tables.php' . DATABASE_NAME_PARAMATER_0 . '">Danh sách bảng</a></li>';
 
-                if (IS_DATABASE_ROOT)
-                    echo '<li><img src="icon/database.png"/> <a href="database_lists.php">Danh sách database</a></li>';
+    if (IS_DATABASE_ROOT) {
+        echo '<li><img src="icon/database.png"/> <a href="database_lists.php">Danh sách database</a></li>';
+    }
 
-            echo '</ul>';
-        } else if (ERROR_CONNECT == false && ERROR_SELECT_DB && IS_DATABASE_ROOT) {
-            include_once 'header.php';
+    echo '</ul>';
+} elseif (ERROR_CONNECT == false && ERROR_SELECT_DB && IS_DATABASE_ROOT) {
+    include_once 'header.php';
 
-            echo '<div class="title">' . $title . '</div>
+    echo '<div class="title">' . $title . '</div>
             <div class="list">Không thể chọn database</div>
             <div class="title">Chức năng</div>
             <ul class="list">
                 <li><img src="icon/database.png"/> <a href="database_lists.php">Danh sách database</a></li>
             </ul>';
-        } else {
-            include_once 'header.php';
+} else {
+    include_once 'header.php';
 
-            echo '<div class="title">' . $title . '</div>
+    echo '<div class="title">' . $title . '</div>
             <div class="list">Lỗi cấu hình hoặc không kết nối được</div>
             <div class="title">Chức năng</div>
             <ul class="list">
                 <li><img src="icon/disconnect.png"/> <a href="database_disconnect.php">Ngắt kết nối database</a></li>
             </ul>';
-        }
+}
 
-        include_once 'footer.php';
-    } else {
-        goURL('login.php');
-    }
+include_once 'footer.php';
 
-    include_once 'database_close.php';
-
-?>
+include_once 'database_close.php';
