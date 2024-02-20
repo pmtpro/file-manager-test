@@ -352,7 +352,7 @@ if (IS_CONNECT && $name != null && ($isTableExists = isTableExists($name))) {
                     $type = strtoupper($type);
                 }
 
-                $default = htmlspecialchars($info['Default']);
+                $default = htmlspecialchars((string) $info['Default']);
                 $is_null = strtolower($info['Null']) != 'no';
                 $auto_increment = strtolower($info['Extra']) == 'auto_increment';
                 $isDataTypeNumeric = isDataTypeNumeric($type);
@@ -376,9 +376,9 @@ if (IS_CONNECT && $name != null && ($isTableExists = isTableExists($name))) {
                             <span class="bull">&bull;</span>Loại dữ liệu:<br/>
                             <select name="type">' . printDataType(stripslashes($type)) . '</select><br/>
                             <span class="bull">&bull;</span>Mã hóa - Đối chiếu:<br/>
-                            <select name="collection">' . printCollection(stripslashes($collection)) . '</select><br/>
+                            <select name="collection">' . printCollection(stripslashes((string) $collection)) . '</select><br/>
                             <span class="bull">&bull;</span>Thuộc tính:<br/>
-                            <select name="attributes">' . printAttributes(stripslashes($attributes)) . '</select><br/>
+                            <select name="attributes">' . printAttributes(stripslashes((string) $attributes)) . '</select><br/>
                             <span class="bull">&bull;</span>Thêm:<br/>
                             <input type="checkbox" name="is_null" value="1"' . ($is_null ? ' checked="checked"' : null) . '/>Null<br/>
                             <input type="checkbox" name="auto_increment" value="1"' . ($auto_increment ? ' checked="checked"' : null) . '/>Tự tăng giá trị<hr/>
