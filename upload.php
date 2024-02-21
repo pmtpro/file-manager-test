@@ -1,13 +1,8 @@
 <?php
 
-const ACCESS = true;
+define('ACCESS', true);
 
-include_once 'function.php';
-
-// login
-if (!IS_LOGIN) {
-    goURL('login.php');
-}
+require_once 'function.php';
 
 $title = 'Tải lên tập tin';
 
@@ -42,10 +37,13 @@ if ($dir == null || !is_dir(processDirectory($dir))) {
                     if ($_FILES['file']['error'] == UPLOAD_ERR_INI_SIZE) {
                         echo '<div class="notice_failure">Tập tin <strong class="file_name_upload">' . $_FILES['file']['name'][$i] . '</strong> vượt quá kích thước cho phép</div>';
                     } else {
-                        if (copy($_FILES['file']['tmp_name'][$i], $dir . '/' . str_replace(['_jar', '.jar1', '.jar2'], '.jar', $_FILES['file']['name'][$i])))
+                        $newName = $dir . '/' . str_replace(['_jar', '.jar1', '.jar2'], '.jar', $_FILES['file']['name'][$i]);
+
+                        if (move_uploaded_file($_FILES['file']['tmp_name'][$i], $newName)) {
                             echo '<div class="notice_succeed">Tải lên tập tin <strong class="file_name_upload">' . $_FILES['file']['name'][$i] . '</strong>, <span class="file_size_upload">' . size($_FILES['file']['size'][$i]) . '</span> thành công</div>';
-                        else
+                        } else {
                             echo '<div class="notice_failure">Tải lên tập tin <strong class="file_name_upload">' . $_FILES['file']['name'][$i] . '</strong> thất bại</div>';
+                        }
                     }
                 }
             }
