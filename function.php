@@ -462,6 +462,11 @@ function rrmdir($path)
     return false;
 }
 
+function removeDir($path)
+{
+    return rrmdir($path);
+}
+
 function rrms($entrys, $dir)
 {
     foreach ($entrys as $e) {

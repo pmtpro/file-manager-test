@@ -2,17 +2,13 @@
 
 const ACCESS = true;
 
-include_once 'function.php';
-
-if (!IS_LOGIN) {
-    goURL('login.php');
-}
+require_once 'function.php';
 
 $title = 'Cài đặt';
 $ref   = $_POST['ref'] ?? (isset($_SERVER['HTTP_REFFRER']) ? $_SERVER['HTTP_REFERER'] : null);
 $ref   = $ref != $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ? $ref : null;
 
-include_once 'header.php';
+require_once 'header.php';
 
 echo '<div class="title">' . $title . '</div>';
 
@@ -124,6 +120,7 @@ if ($ref != null) {
 }
 
 echo '<li><img src="icon/download.png" alt=""/> <a href="update.php">Cập nhật</a></li>';
+echo '<li><img src="icon/empty.png" alt=""/> <a href="reinstall.php">Cài đặt lại!!!</a></li>';
 echo '</ul>';
 
-include_once 'footer.php';
+require_once 'footer.php';
