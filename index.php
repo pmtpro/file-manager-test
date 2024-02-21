@@ -3,7 +3,7 @@
 const ACCESS = true;
 const INDEX  = true;
 
-include_once 'function.php';
+require_once 'function.php';
 
 if (!IS_LOGIN) {
     goURL('login.php');
@@ -41,27 +41,30 @@ if (!IS_INSTALL_ROOT_DIRECTORY && $count > 0) {
 
     foreach ($handler as $entry) {
         if ($entry != '.' && $entry != '..') {
-            if ($entry == DIRECTORY_FILE_MANAGER && IS_ACCESS_PARENT_PATH_FILE_MANAGER) ;
+            if ($entry == DIRECTORY_FILE_MANAGER && IS_ACCESS_PARENT_PATH_FILE_MANAGER) {
             /* Is hide directory File Manager */
-            elseif (is_dir($dir . '/' . $entry))
+            } elseif (is_dir($dir . '/' . $entry)) {
                 $folders[] = $entry;
-            else
+            } else {
                 $files[] = $entry;
+            }
         }
     }
 
     if (count($folders) > 0) {
-        asort($folders);
+        natcasesort($folders);
 
-        foreach ($folders as $entry)
+        foreach ($folders as $entry) {
             $lists[] = array('name' => $entry, 'is_directory' => true);
+        }
     }
 
     if (count($files) > 0) {
         natcasesort($files);
 
-        foreach ($files as $entry)
+        foreach ($files as $entry) {
             $lists[] = array('name' => $entry, 'is_directory' => false);
+        }
     }
 }
 
@@ -82,16 +85,18 @@ if (!IS_INSTALL_ROOT_DIRECTORY && $dir != '/' && strpos($dir, '/') !== false) {
             $item = '/' . $entry;
         }
 
-        if ($key < count($array) - 1)
+        if ($key < count($array) - 1) {
             $html .= '/<a href="index.php?dir=' . rawurlencode($url . $item) . '">';
-        else
+        } else {
             $html .= '/';
+        }
 
         $url  .= $item;
         $html .= substring($entry, 0, NAME_SUBSTR, NAME_SUBSTR_ELLIPSIS);
 
-        if ($key < count($array) - 1)
+        if ($key < count($array) - 1) {
             $html .= '</a>';
+        }
     }
 }
 
@@ -117,10 +122,11 @@ if (!IS_INSTALL_ROOT_DIRECTORY) {
     if (preg_replace('|[a-zA-Z]+:|', '', str_replace('\\', '/', $dir)) != '/') {
         $path = strrchr($dir, '/');
 
-        if ($path !== false)
+        if ($path !== false) {
             $path = 'index.php?dir=' . rawurlencode(substr($dir, 0, strlen($dir) - strlen($path)));
-        else
+        } else {
             $path = 'index.php';
+        }
 
         echo '<li class="normal">
                     <img src="icon/back.png" style="margin-left: 5px; margin-right: 5px"/> 
@@ -139,8 +145,9 @@ if (!IS_INSTALL_ROOT_DIRECTORY) {
         if ($configs['page_list'] > 0 && $count > $configs['page_list']) {
             $pages['total'] = ceil($count / $configs['page_list']);
 
-            if ($pages['total'] <= 0 || $pages['current'] > $pages['total'])
+            if ($pages['total'] <= 0 || $pages['current'] > $pages['total']) {
                 goURL('index.php?dir=' . $dirEncode . ($pages['total'] <= 0 ? null : '&page_list=' . $pages['total']));
+            }
 
             $start = ($pages['current'] * $configs['page_list']) - $configs['page_list'];
             $end   = $start + $configs['page_list'] >= $count ? $count : $start + $configs['page_list'];
@@ -195,12 +202,13 @@ if (!IS_INSTALL_ROOT_DIRECTORY) {
                     $isEdit = true;
                 }
 
-                if (strtolower($name) == 'error_log' || $isEdit)
+                if (strtolower($name) == 'error_log' || $isEdit) {
                     $edit[0] = '<a href="edit_text.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">';
-                elseif (in_array($type, $formats['zip']))
+                } elseif (in_array($type, $formats['zip'])) {
                     $edit[0] = '<a href="file_unzip.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">';
-                else
+                } else {
                     $edit[0] = '<a href="file_rename.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">';
+                }
 
                 echo '<li class="file">
                         <p>
@@ -218,8 +226,9 @@ if (!IS_INSTALL_ROOT_DIRECTORY) {
 
         echo '<li class="normal"><input type="checkbox" name="all" value="1" onClick="javascript:onCheckItem();"/> <strong class="form_checkbox_all">Chọn tất cả</strong></li>';
 
-        if ($configs['page_list'] > 0 && $pages['total'] > 1)
+        if ($configs['page_list'] > 0 && $pages['total'] > 1) {
             echo '<li class="normal">' . page($pages['current'], $pages['total'], array(PAGE_URL_DEFAULT => 'index.php?dir=' . $dirEncode, PAGE_URL_START => 'index.php?dir=' . $dirEncode . '&page_list=')) . '</li>';
+        }
     }
 
     echo '</ul>';

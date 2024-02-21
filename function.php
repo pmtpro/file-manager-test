@@ -9,7 +9,8 @@ error_reporting(E_ALL);
 
 mysqli_report(MYSQLI_REPORT_ERROR);
 
-ob_start();
+@session_start();
+@ob_start();
 
 // Check require function
 {

@@ -6,8 +6,6 @@ require_once 'function.php';
 require_once __DIR__ . '/lib/pclzip.class.php';
 require_once 'update.class.php';
 
-@session_start();
-
 define('FORMATS', $formats);
 
 function remove_dir($dir = null) {
