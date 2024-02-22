@@ -40,14 +40,12 @@ if (isset($_POST['format_php'])) {
 
         $result = exec("vendor/bin/php-cs-fixer fix {$tempFile} --config {$configFile}");
 
-        if ($result !== false) {
+        if ($result) {
             $data['format'] = file_get_contents($tempFile);
             $data['error'] = '';
 
             @unlink($tempFile);
             //@unlink($cacheFile);
-        } else {
-            $data['error'] = $result;
         }
     }
 
