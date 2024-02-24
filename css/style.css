@@ -1,5 +1,6 @@
 * {
     word-wrap: break-word;
+    box-sizing: border-box;
 }
 
 @media (min-width: 240px) {
@@ -330,7 +331,7 @@ ul.list_file > li, ul.list_database > li {
 }
 
 ul.list_file > li.normal, ul.list_database > li.normal {
-    padding: 7px 5px 7px 5px;
+    padding: 7px 5px;
 }
 
 ul.list_file > li.normal img,
@@ -364,7 +365,8 @@ ul.list_database > li:last-child {
 }
 
 ul.list_file > li.folder > div {
-    height: 21px;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
     padding-right: 30px !important;
 }
 
