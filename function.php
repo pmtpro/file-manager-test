@@ -609,7 +609,7 @@ function moves($entrys, $dir, $path)
 }
 
 
-function copy_folder_recursive($source, $destination, $overwrite = true) {
+function mergeFolder($source, $destination, $overwrite = true) {
     if (!is_dir($source)) {
         return false; // Source is not a directory
     }
@@ -626,7 +626,7 @@ function copy_folder_recursive($source, $destination, $overwrite = true) {
             $dst_file = $destination . '/' . $file;
 
             if (is_dir($src_file)) {
-                copy_folder_recursive($src_file, $dst_file);
+                mergeFolder($src_file, $dst_file);
             } else {
                 copy($src_file, $dst_file); // Overwrite existing files
             }

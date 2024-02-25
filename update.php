@@ -71,7 +71,7 @@ if (isset($_POST['submit'])) {
     }
 
     if(isset($_POST['all'])) {
-        copy_folder_recursive(__DIR__ . '/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER, __DIR__);
+        mergeFolder(__DIR__ . '/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER, __DIR__);
         @remove_dir(__DIR__ .'/tmp/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
         @remove_dir($thisver .'/'. NAME_DIRECTORY_INSTALL_FILE_MANAGER);
 

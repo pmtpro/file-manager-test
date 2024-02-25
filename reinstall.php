@@ -29,7 +29,7 @@ if ($remoteVersion === false) {
 
                 $folder = 'tmp/' . $remoteVersion['repo'];
 
-                copy_folder_recursive($folder, __DIR__);
+                mergeFolder($folder, __DIR__);
 
                 removeDir($folder);
 
