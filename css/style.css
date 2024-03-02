@@ -130,7 +130,7 @@ div#header > ul {
 }
 
 div#header > ul li {
-    display: inline;
+    display: inline-block;
     margin: 3px;
 }
 
@@ -702,6 +702,7 @@ strong.order_query_href {
 
 
 .scroll-to-top {
+    box-sizing: content-box;
     position: fixed;
     right: 20px;
     bottom: 20px;
@@ -743,4 +744,50 @@ strong.order_query_href {
     content: "";
     background-color: #fff;
     transform: translate(0, -50%) rotate(-45deg);
+}
+
+#nav-menu {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #cecece;
+    float: left;
+}
+
+#menuOverlay {
+    display:none;
+    -webkit-backdrop-filter:blur(7px);
+    backdrop-filter:blur(7px);
+    background-color:rgba(0,0,0,.5);
+    position:fixed;
+    z-index:999;
+    top:0;
+    left:0;
+    bottom:0;
+    right:-100px
+}
+
+.menuToggle {
+    padding-top: 10px;
+    z-index: 1000;
+    position: fixed;
+    top:0;
+    left:-240px;
+    width: 240px;
+    height: 100%;
+    background-image: linear-gradient(to bottom,#ffffff 0,#b5bcc3 100%);
+    transition: left .5s;
+    overflow-y: scroll;
+}
+
+body.has-menu {
+    height:100vh;
+    overflow-y:hidden!important
+}
+
+body.has-menu #menuOverlay {
+    display: block
+}
+
+body.has-menu .menuToggle {
+    left:0
 }

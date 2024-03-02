@@ -1,4 +1,9 @@
-<?php if (!defined('ACCESS')) die('Not access'); ?>
+<?php
+
+if (!defined('ACCESS')) die('Not access');
+
+$menuToggle = '';
+?>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -17,11 +22,15 @@
 
 <div id="header">
     <ul>
-        <li><a href="index.php"><img src="icon/home.png" /></a></li>
-        <?php if (!empty($dir) && is_dir(processDirectory($dir))) { ?>
-            <li id="copyDirPath" data-path="<?php echo rawurlencode($dir); ?>"><img src="icon/copy.png" /></li>
-        <?php } ?>
         <?php if (!IS_INSTALL_ROOT_DIRECTORY && IS_LOGIN) { ?>
+            <button id="nav-menu">&#9776;</button>
+        <?php } ?>
+        <li><a href="index.php"><img src="icon/home.png" /></a></li>
+        <?php if (!IS_INSTALL_ROOT_DIRECTORY && IS_LOGIN) { ?>
+            <?php if (!empty($dir) && is_dir(processDirectory($dir))) { ?>
+            <li id="copyDirPath" data-path="<?php echo rawurlencode($dir); ?>"><img src="icon/copy.png" /></li>
+            <?php } ?>
+            
             <?php if (!defined('IS_CONNECT')) { ?>
                 <li><a href="database.php"><img src="icon/database.png"/></a></li>
             <?php } else { ?>
@@ -31,6 +40,7 @@
             <li><a href="logout.php"><img src="icon/exit.png" /></a></li>
         <?php } ?>
     </ul>
+    <div style="clear: both"></div>
 </div>
 
 <div id="container">

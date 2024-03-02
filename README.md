@@ -2,7 +2,7 @@
 
 PHP File Manager by Izero
 
-Edit by PMTpro
+Edit by linh && pmtpro
 
 ## Báo lỗi
 

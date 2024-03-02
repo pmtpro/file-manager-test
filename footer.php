@@ -1,7 +1,8 @@
-<?php if (!defined('ACCESS')) die('Not access'); ?>
-
-<?php if (IS_LOGIN) { ?>
 <?php
+
+if (!defined('ACCESS')) die('Not access');
+
+if (IS_LOGIN) {
     require __DIR__ . '/lib/bookmark.class.php';
 
     define('BOOKMARK_FILE', __DIR__ . '/bookmark.json');
@@ -25,60 +26,67 @@
     }
     
     $bookmarks = array_reverse($Bookmark->get());
-?>
 
-<style>
+    $menuToggle .= '<style>
     ul.list li {
         white-space: normal;
         font-size: small;
     }
-</style>
-<div class="title">Bookmark</div>
-<ul class="list">
-    <?php if (
+    </style>
+    <div class="title">Bookmark</div>
+    <ul class="list">';
+
+    if (
         !empty($dir)
         && is_dir(processDirectory($dir))
-    ) { ?>
-    <li>
+    ) {
+        $menuToggle .= '<li>
         <img src="icon/create.png" />
-        <a href="index.php?add_bookmark=<?php echo rawurlencode($dir); ?>">
+        <a href="index.php?add_bookmark=' . rawurlencode($dir) . '">
             Thêm thư mục hiện tại
         </a>
-    </li>
-    <?php } ?>
+        </li>';
+    }
 
-    <?php foreach ($bookmarks as $bookmark) { ?>
-    <li>
-        <img src="icon/folder.png" />
-        <a href="index.php?dir=<?php echo rawurlencode($bookmark); ?>">
-            <?php echo htmlspecialchars($bookmark); ?>
+    foreach ($bookmarks as $bookmark) {
+        $menuToggle .= '<li>
+        
+        <a href="index.php?dir=' . rawurlencode($bookmark) . '">
+            ' . htmlspecialchars(dirname($bookmark)) . '/<b>' . htmlspecialchars(basename($bookmark)) . '</b>
         </a>
-        <a href="index.php?delete_bookmark=<?php echo rawurlencode($bookmark); ?>">
+        <a href="index.php?delete_bookmark=' . rawurlencode($bookmark) . '">
             <span style="color: red">[X]</span>
         </a>
-    </li>
-    <?php } ?>
-</ul>
-<?php } // IS_LOGIN ?>
+        </li>';
+    }
 
-</div>
+    $menuToggle .= '</ul>';
+    
+    echo '<div class="menuToggle">
+        ' . $menuToggle . '
+    </div>';
+}
 
-<div id="footer">
+echo '</div>';
+
+echo '<div id="footer">
     <span>
 		ngatngay cooperation with linh
 	</span><br />
-    <span>Version: <?php echo VERSION_MAJOR; ?>.<?php echo VERSION_MINOR; ?>.<?php echo VERSION_PATCH; ?></span>
-</div>
+    <span>Version: ' . VERSION_MAJOR . '.' . VERSION_MINOR . '.' . VERSION_PATCH . '</span>
+</div>';
 
-<div
+echo '<div
     id="scroll"
     class="scroll-to-top scroll-to-top-icon"
     style="display: block; visibility: visible; opacity: 0.5; display: none;"
-></div>
+></div>';
 
-<script src="<?php echo asset('js/script.js') ?>"></script>
+echo '<div id="menuOverlay"></div>';
 
-</body>
-</html>
+echo '<script src="' . asset('js/script.js') . '"></script>';
 
-<?php ob_end_flush(); ?>
+echo '</body>
+</html>';
+
+ob_end_flush();

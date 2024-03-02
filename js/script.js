@@ -49,3 +49,12 @@ copyDirPathButton?.addEventListener("click", function () {
     
     navigator.clipboard.writeText(path);
 });
+
+
+// menu
+document.addEventListener('click', function(e) {
+    var targetId = e.target.id;
+    if (targetId === 'nav-menu' || targetId === 'menuOverlay' || (document.body.classList.contains('has-menu') && e.target.closest('.menuToggle a:not(.noPusher)'))) {
+        document.body.classList.toggle('has-menu');
+    }
+});

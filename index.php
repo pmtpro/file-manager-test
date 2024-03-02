@@ -247,8 +247,9 @@ if (!IS_INSTALL_ROOT_DIRECTORY) {
             </div>';
     }
 
-    echo '</form>
-        <div class="title">Chức năng</div>
+    echo '</form>';
+    
+    $menuToggle .= '<div class="title">Chức năng</div>
         <ul class="list">
             <li><img src="icon/create.png"/> <a href="create.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Tạo mới</a></li>
             <li><img src="icon/upload.png"/> <a href="upload.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Tải lên tập tin</a></li>
