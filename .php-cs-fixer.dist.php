@@ -6,7 +6,8 @@ return (new PhpCsFixer\Config())
     ->setUsingCache(false)
     ->setRules([
         '@PSR12' => true,
-        'array_indentation' => true
+        'array_indentation' => true,
+        'method_chaining_indentation' => true
     ])
     ->setIndent("    ") // 4 space
 ;

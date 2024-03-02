@@ -37,7 +37,8 @@ if (isset($_POST['format_php'])) {
 
     if (!empty($content)) {
         file_put_contents($tempFile, $content);
-
+        
+        chmod('vendor/bin/php-cs-fixer', 0775);
         $result = exec("vendor/bin/php-cs-fixer fix {$tempFile} --config {$configFile}");
 
         if ($result) {
