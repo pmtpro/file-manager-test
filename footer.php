@@ -3,6 +3,15 @@
 if (!defined('ACCESS')) die('Not access');
 
 if (IS_LOGIN) {
+    $menuToggle .= '<div class="title">Chức năng</div>
+        <ul class="list">
+            <li><img src="icon/search.png"/> <a href="folder_compare_simple.php">So sánh thư mục</a></li>
+			<li><img src="icon/mime/unknown.png"/> <a href="run_command.php?dir=' . $dirEncode . '">Chạy lệnh</a></li>
+			<li><img src="icon/mime/unknown.png"/> <a href="run_composer.php?dir=' . $dirEncode . '">Chạy lệnh Composer</a></li>
+        </ul>';
+}
+
+if (IS_LOGIN) {
     require __DIR__ . '/lib/bookmark.class.php';
 
     define('BOOKMARK_FILE', __DIR__ . '/bookmark.json');

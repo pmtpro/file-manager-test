@@ -9,5 +9,6 @@ config.inc.php
 database.inc.php
 bookmark.json
 
+composer.phar
 composer.lock
 yarn.lock

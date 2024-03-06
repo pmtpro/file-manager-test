@@ -170,7 +170,7 @@ if (
 
                 while (!$fileObj->eof()) {
                     $line = $fileObj->fgets();
-                    $line_number = $fileObj->key() + 1;
+                    $line_number = $fileObj->key();
 
                     // phân biệt chữ hoa
                     if ($case) {
