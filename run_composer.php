@@ -64,8 +64,13 @@ if (isset($_POST['submit'])) {
     $output = [];
     $result_code = '';
     
+    // for composer.phar
     putenv('COMPOSER_HOME=~/.composer');
-    $command = substr($command, 9 - strlen($command));
+    
+    if (substr($command, 0, 9) === "composer ") {
+        $command = substr($command, 9 - strlen($command));
+    }
+
     $command = sprintf(
         'cd %s && %s %s/composer.phar %s 2>&1',
         processDirectory($folder), $php, REALPATH, $command
