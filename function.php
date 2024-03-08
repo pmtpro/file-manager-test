@@ -1058,7 +1058,7 @@ function debug($o)
 
 
 function asset($asset) {
-    return $asset . '?' .  date('YmdH');
+    return $asset . '?' .  date('YmdHi', filemtime($asset));
 }
 
 
