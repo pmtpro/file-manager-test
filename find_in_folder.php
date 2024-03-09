@@ -28,13 +28,15 @@ echo '<style>
         padding-left: 7px;
         padding-right: 7px;
         padding-bottom: 0;
-        background-color: #eeeeee;        
+        background-color: #eeeeee;
     }
     
     #find_list .item-content .item-content-item {
         padding-top: 7px;
         padding-bottom: 7px;
         border-bottom: 1px dotted #dddddd;
+        /* word-break: break-all !important; */
+        overflow-x: auto !important;
     }
 </style>';
 
