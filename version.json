@@ -2,6 +2,6 @@
     "repo": "file-manager-main",
     "major": 1,
     "minor": 0,
-    "patch": 29,
+    "patch": 30,
     "message": "thêm chạy lệnh shell, composer. hmm... khá là nguy hiểm..."
 }
