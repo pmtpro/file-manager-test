@@ -453,9 +453,9 @@ ul.info {
 }
 
 ul.info > li {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    /* overflow: hidden; */
+    /* white-space: nowrap; */
+    /* text-overflow: ellipsis; */
     border-bottom: 1px dotted #cecece;
     padding: 7px 3px 7px 3px;
     margin-left: 2px;
