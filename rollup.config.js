@@ -9,6 +9,8 @@ export default {
 	},
 	plugins: [
 	    nodeResolve(),
-        terser()
+        terser({
+            maxWorkers: 4
+        })
     ]
 };

@@ -11,4 +11,5 @@ bookmark.json
 
 composer.phar
 composer.lock
+package-lock.json
 yarn.lock
