@@ -1061,6 +1061,24 @@ function asset($asset) {
     return $asset . '?' .  date('YmdHi', filemtime($asset));
 }
 
+function cookie(
+    $cookie,
+    $option = null
+) {
+    // get
+    if (is_string($cookie)) {
+        return isset($_COOKIE[$cookie]) ? $_COOKIE[$cookie] : $option;
+    }
+    
+    // set
+    if (is_array($cookie)) {
+        $option = is_array($option) ? $option : [];
+        
+        foreach ($cookie as $key => $value) {
+            setcookie($key, $value, $option);
+        }
+    }
+}
 
 include_once 'development.inc.php';
 
