@@ -4,7 +4,7 @@ if (!defined('ACCESS'))
     die('Not access');
 
 $script = function_exists('getenv') ? getenv('SCRIPT_NAME') : $_SERVER['SCRIPT_NAME'];
-$script = strpos($script, '/') !== false ? dirname($script) : null;
+$script = strpos($script, '/') !== false ? dirname($script) : '';
 $script = str_replace('\\', '/', $script);
 
 define('IS_INSTALL_ROOT_DIRECTORY', $script == '.' || $script == '/');

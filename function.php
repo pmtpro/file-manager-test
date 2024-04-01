@@ -53,12 +53,12 @@ mysqli_report(MYSQLI_REPORT_ERROR);
 {
     $dir = getenv('SCRIPT_NAME');
     $dir = str_replace('\\', '/', $dir);
-    $dir = strpos($dir, '/') !== false ? dirname($dir) : null;
+    $dir = strpos($dir, '/') !== false ? dirname($dir) : '';
     $dir = str_replace('\\', '/', $dir);
     $dir = $dir == '.' || $dir == '/' ? '' : $dir;
 
     $_SERVER['DOCUMENT_ROOT'] = realpath('.');
-    $_SERVER['DOCUMENT_ROOT'] = $dir == null ? $_SERVER['DOCUMENT_ROOT'] : substr($_SERVER['DOCUMENT_ROOT'], 0, strlen($_SERVER['DOCUMENT_ROOT']) - strlen($dir));
+    $_SERVER['DOCUMENT_ROOT'] = !$dir ? $_SERVER['DOCUMENT_ROOT'] : substr($_SERVER['DOCUMENT_ROOT'], 0, strlen($_SERVER['DOCUMENT_ROOT']) - strlen($dir));
     $_SERVER['DOCUMENT_ROOT'] = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']);
 
     unset($dir);
