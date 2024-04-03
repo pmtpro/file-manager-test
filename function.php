@@ -921,18 +921,6 @@ function getChmod($path)
     return $perms;
 }
 
-function jsonEncode($var)
-{
-    global $jsons;
-
-    return json_encode($var);
-}
-
-function jsonDecode($var, $isAssoc = false)
-{
-    return json_decode($var, $isAssoc);
-}
-
 function countStringArray($array, $search, $isLowerCase = false)
 {
     $count = 0;

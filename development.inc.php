@@ -39,7 +39,7 @@
         unset($handler);
 
         if (is_file(REALPATH . '/' . DEVELOPMENT_FILE)) {
-            $json = jsonDecode(file_get_contents(DEVELOPMENT_FILE), true);
+            $json = json_decode(file_get_contents(DEVELOPMENT_FILE), true);
 
             if ($json !== null) {
                 $entryFiles = $json['files'];
@@ -88,7 +88,7 @@
         }
 
         if ($isCreator)
-            file_put_contents(REALPATH . '/' . DEVELOPMENT_FILE, jsonEncode(array('files' => $files, 'times' => $times, 'count' => $count, 'version' => $version)));
+            file_put_contents(REALPATH . '/' . DEVELOPMENT_FILE, json_encode(array('files' => $files, 'times' => $times, 'count' => $count, 'version' => $version)));
 
         if ($isCreator || $isModifier)
             file_put_contents(REALPATH . '/' . VERSION_INC, '<?php if (!defined(\'ACCESS\')) { die(\'Not acces\'); } else { $count = ' . $count . '; $version = \'' . $version . '\'; } ?>');

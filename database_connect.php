@@ -51,7 +51,7 @@
                     global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_DATA_TYPE) && count($MYSQL_DATA_TYPE) <= 0) {
-                        $json = jsonDecode(@file_get_contents(PATH_MYSQL_DATA_TYPE), true);
+                        $json = json_decode(@file_get_contents(PATH_MYSQL_DATA_TYPE), true);
 
                         if ($json != null && count($json) > 0)
                             $MYSQL_DATA_TYPE = $json;
@@ -81,7 +81,7 @@
                     global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_COLLECTION) && count($MYSQL_COLLECTION) <= 0) {
-                        $json = jsonDecode(@file_get_contents(PATH_MYSQL_COLLECTION), true);
+                        $json = json_decode(@file_get_contents(PATH_MYSQL_COLLECTION), true);
 
                         if ($json != null && count($json) > 0)
                             $MYSQL_COLLECTION = $json;
@@ -113,7 +113,7 @@
                     global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_ATTRIBUTES) && count($MYSQL_ATTRIBUTES) <= 0) {
-                        $json = jsonDecode(@file_get_contents(PATH_MYSQL_ATTRIBUTES), true);
+                        $json = json_decode(@file_get_contents(PATH_MYSQL_ATTRIBUTES), true);
 
                         if ($json != null && count($json) > 0)
                             $MYSQL_ATTRIBUTES = $json;
@@ -139,7 +139,7 @@
                     global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_FIELD_KEY) && count($MYSQL_FIELD_KEY) <= 0) {
-                        $json = jsonDecode(@file_get_contents(PATH_MYSQL_FIELD_KEY), true);
+                        $json = json_decode(@file_get_contents(PATH_MYSQL_FIELD_KEY), true);
 
                         if ($json != null && count($json) > 0)
                             $MYSQL_FIELD_KEY = $json;
@@ -165,7 +165,7 @@
                     global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_ENGINE_STORAGE) && count($MYSQL_ENGINE_STORAGE) <= 0) {
-                        $json = jsonDecode(@file_get_contents(PATH_MYSQL_ENGINE_STORAGE), true);
+                        $json = json_decode(@file_get_contents(PATH_MYSQL_ENGINE_STORAGE), true);
 
                         if ($json != null && count($json) > 0)
                             $MYSQL_ENGINE_STORAGE = $json;
@@ -286,7 +286,7 @@
                     global $MySQLi;
 
                     if (@is_file(PATH_MYSQL_DATA_TYPE) && count($MYSQL_DATA_TYPE) <= 0) {
-                        $json = jsonDecode(@file_get_contents(PATH_MYSQL_DATA_TYPE), true);
+                        $json = json_decode(@file_get_contents(PATH_MYSQL_DATA_TYPE), true);
 
                         if ($json != null && count($json) > 0)
                             $MYSQL_DATA_TYPE = $json;
