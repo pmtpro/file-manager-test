@@ -10,6 +10,7 @@ if (IS_LOGIN) {
 			<li><img src="icon/mime/unknown.png"/> <a href="run_composer.php?dir=' . $dirEncode . '">Chạy lệnh Composer</a></li>
 			<li><img src="icon/mime/unknown.png"/> <a href="fix_permission.php?dir=' . $dirEncode . '">Fix chown/chmod</a></li>
 			<li><img src="icon/home.png"/> <a href="setting_home.php">Sửa Trang chủ</a></li>
+			<li><img src="icon/mime/php.png"/> <a href="phpinfo.php">phpinfo()</a></li>
 			<li><img src="icon/list.png"/> <a href="index.php?dir=' . $dirEncode . '">Danh sách</a></li>
         </ul>';
 }
