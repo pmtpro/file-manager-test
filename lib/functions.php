@@ -1,5 +1,15 @@
 <?php
 
+function isAppFile($dir) {
+	return stripos($dir, REALPATH) === 0;
+}
+function isAppDir($dir) {
+	return isAppFile($dir);
+}
+function isInstallAsRoot($dir) {
+	return isAppFile($dir);
+}
+
 function createConfig(
     $username = LOGIN_USERNAME_DEFAULT,
     $password = LOGIN_PASSWORD_DEFAULT,

@@ -36,6 +36,8 @@ mysqli_report(MYSQLI_REPORT_ERROR);
     }
 }
 
+define('REALPATH', realpath('./'));
+
 // require function
 require_once 'lib/functions.php';
 
@@ -74,7 +76,6 @@ require_once 'lib/functions.php';
 }
 
 // cau hinh
-define('REALPATH', realpath('./'));
 const PATH_CONFIG = 'config.inc.php';
 const PATH_DATABASE = 'database.inc.php';
 

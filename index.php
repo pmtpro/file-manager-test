@@ -9,14 +9,14 @@ if (!IS_LOGIN) {
     goURL('login.php');
 }
 
-$title = !IS_INSTALL_ROOT_DIRECTORY ? 'Danh sách' : 'Lỗi File Manager';
 $dir = NOT_PERMISSION == false && isset($_GET['dir']) && !empty($_GET['dir']) ? rawurldecode($_GET['dir']) : cookie('fm_home', $_SERVER['DOCUMENT_ROOT']);
 $dir = processDirectory($dir);
+$title = !isInstallAsRoot($dir) ? 'Danh sách' : 'Lỗi File Manager';
 $handler = null;
 
 include_once 'header.php';
 
-if (!IS_INSTALL_ROOT_DIRECTORY) {
+if (!isInstallAsRoot($dir)) {
     $handler = @scandir($dir);
 
     if ($handler === false) {
@@ -35,7 +35,7 @@ $dirEncode = rawurlencode($dir);
 $count     = count($handler);
 $lists     = array();
 
-if (!IS_INSTALL_ROOT_DIRECTORY && $count > 0) {
+if (!isInstallAsRoot($dir) && $count > 0) {
     $folders = array();
     $files   = array();
 
@@ -69,54 +69,29 @@ if (!IS_INSTALL_ROOT_DIRECTORY && $count > 0) {
 }
 
 $count = count($lists);
-$html  = null;
+$html  = printPath($dir);
 
-if (!IS_INSTALL_ROOT_DIRECTORY && $dir != '/' && strpos($dir, '/') !== false) {
-    $array = explode('/', preg_replace('|^/(.*?)$|', '\1', $dir));
-    $html  = null;
-    $item  = null;
-    $url   = null;
-
-    foreach ($array as $key => $entry) {
-        if ($key === 0) {
-            $seperator = preg_match('|^\/(.*?)$|', $dir) ? '/' : null;
-            $item      = $seperator . $entry;
-        } else {
-            $item = '/' . $entry;
-        }
-
-        if ($key < count($array) - 1) {
-            $html .= '/<a href="index.php?dir=' . rawurlencode($url . $item) . '">';
-        } else {
-            $html .= '/';
-        }
-
-        $url  .= $item;
-        $html .= substring($entry, 0, NAME_SUBSTR, NAME_SUBSTR_ELLIPSIS);
-
-        if ($key < count($array) - 1) {
-            $html .= '</a>';
-        }
-    }
-}
-
-if (!IS_INSTALL_ROOT_DIRECTORY) {
+if (!isInstallAsRoot($dir)) {
     echo '<script language="javascript" src="' . asset('js/checkbox.js') . '"></script>';
     echo '<div class="title">' . $html . '</div>';
 }
 
+// can kiem tra lai
 if (NOT_PERMISSION) {
-    if (IS_INSTALL_ROOT_DIRECTORY) {
-        echo '<div class="title">Lỗi File Manager</div>
-                <div class="list">Bạn đang cài đặt File Manager trên thư mục gốc, hãy chuyển vào một thư mục</div>';
-    } elseif (IS_ACCESS_FILE_IN_FILE_MANAGER) {
+	if (IS_ACCESS_FILE_IN_FILE_MANAGER) {
         echo '<div class="notice_info">Bạn không thể xem tập tin của File Manager nó đã bị chặn</div>';
     } else {
         echo '<div class="notice_info">Bạn không thể xem thư mục của File Manager nó đã bị chặn</div>';
     }
 }
 
-if (!IS_INSTALL_ROOT_DIRECTORY) {
+if (isInstallAsRoot($dir)) {
+    echo '<div class="title">Lỗi File Manager</div>';
+	echo '<div class="list">' . $html . '</div>';
+    echo '<div class="list">Bạn đang cài đặt File Manager trên thư mục gốc, hãy chuyển vào một thư mục</div>';
+}
+
+if (!isInstallAsRoot($dir)) {
     echo '<form action="action.php?dir=' . $dirEncode . $pages['paramater_1'] . '" method="post" name="form"><ul class="list_file">';
 
     if (preg_replace('|[a-zA-Z]+:|', '', str_replace('\\', '/', $dir)) != '/') {
