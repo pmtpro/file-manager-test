@@ -25,7 +25,7 @@ $menuToggle = '';
         <?php if (!IS_INSTALL_ROOT_DIRECTORY && IS_LOGIN) { ?>
             <button id="nav-menu">&#9776;</button>
         <?php } ?>
-        <li><a href="index.php?dir=<?php echo rawurlencode(cookie('fm_home', '')); ?>"><img src="icon/home.png" /></a></li>
+        <li><a href="index.php"><img src="icon/home.png" /></a></li>
         <?php if (!IS_INSTALL_ROOT_DIRECTORY && IS_LOGIN) { ?>
             <?php if (!empty($dir) && is_dir(processDirectory($dir))) { ?>
             <li id="copyDirPath" data-path="<?php echo rawurlencode($dir); ?>"><img src="icon/copy.png" /></li>

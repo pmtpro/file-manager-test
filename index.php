@@ -9,9 +9,9 @@ if (!IS_LOGIN) {
     goURL('login.php');
 }
 
-$title   = !IS_INSTALL_ROOT_DIRECTORY ? 'Danh sách' : 'Lỗi File Manager';
-$dir     = NOT_PERMISSION == false && isset($_GET['dir']) && empty($_GET['dir']) == false ? rawurldecode($_GET['dir']) : $_SERVER['DOCUMENT_ROOT'];
-$dir     = processDirectory($dir);
+$title = !IS_INSTALL_ROOT_DIRECTORY ? 'Danh sách' : 'Lỗi File Manager';
+$dir = NOT_PERMISSION == false && isset($_GET['dir']) && !empty($_GET['dir']) ? rawurldecode($_GET['dir']) : cookie('fm_home', $_SERVER['DOCUMENT_ROOT']);
+$dir = processDirectory($dir);
 $handler = null;
 
 include_once 'header.php';
