@@ -2,7 +2,7 @@
 
 define('ACCESS', true);
 
-require_once 'function.php';
+require 'function.php';
 
 $data = [
     'status' => false,
@@ -58,42 +58,43 @@ if (isset($_POST['format_php'])) {
 $dir = processDirectory($dir);
 $path = $dir . '/' . $name;
 
-if (!isset($_POST['content']) || empty($_POST['content'])) {
+if (!isset($_POST['content'])) {
     $data['message'] = 'Chưa nhập nội dung';
-} else {
-    $content = $_POST['content'];
-
-    if (file_put_contents($path, $content)) {
-        $data['status'] = true;
-        $data['message'] = 'Lưu lại thành công';
-
-        $checkPHP = isset($_POST['check']) ? (bool) $_POST['check'] : false;
-
-        if ($checkPHP) {
-            $error_syntax = 'Lưu thành công! Không thể kiểm tra lỗi';
-            $isExecute = isFunctionExecEnable();
-
-            if ($isExecute) {
-                @exec(getPathPHP() . ' -c -f -l ' . $path, $output, $value);
-
-                if ($value == -1) {
-                } elseif ($value == 255 || count($output) == 3) {
-                    $error_syntax = 'Lưu thành công! Có lỗi!';
-
-                    $data['error'] = $output[1];
-                } else {
-                    $error_syntax = 'Lưu thành công! Không có lỗi';
-                }
-            }
-
-            $data['message'] = $error_syntax;
-        }
-    } else {
-        $data['message'] = 'Lưu lại thất bại';
-    }
+    goto end_request;
 }
 
+$content = $_POST['content'];
 
+if (file_put_contents($path, $content) !== false) {
+    $data['status'] = true;
+    $data['message'] = 'Lưu lại thành công';
+
+    $checkPHP = isset($_POST['check']) ? (bool) $_POST['check'] : false;
+
+    if ($checkPHP) {
+        $error_syntax = 'Lưu thành công! Không thể kiểm tra lỗi';
+        $isExecute = isFunctionExecEnable();
+
+        if ($isExecute) {
+            @exec(getPathPHP() . ' -c -f -l ' . $path, $output, $value);
+
+            if ($value == -1) {
+            } elseif ($value == 255 || count($output) == 3) {
+                $error_syntax = 'Lưu thành công! Có lỗi!';
+
+                $data['error'] = $output[1];
+            } else {
+                $error_syntax = 'Lưu thành công! Không có lỗi';
+            }
+        }
+
+        $data['message'] = $error_syntax;
+    }
+} else {
+    $data['message'] = 'Lưu lại thất bại';
+}
+
+// response
 end_request:
 @ob_end_clean();
 header('Content-Type: application/json; charset=utf-8');
