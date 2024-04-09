@@ -570,6 +570,8 @@ function chmods($dir, $entrys, $folder, $file)
 
 function size($size)
 {
+    $size = (int) $size;
+
     if ($size < 1024)
         $size = $size . 'B';
     elseif ($size < 1048576)
@@ -714,7 +716,7 @@ function page($current, $total, $url)
 
 function getChmod($path)
 {
-    $perms = fileperms($path);
+    $perms = @fileperms($path);
 
     if ($perms !== false) {
         $perms = decoct($perms);

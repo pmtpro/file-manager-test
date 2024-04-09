@@ -192,7 +192,7 @@ if (!isInstallAsRoot($dir)) {
                             <a href="file.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '">' . $name . '</a>
                         </p>
                         <p>
-                            <span class="size">' . size(filesize($dir . '/' . $name)) . '</span>,
+                            <span class="size">' . size(@filesize($dir . '/' . $name)) . '</span>,
                             <a href="file_chmod.php?dir=' . $dirEncode . '&name=' . $name . $pages['paramater_1'] . '" class="chmod">' . $perms . '</a>
                         </p>
                     </li>';
