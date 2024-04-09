@@ -510,7 +510,7 @@ function dirSize($path) {
 
 function zipdir($path, $file, $isDelete = false)
 {
-    require_once __DIR__ . '/lib/pclzip.class.php';
+    require_once __DIR__ . '/pclzip.class.php';
 
     if (@is_file($file))
         @unlink($file);
@@ -529,7 +529,7 @@ function zipdir($path, $file, $isDelete = false)
 
 function zips($dir, $entrys, $file, $isDelete = false)
 {
-    require_once __DIR__ . '/lib/pclzip.class.php';
+    require_once __DIR__ . '/pclzip.class.php';
 
     if (@is_file($file))
         @unlink($file);
