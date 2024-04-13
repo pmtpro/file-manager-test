@@ -7,14 +7,15 @@ import {
     highlightActiveLine,
     highlightSpecialChars,
     highlightActiveLineGutter,
-    drawSelection
+    //drawSelection
 } from "@codemirror/view"
 
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands"
 
 import {
 	bracketMatching,
-	foldGutter
+	foldGutter,
+    indentService
 } from "@codemirror/language"
  
  import { highlightSelectionMatches } from "@codemirror/search"
@@ -40,11 +41,13 @@ const initialState = EditorState.create({
   doc: document.querySelector("#content").value,
 
   extensions: [
+    EditorState.allowMultipleSelections.of(false),
+
     bracketMatching(),
     highlightSelectionMatches(),
 
     history(),
-    drawSelection(),    
+    //drawSelection(),    
     foldGutter(),
     lineNumbers(),
     highlightActiveLineGutter(),
@@ -53,7 +56,7 @@ const initialState = EditorState.create({
 
 //    readOnlyConf.of(EditorState.readOnly.of(true)),
 //    editableConf.of(EditorView.editable.of(false)),
-
+    indentService.of(undefined),
     keymap.of([
         /*
         {

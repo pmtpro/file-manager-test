@@ -6,16 +6,16 @@
   },
   "dependencies": {
     "@codemirror/lang-css": "^6.2.1",
-    "@codemirror/lang-html": "^6.4.8",
+    "@codemirror/lang-html": "^6.4.9",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-php": "^6.0.1",
     "@codemirror/lang-sass": "^6.0.2",
-    "@codemirror/lang-sql": "^6.6.1",
+    "@codemirror/lang-sql": "^6.6.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "cm6-theme-material-dark": "^0.2.0",
     "codemirror": "^6.0.1",
-    "rollup": "^4.13.0"
+    "rollup": "^4.14.2"
   }
 }
