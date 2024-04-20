@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    paths:
+      - "version.json"
+    workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    permissions: write-all
+
+    steps:
+      - name: clone repo
+        uses: actions/checkout@v4
+
+      - name: get version
+        run: |
+          VERSION=$(cat version.json | jq -r ".version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: zip repo
+        run: zip -r file-manager.zip . -x ".git/*" ".github/*"
+
+      - name: bump tag
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CUSTOM_TAG: ${{ env.VERSION }}
+
+      - name: bump release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          files: file-manager.zip
