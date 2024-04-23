@@ -8,13 +8,18 @@ Edit by linh && pmtpro
 
 Nếu có lỗi các bạn cứ báo trên repo này (phần `Issues`), hoặc liên hệ mình, mình hứa có thời gian sẽ sửa lỗi sớm nhất có thể!
 
-## File cài đặt nhanh
+## Cài đặt nhanh
 
-Tạo một file php, dán code ở [file này](https://raw.githubusercontent.com/ngatngay/file-manager/main/install.manager.php.txt) vào và chạy nó.
+Tạo một file php, dán code ở [file này](https://raw.githubusercontent.com/ngatngay/file-manager/main/install.txt) vào và chạy nó.
+
+```bash
+curl -O https://raw.githubusercontent.com/ngatngay/file-manager/main/install.txt
+php install.txt
+```
 
 ## Hướng dẫn cài đặt
 
-- Tải code về và giải nén vào 1 thư mục không phải thư mục gốc!
+- Tải code về và giải nén vào 1 thư mục không phải thư mục gốc (`DOCUMENT_ROOT`)!
 
 _Ví dụ:_
 
@@ -22,8 +27,8 @@ Bạn có tên miền `localhost.com` và thư mục web tương ứng là `publ
 
 ## Tài khoản quản trị mặc định
 
-  * Tài khoản: admin
-  * Mật khẩu: 12345
+  * admin
+  * 12345
 
 ## Một số ảnh đính kèm
 
@@ -31,4 +36,9 @@ Bạn có tên miền `localhost.com` và thư mục web tương ứng là `publ
 ![image](screenshot1.png)
 
 ## Format code
-- Để sử dụng chức năng **format** code, vui lòng chạy lệnh `composer install` ở thư mục manager
+
+- Để sử dụng chức năng **format** code, vui lòng chạy lệnh sau ở thư mục manager
+
+```bash
+composer install
+```
