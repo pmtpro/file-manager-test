@@ -1,13 +1,16 @@
 <?php
 
-function isAppFile($dir) {
-	return stripos($dir, REALPATH) === 0;
+function isAppFile($dir)
+{
+    return stripos($dir, REALPATH) === 0;
 }
-function isAppDir($dir) {
-	return isAppFile($dir);
+function isAppDir($dir)
+{
+    return isAppFile($dir);
 }
-function isInstallAsRoot($dir) {
-	return isAppFile($dir);
+function isInstallAsRoot($dir)
+{
+    return isAppFile($dir);
 }
 
 function createConfig(
@@ -57,15 +60,16 @@ function createConfig(
 function createDatabaseConfig($host, $username, $password, $name, $auto)
 {
     $content = "<?php if (!defined('ACCESS')) die('Not access'); else \$databases = array(";
-        $content .= "'db_host' => '$host', ";
-        $content .= "'db_username' => '$username', ";
-        $content .= "'db_password' => '$password', ";
-        $content .= "'db_name' => '$name', ";
-        $content .= "'is_auto' => " . ($auto == true ? 'true' : 'false') . "";
+    $content .= "'db_host' => '$host', ";
+    $content .= "'db_username' => '$username', ";
+    $content .= "'db_password' => '$password', ";
+    $content .= "'db_name' => '$name', ";
+    $content .= "'is_auto' => " . ($auto == true ? 'true' : 'false') . "";
     $content .= '); ?>';
 
-    if (@is_file(REALPATH . '/' . PATH_DATABASE))
+    if (@is_file(REALPATH . '/' . PATH_DATABASE)) {
         @unlink(REALPATH . '/' . PATH_DATABASE);
+    }
 
     $put = @file_put_contents(REALPATH . '/' . PATH_DATABASE, $content);
 
@@ -75,10 +79,11 @@ function createDatabaseConfig($host, $username, $password, $name, $auto)
         $handler = @fopen(REALPATH . '/' . PATH_DATABASE, "w+");
 
         if ($handler) {
-            if (@fwrite($handler, $content))
+            if (@fwrite($handler, $content)) {
                 @fclose($handler);
-            else
+            } else {
                 return false;
+            }
         } else {
             return false;
         }
@@ -99,7 +104,8 @@ function isDatabaseVariable($array)
                 empty($array['db_username']) == false && $array['db_username'] != null;
 }
 
-function getNewVersion() {
+function getNewVersion()
+{
     $remoteVersion = json_decode(@file_get_contents(REMOTE_VERSION_FILE), true);
 
     return is_array($remoteVersion) && isset($remoteVersion['message'])
@@ -108,8 +114,9 @@ function getNewVersion() {
 }
 
 
-function hasNewVersion() {
-	return REMOTE_FILE_CURRENT !== REMOTE_FILE_NEW;
+function hasNewVersion()
+{
+    return REMOTE_FILE_CURRENT !== REMOTE_FILE_NEW;
 }
 
 
@@ -140,8 +147,9 @@ function isFormatText($name)
 
     $format = getFormat($name);
 
-    if ($format == null)
+    if ($format == null) {
         return false;
+    }
 
     return in_array($format, $formats['text']) || in_array($format, $formats['other']) || in_array(strtolower(strpos($name, '.') !== false ? substr($name, 0, strpos($name, '.')) : $name), $formats['source']);
 }
@@ -153,17 +161,21 @@ function isFormatUnknown($name)
 
     $format = getFormat($name);
 
-    if ($format == null)
+    if ($format == null) {
         return true;
+    }
 
-    foreach ($formats as $array)
-        if (in_array($format, $array))
+    foreach ($formats as $array) {
+        if (in_array($format, $array)) {
             return false;
+        }
+    }
 
     return true;
 }
 
-function str_replace_first($needle, $replace, $haystack) {
+function str_replace_first($needle, $replace, $haystack)
+{
     $pos = strpos($haystack, $needle);
 
     if ($pos !== false) {
@@ -184,7 +196,7 @@ function processDirectory($var, $seSlash = false)
     if (empty($var)) {
         $var = '';
     }
-    
+
     $var = str_replace('\\', '/', $var);
     $var = preg_replace('#/\./#', '//', $var);
     $var = preg_replace('#/\.\./#', '//', $var);
@@ -204,8 +216,9 @@ function processDirectory($var, $seSlash = false)
 
 function processImport($url)
 {
-    if (!preg_match('|^http[s]?://(.+?)$|i', $url))
+    if (!preg_match('|^http[s]?://(.+?)$|i', $url)) {
         $url = 'http://' . $url;
+    }
 
     return $url;
 }
@@ -216,7 +229,7 @@ function processPathZip($var)
     if (empty($var)) {
         $var = '';
     }
-    
+
     $var = str_replace('\\', '/', $var);
     $var = preg_replace('#/\./#', '//', $var);
     $var = preg_replace('#/\.\./#', '//', $var);
@@ -250,11 +263,13 @@ function rrmdir($path)
                 $pa = $path . '/' . $entry;
 
                 if (@is_file($pa)) {
-                    if (!@unlink($pa))
+                    if (!@unlink($pa)) {
                         return false;
+                    }
                 } elseif (@is_dir($pa)) {
-                    if (!rrmdir($pa))
+                    if (!rrmdir($pa)) {
                         return false;
+                    }
                 } else {
                     return false;
                 }
@@ -278,11 +293,13 @@ function rrms($entrys, $dir)
         $pa = $dir . '/' . $e;
 
         if (@is_file($pa)) {
-            if (!@unlink($pa))
+            if (!@unlink($pa)) {
                 return false;
+            }
         } elseif (@is_dir($pa)) {
-            if (!rrmdir($pa))
+            if (!rrmdir($pa)) {
                 return false;
+            }
         } else {
             return false;
         }
@@ -300,8 +317,9 @@ function copydir($old, $new, $isParent = true)
             $arr = explode('/', $old);
             $end = $new = $new . '/' . end($arr);
 
-            if (@is_file($end) || (!@is_dir($end) && !@mkdir($end)))
+            if (@is_file($end) || (!@is_dir($end) && !@mkdir($end))) {
                 return false;
+            }
         } elseif (!$isParent && !@is_dir($new) && !@mkdir($new)) {
             return false;
         }
@@ -312,11 +330,13 @@ function copydir($old, $new, $isParent = true)
                 $paNew = $new . '/' . $entry;
 
                 if (@is_file($paOld)) {
-                    if (!@copy($paOld, $paNew))
+                    if (!@copy($paOld, $paNew)) {
                         return false;
+                    }
                 } elseif (@is_dir($paOld)) {
-                    if (!copydir($paOld, $paNew, false))
+                    if (!copydir($paOld, $paNew, false)) {
                         return false;
+                    }
                 } else {
                     return false;
                 }
@@ -337,11 +357,13 @@ function copys($entrys, $dir, $path)
         if (isPathNotPermission(processDirectory($path . '/' . $e))) {
             /* Entry not permission */
         } elseif (@is_file($pa)) {
-            if (!@copy($pa, $path . '/' . $e))
+            if (!@copy($pa, $path . '/' . $e)) {
                 return false;
+            }
         } elseif (@is_dir($pa)) {
-            if (!copydir($pa, $path))
+            if (!copydir($pa, $path)) {
                 return false;
+            }
         } else {
             return false;
         }
@@ -359,8 +381,9 @@ function movedir($old, $new, $isParent = true)
             $s   = explode('/', $old);
             $end = $new = $new . '/' . end($s);
 
-            if (@is_file($end) || (!@is_dir($end) && !@mkdir($end)))
+            if (@is_file($end) || (!@is_dir($end) && !@mkdir($end))) {
                 return false;
+            }
         } elseif (!$isParent && !@is_dir($new) && !@mkdir($new)) {
             return false;
         }
@@ -371,13 +394,15 @@ function movedir($old, $new, $isParent = true)
                 $paNew = $new . '/' . $entry;
 
                 if (@is_file($paOld)) {
-                    if (!@copy($paOld, $paNew))
+                    if (!@copy($paOld, $paNew)) {
                         return false;
+                    }
 
                     @unlink($paOld);
                 } elseif (@is_dir($paOld)) {
-                    if (!movedir($paOld, $paNew, false))
+                    if (!movedir($paOld, $paNew, false)) {
                         return false;
+                    }
                 } else {
                     return false;
                 }
@@ -398,13 +423,15 @@ function moves($entrys, $dir, $path)
         if (isPathNotPermission(processDirectory($path . '/' . $e))) {
             /* Entry not permission */
         } elseif (@is_file($pa)) {
-            if (!@copy($pa, $path . '/' . $e))
+            if (!@copy($pa, $path . '/' . $e)) {
                 return false;
+            }
 
             @unlink($pa);
         } elseif (@is_dir($pa)) {
-            if (!movedir($pa, $path))
+            if (!movedir($pa, $path)) {
                 return false;
+            }
         } else {
             return false;
         }
@@ -414,7 +441,8 @@ function moves($entrys, $dir, $path)
 }
 
 
-function mergeFolder($source, $destination, $overwrite = true) {
+function mergeFolder($source, $destination, $overwrite = true)
+{
     if (!is_dir($source)) {
         return false; // Source is not a directory
     }
@@ -454,14 +482,14 @@ function readDirectoryIterator(
         FilesystemIterator::UNIX_PATHS
         | FilesystemIterator::SKIP_DOTS
     );
-    
+
     $filter = new RecursiveCallbackFilterIterator($directory, function ($current, $key, $iterator) use ($path, $excludes) {
         $relative_path = str_replace_first($path, '', $current->getPathname());
 
         $excludes = array_map(function ($data) {
             return ltrim($data, '/');
         }, $excludes);
-  
+
         foreach ($excludes as $exclude) {
             $exclude = trim($exclude);
 
@@ -482,7 +510,7 @@ function readDirectoryIterator(
                 return false;
             }
         }
-      
+
         return true;
     });
 
@@ -493,9 +521,10 @@ function readDirectoryIterator(
 }
 
 
-function dirSize($path) {
+function dirSize($path)
+{
     $size = 0;
-    
+
     $files = readDirectoryIterator($path);
 
     foreach ($files as $file) {
@@ -503,7 +532,7 @@ function dirSize($path) {
             $size += $file->getSize();
         }
     }
-    
+
     return $size;
 }
 
@@ -512,14 +541,16 @@ function zipdir($path, $file, $isDelete = false)
 {
     require_once __DIR__ . '/pclzip.class.php';
 
-    if (@is_file($file))
+    if (@is_file($file)) {
         @unlink($file);
+    }
 
     $zip = new PclZip($file);
 
     if ($zip->add($path, PCLZIP_OPT_REMOVE_PATH, $path)) {
-        if ($isDelete)
+        if ($isDelete) {
             rrmdir($path);
+        }
 
         return true;
     }
@@ -531,17 +562,21 @@ function zips($dir, $entrys, $file, $isDelete = false)
 {
     require_once __DIR__ . '/pclzip.class.php';
 
-    if (@is_file($file))
+    if (@is_file($file)) {
         @unlink($file);
+    }
 
     $zip = new PclZip($file);
 
-    foreach ($entrys as $e)
-        if (!$zip->add($dir . '/' . $e, PCLZIP_OPT_REMOVE_PATH, $dir))
+    foreach ($entrys as $e) {
+        if (!$zip->add($dir . '/' . $e, PCLZIP_OPT_REMOVE_PATH, $dir)) {
             return false;
+        }
+    }
 
-    if ($isDelete)
+    if ($isDelete) {
         rrms($entrys, $dir);
+    }
 
     return true;
 }
@@ -555,11 +590,13 @@ function chmods($dir, $entrys, $folder, $file)
         $path = $dir . '/' . $e;
 
         if (@is_file($path)) {
-            if (!@chmod($path, $file))
+            if (!@chmod($path, $file)) {
                 return false;
+            }
         } elseif (@is_dir($path)) {
-            if (!@chmod($path, $folder))
+            if (!@chmod($path, $folder)) {
                 return false;
+            }
         } else {
             return false;
         }
@@ -572,14 +609,15 @@ function size($size)
 {
     $size = (int) $size;
 
-    if ($size < 1024)
+    if ($size < 1024) {
         $size = $size . 'B';
-    elseif ($size < 1048576)
+    } elseif ($size < 1048576) {
         $size = round($size / 1024, 2) . 'KB';
-    elseif ($size < 1073741824)
+    } elseif ($size < 1073741824) {
         $size = round($size / 1048576, 2) . 'MB';
-    else
+    } else {
         $size = round($size / 1073741824, 2) . 'GB';
+    }
 
     return $size;
 }
@@ -597,30 +635,35 @@ function grab($url, $ref = '', $cookie = '', $user_agent = '', $header = '')
 
     curl_setopt($ch, CURLOPT_URL, $url);
 
-    if ($user_agent)
+    if ($user_agent) {
         curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
-    else
+    } else {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Nokia3110c/2.0 (04.91) Profile/MIDP-2.0 Configuration/CLDC-1.1');
+    }
 
-    if ($header)
+    if ($header) {
         curl_setopt($ch, CURLOPT_HEADER, 1);
-    else
+    } else {
         curl_setopt($ch, CURLOPT_HEADER, 0);
+    }
 
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-    if ($ref)
+    if ($ref) {
         curl_setopt($ch, CURLOPT_REFERER, $ref);
-    else
+    } else {
         curl_setopt($ch, CURLOPT_REFERER, 'http://www.google.com.vn/search?hl=vi&client=firefox-a&rls=org.mozilla:en-US:official&hs=hKS&q=video+clip&start=20&sa=N');
+    }
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-    if (strncmp($url, 'https', 6))
+    if (strncmp($url, 'https', 6)) {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    }
 
-    if ($cookie)
+    if ($cookie) {
         curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+    }
 
     curl_setopt($ch, CURLOPT_TIMEOUT, 100);
 
@@ -658,55 +701,63 @@ function page($current, $total, $url)
             if ($current == $i) {
                 $html .= '<strong class="current">' . $i . '</strong>';
             } else {
-                if ($i == 1)
+                if ($i == 1) {
                     $html .= '<a href="' . $link[PAGE_URL_DEFAULT] . '" class="other">' . $i . '</a>';
-                else
+                } else {
                     $html .= '<a href="' . $link[PAGE_URL_START] . $i . $link[PAGE_URL_END] . '" class="other">' . $i . '</a>';
+                }
             }
         }
     } else {
-        if ($current == 1)
+        if ($current == 1) {
             $html .= '<strong class="current">1</strong>';
-        else
+        } else {
             $html .= '<a href="' . $link[PAGE_URL_DEFAULT] . '" class="other">1</a>';
+        }
 
         if ($current > $center) {
             $i = $current - $center < 1 ? 1 : $current - $center;
 
-            if ($i == 1)
+            if ($i == 1) {
                 $html .= '<a href="' . $link[PAGE_URL_DEFAULT] . '" class="text">...</a>';
-            else
+            } else {
                 $html .= '<a href="' . $link[PAGE_URL_START] . $i . $link[PAGE_URL_END] . '" class="text">...</a>';
+            }
         }
 
         $offset = array();
 
         {
-            if ($current <= $center)
+            if ($current <= $center) {
                 $offset['start'] = 2;
-            else
+            } else {
                 $offset['start'] = $current - ($current > $total - $center ? $current - ($total - $center) : floor($center >> 1));
+            }
 
-            if ($current >= $total - $center + 1)
+            if ($current >= $total - $center + 1) {
                 $offset['end'] = $total - 1;
-            else
+            } else {
                 $offset['end'] = $current + ($current <= $center ? ($center + 1) - $current : floor($center >> 1));
+            }
         }
 
         for ($i = $offset['start']; $i <= $offset['end']; ++$i) {
-            if ($current == $i)
+            if ($current == $i) {
                 $html .= '<strong class="current">' . $i . '</strong>';
-            else
+            } else {
                 $html .= '<a href="' . $link[PAGE_URL_START] . $i . $link[PAGE_URL_END] . '" class="other">' . $i . '</a>';
+            }
         }
 
-        if ($current < $total - $center + 1)
+        if ($current < $total - $center + 1) {
             $html .= '<a href="' . $link[PAGE_URL_START] . ($current + $center > $total ? $total : $current + $center) . $link[PAGE_URL_END] . '" class="text">...</a>';
+        }
 
-        if ($current == $total)
+        if ($current == $total) {
             $html .= '<strong class="current">' . $total . '</strong>';
-        else
+        } else {
             $html .= '<a href="' . $link[PAGE_URL_START] . $total . $link[PAGE_URL_END] . '" class="other">' . $total . '</a>';
+        }
     }
 
     $html .= '</div>';
@@ -734,11 +785,13 @@ function countStringArray($array, $search, $isLowerCase = false)
 
     if ($array != null && is_array($array)) {
         foreach ($array as $entry) {
-            if ($isLowerCase)
+            if ($isLowerCase) {
                 $entry = strtolower($entry);
+            }
 
-            if ($entry == $search)
+            if ($entry == $search) {
                 ++$count;
+            }
         }
     }
 
@@ -747,15 +800,18 @@ function countStringArray($array, $search, $isLowerCase = false)
 
 function isInArray($array, $search, $isLowerCase)
 {
-    if ($array == null || !is_array($array))
+    if ($array == null || !is_array($array)) {
         return false;
+    }
 
     foreach ($array as $entry) {
-        if ($isLowerCase)
+        if ($isLowerCase) {
             $entry = strtolower($entry);
+        }
 
-        if ($entry == $search)
+        if ($entry == $search) {
             return true;
+        }
     }
 
     return false;
@@ -763,8 +819,9 @@ function isInArray($array, $search, $isLowerCase)
 
 function substring($str, $offset, $length = -1, $ellipsis = '')
 {
-    if ($str != null && strlen($str) > $length - $offset)
+    if ($str != null && strlen($str) > $length - $offset) {
         $str = ($length == -1 ? substr($str, $offset) : substr($str, $offset, $length)) . $ellipsis;
+    }
 
     return $str;
 }
@@ -786,16 +843,18 @@ function printPath($path, $isHrefEnd = false)
                 $item = '/' . $entry;
             }
 
-            if ($key < count($array) - 1 || ($key == count($array) - 1 && $isHrefEnd))
+            if ($key < count($array) - 1 || ($key == count($array) - 1 && $isHrefEnd)) {
                 $html .= '<span class="path_seperator">/</span><a href="index.php?dir=' . rawurlencode($url . $item) . '">';
-            else
+            } else {
                 $html .= '<span class="path_seperator">/</span>';
+            }
 
             $url  .= $item;
             $html .= '<span class="path_entry">' . substring($entry, 0, NAME_SUBSTR, NAME_SUBSTR_ELLIPSIS) . '</span>';
 
-            if ($key < count($array) - 1 || ($key == count($array) - 1 && $isHrefEnd))
+            if ($key < count($array) - 1 || ($key == count($array) - 1 && $isHrefEnd)) {
                 $html .= '</a>';
+            }
         }
     }
 
@@ -813,8 +872,9 @@ function getPathPHP()
             } else {
                 $bin = $entry . DIRECTORY_SEPARATOR . 'php' . (isset($_SERVER['WINDIR']) ? '.exe' : null);
 
-                if (is_file($bin))
+                if (is_file($bin)) {
                     return $bin;
+                }
             }
         }
     }
@@ -836,9 +896,11 @@ function isFunctionDisable($func)
         $func = strtolower(trim($func));
         $list = explode(',', $list);
 
-        foreach ($list as $e)
-            if (strtolower(trim($e)) == $func)
+        foreach ($list as $e) {
+            if (strtolower(trim($e)) == $func) {
                 return true;
+            }
+        }
     }
 
     return false;
@@ -851,7 +913,8 @@ function debug($o)
     echo('</pre>');
 }
 
-function asset($asset) {
+function asset($asset)
+{
     return $asset . '?' .  date('YmdHi', filemtime($asset));
 }
 
@@ -863,11 +926,11 @@ function cookie(
     if (is_string($cookie)) {
         return isset($_COOKIE[$cookie]) ? $_COOKIE[$cookie] : $option;
     }
-    
+
     // set
     if (is_array($cookie)) {
         $option = is_array($option) ? $option : [];
-        
+
         foreach ($cookie as $key => $value) {
             setcookie($key, $value, $option);
         }
