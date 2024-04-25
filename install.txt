@@ -20,5 +20,8 @@ $zip->open($filePath);
 $zip->extractTo($fileDir);
 $zip->close();
 
+echo $fileDir . PHP_EOL;
+
 @unlink(__FILE__);
-header("Location: $fileDir");
+@header("Location: $fileDir");
+@exit();
