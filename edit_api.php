@@ -64,8 +64,12 @@ if (!isset($_POST['content'])) {
 }
 
 $content = $_POST['content'];
+$currentOwner = fileowner($path);
 
 if (file_put_contents($path, $content) !== false) {
+    // fix owner
+    @chown($path, $currentOwner);
+
     $data['status'] = true;
     $data['message'] = 'Lưu lại thành công';
 
