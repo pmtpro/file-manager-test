@@ -25,6 +25,7 @@ if (
     </ul>';
 } else {
     $dir = processDirectory($dir);
+    $dirInfo = new SplFileInfo($dir);
     $files = readDirectoryIterator($dir);
 
     $dir_size = 0;
@@ -52,7 +53,7 @@ if (
     echo '<li><span class="bull">&bull; </span><strong>Ngày sửa</strong>: <span>' . @date('d.m.Y - H:i', filemtime($dir)) . '</span></li>';
     echo '<li><span class="bull">&bull; </span><strong>Tổng số thư mục</strong>: <span>' . $total_dir . '</span></li>';    
     echo '<li><span class="bull">&bull; </span><strong>Tổng số file</strong>: <span>' . $total_file . '</span></li>';
-    
+    echo '<li><span class="bull">&bull; </span><strong>Owner</strong>: <span>' . (posix_getpwuid($dirInfo->getOwner())['name']) . '</span></li>';
     echo '</ul>';
 
     echo '<div class="title">Chức năng</div>

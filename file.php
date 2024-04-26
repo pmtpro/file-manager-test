@@ -2,11 +2,11 @@
 
 define('ACCESS', true);
 
-include_once 'function.php';
+require 'function.php';
 
 $title = 'Thông tin tập tin';
 
-include_once 'header.php';
+require 'header.php';
 
 echo '<div class="title">' . $title . '</div>';
 
@@ -19,7 +19,8 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
 } else {
     $dir = processDirectory($dir);
     $path = $dir . '/' . $name;
-    $format = getFormat($name);
+    $file = new SplFileInfo($path);
+    $format = $file->getExtension();
     $isImage = false;
     $pixel = null;
 
@@ -34,7 +35,7 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     }
 
     echo '<li><span class="bull">&bull; </span><strong>Tên</strong>: <span>' . $name . '</span></li>
-        <li><span class="bull">&bull; </span><strong>Kích thước</strong>: <span>' . size(filesize($path)) . '</span></li>
+        <li><span class="bull">&bull; </span><strong>Kích thước</strong>: <span>' . size($file->getSize()) . '</span></li>
         <li><span class="bull">&bull; </span><strong>Chmod</strong>: <span>' . getChmod($path) . '</span></li>';
 
     if ($isImage) {
@@ -42,9 +43,13 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     }
 
     echo '<li><span class="bull">&bull; </span><strong>Định dạng</strong>: <span>' . ($format == null ? 'Không rõ' : $format) . '</span></li>
-        <li><span class="bull">&bull; </span><strong>Ngày sửa</strong>: <span>' . @date('d.m.Y - H:i', filemtime($path)) . '</span></li>
-    </ul>
-    <div class="title">Chức năng</div>
+        <li><span class="bull">&bull; </span><strong>Ngày sửa</strong>: <span>' . @date('d.m.Y - H:i', filemtime($path)) . '</span></li>';
+
+    echo '<li><span class="bull">&bull; </span><strong>Owner</strong>: <span>' . (posix_getpwuid($file->getOwner())['name']) . '</span></li>';
+
+    echo '</ul>';
+
+    echo '<div class="title">Chức năng</div>
     <ul class="list">';
 
     if (isFormatText($name)) {
@@ -71,4 +76,4 @@ if ($dir == null || $name == null || !is_file(processDirectory($dir . '/' . $nam
     </ul>';
 }
 
-include_once 'footer.php';
+require 'footer.php';
