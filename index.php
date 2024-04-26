@@ -98,7 +98,7 @@ if (!isInstallAsRoot($dir)) {
         $path = strrchr($dir, '/');
 
         if ($path !== false) {
-            $path = 'index.php?dir=' . rawurlencode(substr($dir, 0, strlen($dir) - strlen($path)));
+            $path = 'index.php?dir=' . rawurlencode(dirname($dir));
         } else {
             $path = 'index.php';
         }
