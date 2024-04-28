@@ -2,76 +2,172 @@
 
 define('ACCESS', true);
 
-require_once 'function.php';
+require 'function.php';
 
+$dir = processDirectory($dir);
 $title = 'Tải lên tập tin';
 
-include_once 'header.php';
+if (!$dir || !is_dir($dir)) {
+    require 'header.php';
+    echo '<div class="title">' . $title . '</div>';
 
-echo '<div class="title">' . $title . '</div>';
-
-if ($dir == null || !is_dir(processDirectory($dir))) {
     echo '<div class="list"><span>Đường dẫn không tồn tại</span></div>
-            <div class="title">Chức năng</div>
-            <ul class="list">
-                <li><img src="icon/list.png" alt=""/> <a href="index.php' . $pages['paramater_0'] . '">Danh sách</a></li>
-            </ul>';
-} else {
-    $dir = processDirectory($dir);
+    <div class="title">Chức năng</div>
+    <ul class="list">
+        <li><img src="icon/list.png" alt=""/> <a href="index.php' . $pages['paramater_0'] . '">Danh sách</a></li>
+    </ul>';
+    require 'footer.php';
+    exit;
+}
 
-    if (isset($_POST['submit'])) {
-        $isEmpty = true;
+if (isset($_FILES['file'])) {
+    $data = [];
+    $data['error'] = 'Tập tin bị lỗi!';
 
-        foreach ($_FILES['file']['name'] as $entry) {
-            if (!empty($entry)) {
-                $isEmpty = false;
-                break;
-            }
-        }
-
-        if ($isEmpty) {
-            echo '<div class="notice_failure">Chưa chọn tập tin</div>';
+    if (!empty($_FILES['file']['name'])) {
+        if ($_FILES['file']['error'] == UPLOAD_ERR_INI_SIZE) {
+            $data['error'] = 'Tập tin ' . $_FILES['file']['name'] . ' vượt quá kích thước cho phép';
         } else {
-            for ($i = 0; $i < count($_FILES['file']['name']); ++$i) {
-                if (!empty($_FILES['file']['name'][$i])) {
-                    if ($_FILES['file']['error'] == UPLOAD_ERR_INI_SIZE) {
-                        echo '<div class="notice_failure">Tập tin <strong class="file_name_upload">' . $_FILES['file']['name'][$i] . '</strong> vượt quá kích thước cho phép</div>';
-                    } else {
-                        $newName = $dir . '/' . str_replace(['_jar', '.jar1', '.jar2'], '.jar', $_FILES['file']['name'][$i]);
+            $newName = $dir . '/' . $_FILES['file']['name'];
 
-                        if (move_uploaded_file($_FILES['file']['tmp_name'][$i], $newName)) {
-                            echo '<div class="notice_succeed">Tải lên tập tin <strong class="file_name_upload">' . $_FILES['file']['name'][$i] . '</strong>, <span class="file_size_upload">' . size($_FILES['file']['size'][$i]) . '</span> thành công</div>';
-                        } else {
-                            echo '<div class="notice_failure">Tải lên tập tin <strong class="file_name_upload">' . $_FILES['file']['name'][$i] . '</strong> thất bại</div>';
-                        }
-                    }
-                }
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $newName)) {
+                $data['error'] = '';
             }
         }
     }
-
-    echo '<div class="list">
-                <span>' . printPath($dir, true) . '</span><hr/>
-                <form action="upload.php?dir=' . $dirEncode . $pages['paramater_1'] . '" method="post" enctype="multipart/form-data">
-                    <span class="bull">&bull; </span>Tập tin 1:<br/>
-                    <input type="file" name="file[]" size="18"/><br/>
-                    <span class="bull">&bull; </span>Tập tin 2:<br/>
-                    <input type="file" name="file[]" size="18"/><br/>
-                    <span class="bull">&bull; </span>Tập tin 3:<br/>
-                    <input type="file" name="file[]" size="18"/><br/>
-                    <span class="bull">&bull; </span>Tập tin 4:<br/>
-                    <input type="file" name="file[]" size="18"/><br/>
-                    <span class="bull">&bull; </span>Tập tin 5:<br/>
-                    <input type="file" name="file[]" size="18"/><br/>
-                    <input type="submit" name="submit" value="Tải lên"/>
-                </form>
-            </div>
-            <div class="title">Chức năng</div>
-            <ul class="list">
-                <li><img src="icon/create.png" alt=""/> <a href="create.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Tạo mới</a></li>
-                <li><img src="icon/import.png" alt=""/> <a href="import.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Nhập khẩu tập tin</a></li>
-                <li><img src="icon/list.png" alt=""/> <a href="index.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Danh sách</a></li>
-            </ul>';
+    
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data);
+    exit;
 }
 
-include_once 'footer.php';
+$action = 'upload.php?dir=' . $dirEncode . $pages['paramater_1'];
+
+require 'header.php';
+
+echo '<div class="title">' . $title . '</div>';
+
+echo '<div class="list">
+    <span>' . printPath($dir, true) . '</span><hr/>
+    <form id="formUpload" enctype="multipart/form-data">
+
+        <div class="fileUpload">
+            <span class="bull">&bull; </span>Tập tin:<br/>
+            <input type="file" size="18"/><br/>
+            <div class="result"></div>
+            <hr />
+        </div>
+        
+        <div class="fileUpload">
+            <span class="bull">&bull; </span>Tập tin:<br/>
+            <input type="file" size="18"/><br/>
+            <div class="result"></div>
+            <hr />
+        </div>
+        
+        <div class="fileUpload">
+            <span class="bull">&bull; </span>Tập tin:<br/>
+            <input type="file" size="18"/><br/>
+            <div class="result"></div>
+            <hr />
+        </div>
+        
+        <div class="fileUpload">
+            <span class="bull">&bull; </span>Tập tin:<br/>
+            <input type="file" size="18"/><br/>
+            <div class="result"></div>
+            <hr />
+        </div>
+        
+        <div class="fileUpload">
+            <span class="bull">&bull; </span>Tập tin:<br/>
+            <input type="file" size="18"/><br/>
+            <div class="result"></div>
+            <hr />
+        </div>
+
+        <button id="buttonUpload" class="button">Tải lên</button>
+    </form>
+</div>
+
+<div class="title">Chức năng</div>
+<ul class="list">
+    <li><img src="icon/create.png" alt=""/> <a href="create.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Tạo mới</a></li>
+    <li><img src="icon/import.png" alt=""/> <a href="import.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Nhập khẩu tập tin</a></li>
+    <li><img src="icon/list.png" alt=""/> <a href="index.php?dir=' . $dirEncode . $pages['paramater_1'] . '">Danh sách</a></li>
+</ul>';
+
+echo '<script>
+  const form = document.getElementById("formUpload")
+  const submit = document.getElementById("buttonUpload")
+  const files = document.getElementsByClassName("fileUpload")
+  let uploading = 0
+
+  submit.addEventListener("click", function (e) {
+    e.preventDefault()
+    
+    if (uploading) {
+        alert("Đang upload!")
+        return
+    }
+
+    filesLength = files.length;
+
+    for (let i = 0; i < filesLength; i++) {
+      const fileElement = files[i]
+      const fileInput = fileElement.querySelector(`input[type="file"]`)
+      const fileResult = fileElement.querySelector(".result")
+
+      if (!fileInput.files.length) {
+        return
+      }
+
+      const file = fileInput.files[0]
+
+      upload(file, fileResult);
+    }
+  })
+
+  function upload(file, result) {
+    uploading++;
+
+    const formData = new FormData();
+    formData.append("file", file)
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "' . $action . '");
+
+    xhr.upload.onprogress = function (e) {
+      if (e.lengthComputable) {
+        let loaded = (e.loaded / 1024).toFixed(2) + " KB"
+        let total = (e.total / 1024).toFixed(2) + " KB"
+        
+        result.innerText = loaded + " / " + total
+      }
+    }
+
+    xhr.onload = function () {
+      try {
+        var res = JSON.parse(xhr.responseText)
+
+        if (res.error) {
+          result.innerText = res.error
+        } else {
+          result.innerText = "OK!"
+        }
+      } catch (e) {
+        result.innerText = "Thất bại!"
+        alert("Tải lên thất bại: " + file.name)
+        console.log(e)
+      }
+    }
+
+    xhr.onloadend = function () {
+        uploading--
+    }
+
+    xhr.send(formData)
+  }
+</script>';
+
+require 'footer.php';
