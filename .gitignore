@@ -8,6 +8,7 @@ tmp/!.htaccess
 config.inc.php
 database.inc.php
 bookmark.json
+login_fail.lock
 
 composer.phar
 composer.lock
