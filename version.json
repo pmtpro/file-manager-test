@@ -2,7 +2,7 @@
     "repo": "file-manager-main",
     "major": 1,
     "minor": 0,
-    "patch": 37,
-    "version": "1.0.37",
-    "message": "upload pro max"
+    "patch": 38,
+    "version": "1.0.38",
+    "message": "khóa đăng nhập khi đăng nhập sai quá nhiều lần"
 }
