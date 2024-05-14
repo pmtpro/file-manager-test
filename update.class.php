@@ -53,14 +53,14 @@
             }
           }
           $rand = rand(1,10000000000);
-          $folder .= '<div style="margin-top:5px;margin-bottom:5px;margin-left:'. (($start == 0) ? 20 : ($start + 10)) .'px;border-left:0.5px dashed #aaa;padding-left: 5px;"><div class="spoilerhead" onclick="var _m=document.querySelector(\'.'.$value . $rand .'\');var _n=document.querySelector(\'#'.$value . $rand .'\');if(_n.style.display==\'none\'){_n.style.display=\'\';_m.innerHTML=\'<b>-</b>\';}else{_n.style.display=\'none\';_m.innerHTML=\'<b>+</b>\';}">';
+          $folder .= '<div style="margin-top:5px;margin-bottom:5px;margin-left:'. (($start == 0) ? 20 : ($start + 10)) .'px;border-left:0.5px dashed #aaa;padding-left: 5px;"><div class="spoilerhead" onclick="var _m=document.querySelector(\'.'. str_replace('.','str',$value) . $rand .'\');var _n=document.querySelector(\'#'. str_replace('.','str',$value) . $rand .'\');if(_n.style.display==\'none\'){_n.style.display=\'\';_m.innerHTML=\'<b>-</b>\';}else{_n.style.display=\'none\';_m.innerHTML=\'<b>+</b>\';}">';
           if($check == 0) // new and remove
-            $folder .= '<span><span class="'.$value . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> '. $notif .'</span><br />';
+            $folder .= '<span><span class="'. str_replace('.','str',$value) . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> '. $notif .'</span><br />';
           else if($check == 1) // same
-            $folder .= '<span><span class="'.$value . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> '. $isUpdate .'</span><br />';
+            $folder .= '<span><span class="'. str_replace('.','str',$value) . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> '. $isUpdate .'</span><br />';
           else if($check == 2) // add
-            $folder .= '<span><span class="'.$value . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> <font color="Purple">[you add]</font></span><br />';
-          $folder .= '</div><div id="'.$value . $rand .'" class="folder spoilerbody" style="display:none">';
+            $folder .= '<span><span class="'. str_replace('.','str',$value) . $rand .'"><b>+</b></span> <img src="icon/folder.png" alt="folder" /><b> '.$value.'</b> <font color="Purple">[you add]</font></span><br />';
+          $folder .= '</div><div id="'.str_replace('.','str',$value) . $rand .'" class="folder spoilerbody" style="display:none">';
         } else {
           $checkbox = '';
           if($types == 2) {
