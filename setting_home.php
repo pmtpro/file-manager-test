@@ -18,7 +18,7 @@ if (isset($_POST['submit'])) {
         'expires' => time() + 86400 * 30
     ]);
     
-    goURL('#');
+    goURL('index.php');
 }
 
 echo '<div class="list">';
