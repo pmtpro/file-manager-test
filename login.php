@@ -2,26 +2,11 @@
 
 const ACCESS = true;
 const LOGIN  = true;
-const LOGIN_LOCK = 'login_fail.lock';
-const LOGIN_MAX = 5;
 
 require 'function.php';
 
 if (IS_LOGIN) {
     goURL('index.php');
-}
-
-function getLoginFail() {
-    return (int) @file_get_contents(LOGIN_LOCK);
-}
-function increaseLoginFail() {
-    file_put_contents(LOGIN_LOCK, getLoginFail() + 1);
-}
-function removeLoginFail() {
-    @unlink(LOGIN_LOCK);
-}
-function ableLogin() {
-    return getLoginFail() < LOGIN_MAX;
 }
 
 $title = 'Đăng nhập';

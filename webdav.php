@@ -19,11 +19,18 @@ $server = new DAV\Server($rootDirectory);
 $server->setBaseUri('/' . basename(__DIR__) . '/webdav.php');
 
 $authBackend = new DAV\Auth\Backend\BasicCallBack(function ($username, $password) use ($configs) {
+    if (!ableLogin()) {
+        return false;
+    }
+
     if (
         strtolower($username) === strtolower($configs['username'])
         && getPasswordEncode($password) === $configs['password']
     ) {
+        removeLoginFail();
         return true;
+    } else {
+        increaseLoginFail();
     }
         
     return false;

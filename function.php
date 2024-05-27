@@ -82,6 +82,9 @@ const PATH_DATABASE = 'database.inc.php';
 const LOGIN_USERNAME_DEFAULT = 'Admin';
 const LOGIN_PASSWORD_DEFAULT = '12345';
 
+const LOGIN_LOCK = __DIR__ . '/login_fail.lock';
+const LOGIN_MAX = 5;
+
 const PAGE_LIST_DEFAULT = 1000;
 const PAGE_FILE_EDIT_DEFAULT = 1000000;
 const PAGE_FILE_EDIT_LINE_DEFAULT = 100;

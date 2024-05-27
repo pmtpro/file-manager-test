@@ -78,6 +78,12 @@ if (IS_LOGIN) {
     $menuToggle .= '<div class="list" style="font-size: small; font-style: italic">
         run on: ' . get_current_user() . ' (' . getmyuid() . ')
     </div>';
+    
+    if (file_exists(LOGIN_LOCK)) {
+        $menuToggle .= '<div class="list" style="font-size: small; font-style: italic">
+            fail login: <span style="color: red; font-weight: bold">' . getLoginFail() . '</span> (xoá <b>"' . htmlspecialchars(LOGIN_LOCK) . '"</b> để reset)
+        </div>';
+    }
 
     echo '<div class="menuToggle">
         ' . $menuToggle . '
