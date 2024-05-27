@@ -220,3 +220,10 @@ $name = isset($_GET['name']) && !empty($_GET['name']) ? $_GET['name'] : null;
 $dirEncode = !empty($dir) ? rawurlencode($dir) : '';
 
 require_once 'permission.inc.php';
+
+// load thu vien
+$autoload = __DIR__ . '/vendor/autoload.php';
+
+if (file_exists($autoload)) {
+    include_once $autoload;
+}

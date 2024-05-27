@@ -1,6 +1,7 @@
 {
     "require": {
         "php": ">=7.4.0",
-        "friendsofphp/php-cs-fixer": "^3.49"
+        "friendsofphp/php-cs-fixer": "^3.49",
+        "sabre/dav": "^4.6"
     }
 }
