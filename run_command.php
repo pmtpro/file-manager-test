@@ -32,7 +32,7 @@ echo '<style>
 
 echo '<div class="title">' . $title . '</div>';
 
-$folder = $_POST['folder'] ?? $dir;
+$folder = $_POST['folder'] ?? (string) $dir;
 $command = $_POST['command'] ?? '';
 
 echo '<div class="list">';
