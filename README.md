@@ -12,9 +12,21 @@ Nếu có lỗi các bạn cứ báo trên repo này (phần `Issues`), hoặc l
 
 Tạo một file php, dán code ở [file này](https://raw.githubusercontent.com/ngatngay/file-manager/main/install.txt) vào và chạy nó.
 
+Bản nhẹ
+
 ```bash
 curl -O https://raw.githubusercontent.com/ngatngay/file-manager/main/install.txt
 php install.txt
+```
+
+Bản full (cài sẵn mấy công cụ như WebDAV)
+
+```bash
+mkdir file-manager
+cd file-manager
+
+wget https://github.com/ngatngay/file-manager/releases/latest/download/file-manager-full.zip
+unzip file-manager-full.zip
 ```
 
 ## Hướng dẫn cài đặt

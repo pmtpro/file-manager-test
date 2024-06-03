@@ -11,23 +11,23 @@ require_once 'function.php';
 
 $title = 'Chạy lệnh hệ thống';
 
-require_once 'header.php';
+require 'header.php';
 
 echo '<style>
-    input[type="text"] {
-        width: 100%;
-    }
+  input[type="text"] {
+    width: 100%;
+  }
 
-    pre {
-        padding: 6px;
-        border: 0.5px solid #cecece;
-        white-space: pre-wrap;
-    }
+  pre {
+    padding: 6px;
+    border: 0.5px solid #cecece;
+    white-space: pre-wrap;
+  }
 
-    pre#output {
-        overflow-x: scroll;
-        white-space: pre;
-    }
+  pre#output {
+    overflow-x: scroll;
+    white-space: pre;
+  }
 </style>';
 
 echo '<div class="title">' . $title . '</div>';
@@ -38,19 +38,19 @@ $command = $_POST['command'] ?? '';
 echo '<div class="list">';
 
 echo '<form method="post">
-    <span>Thư mục:</span><br />
-    <input type="text" name="folder" value="' . htmlspecialchars($folder) . '" /><br />
+  <span>Thư mục:</span><br />
+  <input type="text" name="folder" value="' . htmlspecialchars($folder) . '" /><br />
 
-    <span>Lệnh:</span><br />
-    <input type="text" name="command" value="' . htmlspecialchars($command) . '" /><br />
+  <span>Lệnh:</span><br />
+  <input type="text" name="command" value="' . htmlspecialchars($command) . '" /><br />
 
-   <input type="submit" name="submit" value="OK" />
+ <input type="submit" name="submit" value="OK" />
 </form>';
 
 // OK
 if (isset($_POST['submit'])) {
     if ($folder) {
-        $command = "cd $folder && $command";
+        $command = "cd $folder; $command";
     }
 
     // RUN
@@ -75,8 +75,10 @@ if (isset($_POST['submit'])) {
 
     echo 'Kết quả:';
     echo '<pre id="output">' . htmlspecialchars(implode("\n", $output)) . '</pre>';
+    
+    //var_dump($output);
 }
 
 echo '</div>';
 
-require_once 'footer.php';
+require 'footer.php';

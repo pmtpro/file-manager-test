@@ -23,6 +23,13 @@ jobs:
       - name: zip repo
         run: zip -r file-manager.zip . -x ".git/*" ".github/*"
 
+      - name: zip full
+        run: |
+          wget https://getcomposer.org/download/latest-stable/composer.phar
+          php composer.phar install
+          zip -r file-manager-full.zip . -x ".git/*" ".github/*"
+          
+
       - name: bump tag
         uses: anothrNick/github-tag-action@v1
         env:
@@ -34,4 +41,6 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           generate_release_notes: true
-          files: file-manager.zip
+          files: |
+            file-manager.zip
+            file-manager-full.zip
